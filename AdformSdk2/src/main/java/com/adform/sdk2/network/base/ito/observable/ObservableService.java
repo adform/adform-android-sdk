@@ -130,7 +130,6 @@ public abstract class ObservableService extends Observable {
             mRunningTask = task;
             mRunningTask.execute();
         }
-
     }
 
     void setRunningTask(NetworkTask mRunningTask) {
