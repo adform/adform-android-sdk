@@ -1,7 +1,7 @@
 package com.adform.sdk2.network.app;
 
 import com.adform.sdk2.BuildConfig;
-import com.adform.sdk2.network.ito.network.*;
+import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.utils.Utils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;

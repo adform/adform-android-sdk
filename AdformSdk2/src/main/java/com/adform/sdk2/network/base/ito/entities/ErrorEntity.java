@@ -1,4 +1,4 @@
-package com.adform.sdk2.network.ito.entities;
+package com.adform.sdk2.network.base.ito.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;

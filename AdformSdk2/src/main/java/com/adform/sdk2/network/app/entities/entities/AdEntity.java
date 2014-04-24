@@ -1,7 +1,7 @@
 package com.adform.sdk2.network.app.entities.entities;
 
-import com.adform.sdk2.network.ito.network.NetworkResponse;
-import com.adform.sdk2.network.ito.network.NetworkResponseParser;
+import com.adform.sdk2.network.base.ito.network.NetworkResponse;
+import com.adform.sdk2.network.base.ito.network.NetworkResponseParser;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 

@@ -10,13 +10,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-	<!--<com.adform.sdk.AdView-->
-			<!--android:id="@+id/ad_view"-->
-			<!--android:background="@android:color/white"-->
-			<!--android:layout_alignParentBottom="true"-->
-			<!--android:layout_centerHorizontal="true"-->
-			<!--android:layout_width="300dp"-->
-			<!--request_url="http://37.157.0.44/mobilesdk/"-->
-			<!--android:layout_height="50dp" />-->
+	<com.adform.sdk2.view.CoreAdView
+			android:id="@+id/ad_view"
+			android:background="@android:color/white"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:layout_width="300dp"
+			android:layout_height="50dp" />
 
 </RelativeLayout>

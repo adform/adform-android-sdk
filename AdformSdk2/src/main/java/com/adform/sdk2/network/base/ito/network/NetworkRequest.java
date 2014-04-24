@@ -1,4 +1,4 @@
-package com.adform.sdk2.network.ito.network;
+package com.adform.sdk2.network.base.ito.network;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

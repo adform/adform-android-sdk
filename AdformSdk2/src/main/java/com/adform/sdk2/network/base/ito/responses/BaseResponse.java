@@ -1,6 +1,6 @@
-package com.adform.sdk2.network.ito.responses;
+package com.adform.sdk2.network.base.ito.responses;
 
-import com.adform.sdk2.network.ito.entities.ErrorEntity;
+import com.adform.sdk2.network.base.ito.entities.ErrorEntity;
 
 /**
  * Created with IntelliJ IDEA.
