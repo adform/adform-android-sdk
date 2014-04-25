@@ -1,22 +1,15 @@
 package com.adform.sdk2.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import com.adform.sdk2.interfaces.AdViewControllable;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.services.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.network.base.ito.observable.ObservableService;
-import com.adform.sdk2.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Observable;
@@ -57,6 +50,7 @@ public class CoreAdView extends RelativeLayout implements Observer {
 //            }
 //        }
         mBannerView = new BannerView(mContext);
+        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         addView(mBannerView);
     }
@@ -81,7 +75,6 @@ public class CoreAdView extends RelativeLayout implements Observer {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Utils.p("onAttachedToWindow");
 //        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
 //        filter.addAction(Intent.ACTION_USER_PRESENT);
 //        mContext.registerReceiver(mScreenStateReceiver, filter);
@@ -96,7 +89,6 @@ public class CoreAdView extends RelativeLayout implements Observer {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Utils.p("onDetachedFromWindow");
 //        unregisterScreenStateBroadcastReceiver();
 
         mAdService.deleteObserver(this);

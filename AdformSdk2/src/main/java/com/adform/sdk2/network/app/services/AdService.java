@@ -1,12 +1,14 @@
 package com.adform.sdk2.network.app.services;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService;
 
-public class AdService extends ObservableService implements ErrorListener {
+public class AdService extends ObservableService implements ErrorListener, Parcelable {
     private static final String TAG = AdService.class.getSimpleName();
     public static final String PATH = "mobilesdk/";
     public static final int REFRESH_SECONDS = 15;
@@ -75,4 +77,32 @@ public class AdService extends ObservableService implements ErrorListener {
         return mAdServingEntity;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(getTimePassed());
+        dest.writeInt(getTimerTimeout());
+        dest.writeInt(getStatus().getValue());
+    }
+
+    public static final Parcelable.Creator<AdService> CREATOR
+            = new Parcelable.Creator<AdService>() {
+        public AdService createFromParcel(Parcel in) {
+            return new AdService(in);
+        }
+
+        public AdService[] newArray(int size) {
+            return new AdService[size];
+        }
+    };
+
+    private AdService(Parcel in) {
+        setTimePassed(in.readInt());
+        setTimerTimeout(in.readInt());
+        setStatus(Status.parseType(in.readInt()));
+    }
 }

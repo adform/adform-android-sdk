@@ -204,6 +204,10 @@ public abstract class ObservableService extends Observable {
         return mTimePassed;
     }
 
+    public void setTimePassed(int timePassed) {
+        this.mTimePassed = timePassed;
+    }
+
     public Status getStatus() {
         return mStatus;
     }
