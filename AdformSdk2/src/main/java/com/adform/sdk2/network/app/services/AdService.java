@@ -10,6 +10,7 @@ public class AdService extends ObservableService implements ErrorListener {
     private static final String TAG = AdService.class.getSimpleName();
     public static final String PATH = "/mobilesdk/";
     public static final int REFRESH_SECONDS = 15;
+    public static final int ERROR_REFRESH_SECONDS = 3;
 
     private AdServingEntity mAdServingEntity;
 
@@ -25,23 +26,22 @@ public class AdService extends ObservableService implements ErrorListener {
         public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
             mAdServingEntity = response.getEntity();
             triggerObservers(mAdServingEntity);
-            scheduleGetInfo(REFRESH_SECONDS);
+            scheduleNewRequest(scheduleGetInfo(), REFRESH_SECONDS);
         }
     };
 
-    private void scheduleGetInfo(int seconds){
+    private AdformNetworkTask<AdServingEntity> scheduleGetInfo(){
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET, PATH,
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
-
-        scheduleRequest(getTask,seconds);
+        return getTask;
     }
 
     @Override
     protected void onStartService() {
-        scheduleGetInfo(0);
+        scheduleGetInfo().execute();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AdService extends ObservableService implements ErrorListener {
 
     @Override
     protected void onResumeService() {
-        scheduleGetInfo(0);
+        resumeScheduledRequest(scheduleGetInfo());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AdService extends ObservableService implements ErrorListener {
         Log.d(TAG, "error:" + error.getType());
         //notify UI on error
         notifyError(error);
-        scheduleGetInfo(3);
+        scheduleNewRequest(scheduleGetInfo(), ERROR_REFRESH_SECONDS);
     }
 
     private void notifyError(NetworkError error){
@@ -74,4 +74,5 @@ public class AdService extends ObservableService implements ErrorListener {
     public AdServingEntity getAdServingEntity() {
         return mAdServingEntity;
     }
+
 }
