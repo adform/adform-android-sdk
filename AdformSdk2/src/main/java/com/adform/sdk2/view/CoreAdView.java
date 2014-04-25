@@ -1,14 +1,20 @@
 package com.adform.sdk2.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.interfaces.AdViewControllable;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.services.AdService;
+import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.network.base.ito.observable.ObservableService;
 import com.adform.sdk2.utils.Utils;
 
@@ -26,8 +32,7 @@ public class CoreAdView extends RelativeLayout implements Observer {
     private Context mContext;
     private AdService mAdService;
 
-    private String mRequestUrl = null;
-    private HashMap<Integer, View> mViews;
+    private BannerView mBannerView;
 
     public CoreAdView(Context context) {
         this(context, null);
@@ -40,18 +45,20 @@ public class CoreAdView extends RelativeLayout implements Observer {
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
-        mViews = initViews(mViews);
 
         // Getting special attributes
-        if (attrs != null) {
-            int attrCount = attrs.getAttributeCount();
-            for (int i = 0; i < attrCount; i++) {
-                String name = attrs.getAttributeName(i);
-                if (name.equals(ATTR_URL)) {
-                    this.mRequestUrl = attrs.getAttributeValue(i);
-                }
-            }
-        }
+//        if (attrs != null) {
+//            int attrCount = attrs.getAttributeCount();
+//            for (int i = 0; i < attrCount; i++) {
+//                String name = attrs.getAttributeName(i);
+//                if (name.equals(ATTR_URL)) {
+//                    this.mRequestUrl = attrs.getAttributeValue(i);
+//                }
+//            }
+//        }
+        mBannerView = new BannerView(mContext);
+        mBannerView.setId(156554);
+        addView(mBannerView);
     }
 
     private HashMap<Integer, View> initViews(HashMap<Integer, View> views) {
@@ -63,24 +70,11 @@ public class CoreAdView extends RelativeLayout implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
-        if (mViews == null || data == null)
+        if (data instanceof NetworkError)
             return;
-        Utils.p("Loaded something");
-
-        // Clear all views
-        for (View view : mViews.values()) {
-            if (view != null)
-                removeView(view);
-        }
-
-        // Add the only needed view
-        addView(mViews.get(VIEW_TYPE_BANNER));
-
-        // Todo remove this mockup later
-        if (mViews.get(VIEW_TYPE_BANNER) instanceof AdViewControllable) {
+        if (mBannerView != null) {
             String content = ((AdServingEntity) data).getAdEntity().getTagDataEntity().getSrc();
-            ((AdViewControllable) mViews.get(VIEW_TYPE_BANNER))
-                    .showContent(content);
+            mBannerView.loadContent(content);
         }
     }
 
@@ -150,8 +144,6 @@ public class CoreAdView extends RelativeLayout implements Observer {
             timePassed = source.readInt();
             timerTimeout = source.readInt();
             timerState = source.readInt();
-//            if (source.readInt() == 1)
-//                requestUrl = source.readString();
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -163,9 +155,6 @@ public class CoreAdView extends RelativeLayout implements Observer {
             dest.writeInt(timePassed);
             dest.writeInt(timerTimeout);
             dest.writeInt(timerState);
-//            dest.writeInt((requestUrl != null)?1:0);
-//            if (requestUrl != null)
-//                dest.writeString(requestUrl);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {

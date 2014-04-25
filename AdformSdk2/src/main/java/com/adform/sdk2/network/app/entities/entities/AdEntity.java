@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by mariusm on 23/04/14.
  */
-public class AdEntity implements NetworkResponseParser<AdEntity> {
+public class AdEntity {
     private String trackingUrlBase;
     private String assetsUrlBase;
     private int refreshInterval;
@@ -64,24 +64,4 @@ public class AdEntity implements NetworkResponseParser<AdEntity> {
         this.metaEntity = metaEntity;
     }
 
-    @Override
-    public NetworkResponse parse(String data, Class<AdEntity> clazz) throws IOException {
-        final AdServingEntity response = new AdServingEntity();
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(data);
-            JSONObject jsonAdServing = (JSONObject)((JSONObject)obj).get("adServing");
-            response.setAdEntity(new AdEntity());
-            JSONObject jsonAdEntity = (JSONObject)jsonAdServing.get("ad");
-            TagDataEntity tagDataEntity = new TagDataEntity();
-            JSONObject jsonTagDataEntity = (JSONObject)jsonAdEntity.get("tagData");
-            tagDataEntity.setSrc((String)jsonTagDataEntity.get("src"));
-            response.getAdEntity().setTagDataEntity(tagDataEntity);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-        NetworkResponse<AdServingEntity> networkResponse =
-                new NetworkResponse<AdServingEntity>(response);
-        return networkResponse;
-    }
 }

@@ -8,8 +8,8 @@ import com.adform.sdk2.BuildConfig;
  */
 public class Utils {
     public static void p(String msg){
-        if(BuildConfig.DEBUG)
-            Log.e("CoreAndroidLib", msg);
+//        if(BuildConfig.DEBUG)
+        Log.e("CoreAndroidLib", msg);
     }
 //    public static void p(String msg, String... args){
 //        if(BuildConfig.DEBUG)

@@ -8,7 +8,7 @@ import com.adform.sdk2.network.base.ito.observable.ObservableService;
 
 public class AdService extends ObservableService implements ErrorListener {
     private static final String TAG = AdService.class.getSimpleName();
-    public static final String PATH = "/mobilesdk/";
+    public static final String PATH = "mobilesdk/";
     public static final int REFRESH_SECONDS = 15;
     public static final int ERROR_REFRESH_SECONDS = 3;
 

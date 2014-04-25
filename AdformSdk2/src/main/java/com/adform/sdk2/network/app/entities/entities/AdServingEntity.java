@@ -48,6 +48,7 @@ public class AdServingEntity {
             }
             NetworkResponse<AdServingEntity> networkResponse =
                     new NetworkResponse<AdServingEntity>(response);
-            return networkResponse;        }
+            return networkResponse;
+        }
     };
 }
