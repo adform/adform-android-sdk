@@ -22,14 +22,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
-//    buildTypes {
-//        release {
-//            runProguard false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-//        }
-//    }
 }
-
+tasks.whenTaskAdded { task ->
+    if (task.name.equals("lint")) {
+        task.enabled = false
+    } else if (task.name.equals("lintVitalRelease")) {
+        task.enabled = false
+    }
+}
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

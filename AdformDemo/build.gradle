@@ -23,6 +23,13 @@ android {
         versionName "1.0"
     }
 }
+tasks.whenTaskAdded { task ->
+    if (task.name.equals("lint")) {
+        task.enabled = false
+    } else if (task.name.equals("lintVitalRelease")) {
+        task.enabled = false
+    }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
