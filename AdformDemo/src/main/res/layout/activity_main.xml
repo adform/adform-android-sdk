@@ -12,7 +12,7 @@
 
 	<com.adform.sdk2.view.CoreAdView
 			android:id="@+id/custom_ad_view"
-			android:background="@android:color/white"
+			android:background="@android:color/transparent"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
 			android:layout_width="300dp"

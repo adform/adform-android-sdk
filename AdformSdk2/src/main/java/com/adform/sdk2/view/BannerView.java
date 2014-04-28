@@ -3,10 +3,12 @@ package com.adform.sdk2.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -18,10 +20,7 @@ import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.app.services.AdService;
-import com.adform.sdk2.network.base.ito.network.NetworkRequest;
-import com.adform.sdk2.network.base.ito.network.NetworkResponse;
-import com.adform.sdk2.network.base.ito.network.NetworkTask;
-import com.adform.sdk2.network.base.ito.network.SuccessListener;
+import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService;
 import com.adform.sdk2.utils.Utils;
 import org.w3c.dom.Document;
@@ -49,6 +48,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     private WebView mBannerWebView;
     private String mLoadedContent;
     private DocumentBuilderFactory mDocBuilderFactory;
+    private BannerViewListener mListener;
 
     public BannerView(Context context) {
         this(context, null);
@@ -66,7 +66,6 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     private WebView createWebView(final Context context) {
         final WebView webView = new WebView(this.getContext()) {
-
             @Override
             public void draw(final Canvas canvas) {
                 if (this.getWidth() > 0 && this.getHeight() > 0)
@@ -83,12 +82,35 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view,
                                                     final String url) {
-                return false;
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (mListener != null)
+                    mListener.onContentLoadSuccessful();
             }
         });
 
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
+
+        // todo: fix this method deprecation, when its provided
+        // This methods seems to be deprecated, but still there is no alternative to this
+        // As closest alternative is onPageFinished, but it indicated content loading, not rendering it
+        // Some sources:
+        // http://stackoverflow.com/questions/7822481/picturelistener-and-onnewpicture-are-deprecated-alternatives
+        // http://stackoverflow.com/questions/7166534/picturelistener-is-deprecated-and-obsolete-is-there-a-replacement
+        // http://stackoverflow.com/questions/17873341/android-webview-picturelistener-deprecated-still-no-alternative
+        // https://code.google.com/p/android/issues/detail?id=38646
+//        webView.setPictureListener(new WebView.PictureListener() {
+//            @Override
+//            public void onNewPicture(WebView view, Picture picture) {
+//                if (mListener != null)
+//                    mListener.onContentLoadSuccessful();
+//            }
+//        });
 
         return webView;
     }
@@ -101,11 +123,19 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         addView(mBannerWebView, webViewParams);
+//        mBannerWebView.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mListener.onClick(v);
+//            }
+//        });
     }
 
     @Override
     public void loadContent(String url) {
         Utils.p("Loading content...");
+        if (mListener != null)
+            mListener.onNewContentLoad();
         String pulledUrl = pullUrlFromXmlScript(url);
         if (pulledUrl != null) {
             RawNetworkTask getTask =
@@ -117,6 +147,13 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                         mLoadedContent = response.getEntity().getContent();
                         showContent(mLoadedContent);
                     }
+                }
+            });
+            getTask.setErrorListener(new ErrorListener() {
+                @Override
+                public void onError(NetworkTask request, NetworkError error) {
+                    if (mListener != null)
+                        mListener.onContentLoadFailed();
                 }
             });
             getTask.execute();
@@ -219,5 +256,15 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                 return new SavedState[size];
             }
         };
+    }
+
+    public interface BannerViewListener {
+        public void onNewContentLoad();
+        public void onContentLoadSuccessful();
+        public void onContentLoadFailed();
+    }
+
+    public void setListener(BannerViewListener listener) {
+        this.mListener = listener;
     }
 }
