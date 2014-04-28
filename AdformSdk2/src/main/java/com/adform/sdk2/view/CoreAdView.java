@@ -1,35 +1,49 @@
 package com.adform.sdk2.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.services.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
-import com.adform.sdk2.network.base.ito.observable.ObservableService;
 import com.adform.sdk2.utils.SlidingManager;
 import com.adform.sdk2.utils.Utils;
 
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
  * Created by mariusm on 24/04/14.
+ * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener {
-    private static final String ATTR_URL = "request_url";
-    public static final int VIEW_TYPE_BANNER = 0;
+
 
     private Context mContext;
     private AdService mAdService;
+    private Bundle mServiceInstanceBundle;
 
     private SlidingManager mSlidingManager;
     private BannerView mBannerView;
+    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                stopService();
+            }
+            else if (intent != null && intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
+                startService();
+            }
+        }
+    };
 
     public CoreAdView(Context context) {
         this(context, null);
@@ -45,9 +59,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mSlidingManager = new SlidingManager(this);
         setBackgroundResource(android.R.color.transparent);
 
-        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
+                (int)(Utils.getWidthDeviceType(mContext) * scale+0.5f),
+                (int)(Utils.getHeightDeviceType(mContext) * scale+0.5f));
+        setLayoutParams(params);
+
         mBannerView = new BannerView(mContext);
         mBannerView.setListener(this);
+        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         addView(mBannerView);
 
@@ -85,25 +105,52 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-//        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-//        filter.addAction(Intent.ACTION_USER_PRESENT);
-//        mContext.registerReceiver(mScreenStateReceiver, filter);
-
-        if (mAdService == null) {
-            mAdService = new AdService();
-            mAdService.addObserver(this);
-            mAdService.startService();
-        }
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        mContext.registerReceiver(mScreenStateReceiver, filter);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-//        unregisterScreenStateBroadcastReceiver();
+        mContext.unregisterReceiver(mScreenStateReceiver);
+    }
 
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE) {
+            if (mServiceInstanceBundle == null) {
+                startService();
+            } else {
+                resumeService();
+            }
+        } else {
+            stopService();
+        }
+    }
+
+    private void stopService() {
         mAdService.deleteObserver(this);
         mAdService.stopService();
     }
+
+    private void resumeService() {
+        mAdService = new AdService();
+        mAdService.addObserver(this);
+        mAdService.restoreInstanceWithBundle(mServiceInstanceBundle);
+        mServiceInstanceBundle = null;
+    }
+
+    private void startService() {
+        mAdService = new AdService();
+        mAdService.addObserver(this);
+        if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
+            resumeService();
+        else
+            mAdService.startService();
+    }
+
 
     /** Widget height return for SliderManager */
     @Override
@@ -117,10 +164,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
-        // todo: change instance saving here, from seperate variables to whole bundle
-        savedState.timePassed = mAdService.getTimePassed();
-        savedState.timerState = mAdService.getStatus().getValue();
-        savedState.timerTimeout = mAdService.getTimerTimeout();
+        savedState.saveBundle = mAdService.getSaveInstanceBundle();
         return savedState;
     }
 
@@ -132,28 +176,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
         }
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
-        if (mAdService == null) {
-            mAdService = new AdService();
-            mAdService.addObserver(this);
-            // todo: same as saving, just instance restore manipulation
-            mAdService.setTimerTimeout(savedState.timerTimeout);
-            mAdService.setStatus(ObservableService.Status.parseType(savedState.timerState));
-            mAdService.resumeService(savedState.timePassed);
-        }
+        mServiceInstanceBundle = savedState.saveBundle;
     }
 
-
     private static class SavedState extends BaseSavedState {
-        public String requestUrl;
-        public int timePassed;
-        public int timerTimeout;
-        public int timerState;
+        public Bundle saveBundle;
 
         public SavedState(Parcel source) {
             super(source);
-            timePassed = source.readInt();
-            timerTimeout = source.readInt();
-            timerState = source.readInt();
+            saveBundle = source.readBundle();
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -162,9 +193,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeInt(timePassed);
-            dest.writeInt(timerTimeout);
-            dest.writeInt(timerState);
+            dest.writeBundle(saveBundle);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {

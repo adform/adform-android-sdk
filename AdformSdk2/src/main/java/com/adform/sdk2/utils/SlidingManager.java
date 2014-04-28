@@ -8,6 +8,7 @@ import android.view.animation.TranslateAnimation;
 /**
  * Created by mariusm on 28/04/14.
  * Manager that helps to handle animation showing.
+ * Callback for view control is provided with {@link com.adform.sdk2.utils.SlidingManager.SliderableWidget}
  */
 public class SlidingManager {
 

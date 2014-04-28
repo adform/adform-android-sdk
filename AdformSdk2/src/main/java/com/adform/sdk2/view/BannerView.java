@@ -40,6 +40,8 @@ import java.util.ArrayList;
 
 /**
  * Created by mariusm on 24/04/14.
+ * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
+ * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
 public class BannerView extends RelativeLayout implements AdViewControllable {
     public static final int FLIP_SPEED = 1000;
@@ -71,8 +73,13 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         initView(2);
     }
 
+    /**
+     * Creates web view and returns its instance. Inside all needed clients and variables are binded.
+     * @param context provided context
+     * @return initialized web view
+     */
     private WebView createWebView(final Context context) {
-        final WebView webView = new WebView(this.getContext()) {
+        final WebView webView = new WebView(context) {
             @Override
             public void draw(final Canvas canvas) {
                 if (this.getWidth() > 0 && this.getHeight() > 0)
@@ -121,7 +128,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     private void initView(int viewCount) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
-        setLayoutParams(new RelativeLayout.LayoutParams((int)(300 * scale+0.5f), (int)(50 * scale+0.5f)));
+        setLayoutParams(new RelativeLayout.LayoutParams(
+                (int)(Utils.getWidthDeviceType(mContext) * scale+0.5f), (int)(Utils.getHeightDeviceType(mContext) * scale+0.5f)));
 
         mViewFlipper = new ViewFlipper(mContext);
         mWebViews = new ArrayList<WebView>();
@@ -213,6 +221,12 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         }
     }
 
+    /**
+     * Get next view in the list (the one that will be shown on view flipper list).
+     * @param views list of views to search in
+     * @param currentView shown view
+     * @return next view in the list
+     */
     private View getNextView(ArrayList<? extends View> views, View currentView) {
         for (int i = 0; i < views.size(); i++) {
             if (views.get(i) == currentView)
@@ -248,6 +262,10 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getTimesLoaded() {
+        return mTimesLoaded;
     }
 
     @Override

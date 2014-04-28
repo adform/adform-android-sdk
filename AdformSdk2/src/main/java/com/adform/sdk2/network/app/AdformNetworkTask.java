@@ -1,6 +1,7 @@
 package com.adform.sdk2.network.app;
 
 import com.adform.sdk2.BuildConfig;
+import com.adform.sdk2.Constants;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.utils.Utils;
 import org.apache.http.HttpRequest;
@@ -58,7 +59,7 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
      */
     @Override
     protected String getServerUrl() {
-        return "http://37.157.0.44/";
+        return Constants.SERVER_URL;
     }
 
 }

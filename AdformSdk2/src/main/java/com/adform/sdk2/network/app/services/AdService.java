@@ -1,8 +1,10 @@
 package com.adform.sdk2.network.app.services;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import com.adform.sdk2.Constants;
 import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
@@ -10,13 +12,36 @@ import com.adform.sdk2.network.base.ito.observable.ObservableService;
 
 public class AdService extends ObservableService implements ErrorListener, Parcelable {
     private static final String TAG = AdService.class.getSimpleName();
-    public static final String PATH = "mobilesdk/";
-    public static final int REFRESH_SECONDS = 15;
-    public static final int ERROR_REFRESH_SECONDS = 3;
+    public static final String INSTANCE_KEY_TIMEPASSED = "instance_key_timepassed";
+    public static final String INSTANCE_KEY_TIMERSTATE = "instance_key_timerstate";
+    public static final String INSTANCE_KEY_TIMERTIMEOUT = "instance_key_timertimeout";
 
     private AdServingEntity mAdServingEntity;
-
+//    private static AdService sInstance;
     public AdService() {}
+
+//    public static AdService getInstance() {
+//        if (sInstance == null)
+//            sInstance = new AdService();
+//        return sInstance;
+//    }
+
+    public Bundle getSaveInstanceBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(INSTANCE_KEY_TIMEPASSED, getTimePassed());
+        bundle.putInt(INSTANCE_KEY_TIMERSTATE, getStatus().getValue());
+        bundle.putInt(INSTANCE_KEY_TIMERTIMEOUT, getTimerTimeout());
+        return bundle;
+    }
+
+    public void restoreInstanceWithBundle(Bundle restoreBundle) {
+        if (restoreBundle == null)
+            restoreBundle = new Bundle(); // Mock up bundle to take default values
+        setTimerTimeout(restoreBundle.getInt(INSTANCE_KEY_TIMERTIMEOUT, Constants.REFRESH_SECONDS));
+        setStatus(ObservableService.Status.parseType(restoreBundle.getInt(INSTANCE_KEY_TIMERSTATE,
+                Status.RUNNING.getValue())));
+        resumeService(restoreBundle.getInt(INSTANCE_KEY_TIMEPASSED, 0));
+    }
 
     @Override
     public String getTag() {
@@ -28,13 +53,13 @@ public class AdService extends ObservableService implements ErrorListener, Parce
         public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
             mAdServingEntity = response.getEntity();
             triggerObservers(mAdServingEntity);
-            scheduleNewRequest(scheduleGetInfo(), REFRESH_SECONDS);
+            scheduleNewRequest(scheduleGetInfo(), Constants.REFRESH_SECONDS);
         }
     };
 
     private AdformNetworkTask<AdServingEntity> scheduleGetInfo(){
         AdformNetworkTask<AdServingEntity> getTask =
-                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET, PATH,
+                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET, Constants.SDK_INFO_PATH,
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
@@ -65,7 +90,7 @@ public class AdService extends ObservableService implements ErrorListener, Parce
         Log.d(TAG, "error:" + error.getType());
         //notify UI on error
         notifyError(error);
-        scheduleNewRequest(scheduleGetInfo(), ERROR_REFRESH_SECONDS);
+        scheduleNewRequest(scheduleGetInfo(), Constants.ERROR_REFRESH_SECONDS);
     }
 
     private void notifyError(NetworkError error){
