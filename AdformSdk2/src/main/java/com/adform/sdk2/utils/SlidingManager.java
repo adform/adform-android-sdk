@@ -7,8 +7,16 @@ import android.view.animation.TranslateAnimation;
 
 /**
  * Created by mariusm on 28/04/14.
+ * Manager that helps to handle animation showing.
  */
 public class SlidingManager {
+
+    public interface SliderableWidget {
+        public void setVisibility(int visibility);
+        public void startAnimation(Animation animation);
+        public float getWidgetHeight();
+    }
+
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 200;
     private static final int SHOW_DELAY = 500;
@@ -49,6 +57,8 @@ public class SlidingManager {
      * Collapses slider down
      */
     public void turnOff() {
+        if (!isOpen)
+            return;
         if (mAnimation != null)
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getWidgetHeight());
@@ -61,15 +71,25 @@ public class SlidingManager {
     /**
      * Expands slider back up
      */
-    public void turnOn() {
+    public void turnOn(int showSpeed) {
+        if (isOpen)
+            return;
         if (mAnimation != null)
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getWidgetHeight(), 0.0f);
-        mAnimation.setDuration(SHOW_SPEED);
+        mAnimation.setDuration(showSpeed);
         mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setInterpolator(mAnimationInterpolator);
         mAnimation.setAnimationListener(expandListener);
         mListener.startAnimation(mAnimation);
+    }
+
+    public void turnOnImmediate() {
+        turnOn(0);
+    }
+
+    public void turnOn() {
+        turnOn(SHOW_SPEED);
     }
 
     Animation.AnimationListener collapseListener = new Animation.AnimationListener() {
@@ -101,10 +121,4 @@ public class SlidingManager {
             isAnimating = true;
         }
     };
-
-    public interface SliderableWidget {
-        public void setVisibility(int visibility);
-        public void startAnimation(Animation animation);
-        public float getWidgetHeight();
-    }
 }

@@ -3,25 +3,23 @@ package com.adform.sdk2.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Picture;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.ViewFlipper;
 import com.adform.sdk2.interfaces.AdViewControllable;
 import com.adform.sdk2.network.app.RawNetworkTask;
-import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
-import com.adform.sdk2.network.app.services.AdService;
 import com.adform.sdk2.network.base.ito.network.*;
-import com.adform.sdk2.network.base.ito.observable.ObservableService;
 import com.adform.sdk2.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,17 +36,24 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by mariusm on 24/04/14.
  */
 public class BannerView extends RelativeLayout implements AdViewControllable {
+    public static final int FLIP_SPEED = 1000;
+    public static final int FLIP_OFFSET = 1000; // Needed for webview render time.
     private Context mContext = null;
     private WebSettings mWebSettings;
-    private WebView mBannerWebView;
     private String mLoadedContent;
     private DocumentBuilderFactory mDocBuilderFactory;
     private BannerViewListener mListener;
+
+    private ViewFlipper mViewFlipper;
+    private ArrayList<WebView> mWebViews;
+    private int mTimesLoaded = 0;
+
 
     public BannerView(Context context) {
         this(context, null);
@@ -60,8 +65,10 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     public BannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setBackgroundColor(Color.TRANSPARENT);
         mContext = context;
-        initView();
+        initCompatibility();
+        initView(2);
     }
 
     private WebView createWebView(final Context context) {
@@ -76,7 +83,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         mWebSettings = webView.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
         webView.setBackgroundColor(Color.TRANSPARENT);
-//        setLayer(webView);
+        setLayer(webView);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -88,8 +95,6 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (mListener != null)
-                    mListener.onContentLoadSuccessful();
             }
         });
 
@@ -111,24 +116,45 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 //                    mListener.onContentLoadSuccessful();
 //            }
 //        });
-
         return webView;
     }
 
-    private void initView() {
-        mBannerWebView = createWebView(mContext);
+    private void initView(int viewCount) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
-        this.setLayoutParams(new RelativeLayout.LayoutParams((int)(300 * scale+0.5f), (int)(50 * scale+0.5f)));
-        final FrameLayout.LayoutParams webViewParams = new FrameLayout.LayoutParams(
+        setLayoutParams(new RelativeLayout.LayoutParams((int)(300 * scale+0.5f), (int)(50 * scale+0.5f)));
+
+        mViewFlipper = new ViewFlipper(mContext);
+        mWebViews = new ArrayList<WebView>();
+        for (int i = 1; i <= viewCount; i++) {
+            WebView webView = createWebView(mContext);
+            final FrameLayout.LayoutParams webViewParams = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            mViewFlipper.addView(webView, webViewParams);
+            mWebViews.add(webView);
+        };
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-        addView(mBannerWebView, webViewParams);
-//        mBannerWebView.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mListener.onClick(v);
-//            }
-//        });
+
+        TranslateAnimation fadeInAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 1.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f);
+        fadeInAnimation.setDuration(FLIP_SPEED);
+        fadeInAnimation.setStartOffset(FLIP_OFFSET);
+        TranslateAnimation fadeOutAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, -1.0f);
+        fadeOutAnimation.setDuration(FLIP_SPEED);
+        fadeOutAnimation.setStartOffset(FLIP_OFFSET);
+        mViewFlipper.setInAnimation(fadeInAnimation);
+        mViewFlipper.setOutAnimation(fadeOutAnimation);
+
+        addView(mViewFlipper, params);
     }
 
     @Override
@@ -146,6 +172,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                     if (response != null && response.getEntity() != null) {
                         mLoadedContent = response.getEntity().getContent();
                         showContent(mLoadedContent);
+                        if (mListener != null)
+                            mListener.onContentLoadSuccessful();
                     }
                 }
             });
@@ -172,9 +200,30 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             content = "<html><head></head><body style='margin:0;padding:0;'>" + content +
                     "</body></html>";
         }
-        mBannerWebView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
+        WebView webView = null;
+        if (mTimesLoaded == 0)
+            webView = (WebView) mViewFlipper.getCurrentView();
+        else
+            webView = (WebView) getNextView(mWebViews, mViewFlipper.getCurrentView());
+        if (webView != null) {
+            webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
+            if (mTimesLoaded > 0)
+                mViewFlipper.showNext();
+            mTimesLoaded++;
+        }
     }
 
+    private View getNextView(ArrayList<? extends View> views, View currentView) {
+        for (int i = 0; i < views.size(); i++) {
+            if (views.get(i) == currentView)
+                if ((i+1) < views.size()) {
+                    return views.get(i + 1);
+                } else {
+                    views.get(0);
+                }
+        }
+        return null;
+    }
 
     private String pullUrlFromXmlScript(String xml) {
         // Inserting header
@@ -217,9 +266,11 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         }
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
-        if(mBannerWebView != null && savedState.loadedContent != null) {
+        if(mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             showContent(savedState.loadedContent);
+            if (mListener != null)
+                mListener.onContentRestore();
         }
     }
 
@@ -261,10 +312,42 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     public interface BannerViewListener {
         public void onNewContentLoad();
         public void onContentLoadSuccessful();
+        public void onContentRestore();
         public void onContentLoadFailed();
     }
 
     public void setListener(BannerViewListener listener) {
         this.mListener = listener;
+    }
+
+    private static Method SET_LAYER_TYPE;
+    private static Field LAYER_TYPE_SOFTWARE;
+
+    static {
+        initCompatibility();
+    };
+
+    private static void initCompatibility() {
+        try {
+            for(Method m:WebView.class.getMethods()){
+                if(m.getName().equals("setLayerType")){
+                    SET_LAYER_TYPE = m;
+                    break;
+                }
+            }
+            LAYER_TYPE_SOFTWARE = WebView.class.getField("LAYER_TYPE_SOFTWARE");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void setLayer(WebView webView){
+        if (SET_LAYER_TYPE != null && LAYER_TYPE_SOFTWARE !=null) {
+            try {
+                SET_LAYER_TYPE.invoke(webView, LAYER_TYPE_SOFTWARE.getInt(WebView.class), null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

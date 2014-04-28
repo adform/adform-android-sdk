@@ -28,15 +28,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private Context mContext;
     private AdService mAdService;
 
-    private BannerView mBannerView;
     private SlidingManager mSlidingManager;
-
-    public enum AdLoadState {
-        LOADING,
-        LOAD_SUCCESSFUL,
-        LOAD_FAILED
-    }
-
+    private BannerView mBannerView;
 
     public CoreAdView(Context context) {
         this(context, null);
@@ -51,41 +44,25 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mContext = context;
         mSlidingManager = new SlidingManager(this);
         setBackgroundResource(android.R.color.transparent);
-        // Getting special attributes
-//        if (attrs != null) {
-//            int attrCount = attrs.getAttributeCount();
-//            for (int i = 0; i < attrCount; i++) {
-//                String name = attrs.getAttributeName(i);
-//                if (name.equals(ATTR_URL)) {
-//                    this.mRequestUrl = attrs.getAttributeValue(i);
-//                }
-//            }
-//        }
+
+        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView = new BannerView(mContext);
         mBannerView.setListener(this);
-        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         addView(mBannerView);
+
         setVisibility(INVISIBLE);
     }
-
-//    private HashMap<Integer, View> initViews(HashMap<Integer, View> views) {
-//        if (views == null)
-//            views = new HashMap<Integer, View>();
-//        views.put(VIEW_TYPE_BANNER, new BannerView(mContext));
-//        return views;
-//    }
 
     /** An update from configuration json */
     @Override
     public void update(Observable observable, Object data) {
         if (data instanceof NetworkError)
             return;
-        if (mBannerView != null && data != null) {
+        // Loading banner
+        if (data != null) {
             String content = ((AdServingEntity) data).getAdEntity().getTagDataEntity().getSrc();
             mBannerView.loadContent(content);
-        } else {
-            mSlidingManager.turnOff();
         }
     }
 
@@ -95,9 +72,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    public void onNewContentLoad() {
-        mSlidingManager.turnOff();
+    public void onContentRestore() {
+        mSlidingManager.turnOnImmediate();
     }
+
+    @Override
+    public void onNewContentLoad() {}
 
     @Override
     public void onContentLoadFailed() {}
