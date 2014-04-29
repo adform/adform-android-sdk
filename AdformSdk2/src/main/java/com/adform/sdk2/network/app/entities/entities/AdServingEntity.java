@@ -13,12 +13,21 @@ public class AdServingEntity {
 
     private String version;
     private AdEntity adEntity;
+    private MetaEntity metaEntity;
 
     public AdServingEntity() {}
 
     public AdServingEntity(String version, AdEntity adEntity) {
         this.version = version;
         this.adEntity = adEntity;
+    }
+
+    public MetaEntity getMetaEntity() {
+        return metaEntity;
+    }
+
+    public void setMetaEntity(MetaEntity metaEntity) {
+        this.metaEntity = metaEntity;
     }
 
     public AdEntity getAdEntity() {
@@ -41,18 +50,25 @@ public class AdServingEntity {
                 JSONObject jsonAdServing = (JSONObject)((JSONObject)obj).get("adServing");
 
                 // Parsing Ad
-                JSONObject jsonAdEntity = (JSONObject)jsonAdServing.get("ad");
-                AdEntity adEntity = new AdEntity();
-                Object refreshInterval = jsonAdEntity.get("refreshInterval");
-                if (refreshInterval != null)
-                    adEntity.setRefreshInterval(Integer.parseInt(refreshInterval.toString()));
-                response.setAdEntity(adEntity);
-
-                // Parsing TagData
-                JSONObject jsonTagDataEntity = (JSONObject)jsonAdEntity.get("tagData");
-                TagDataEntity tagDataEntity = new TagDataEntity();
-                tagDataEntity.setSrc((String)jsonTagDataEntity.get("src"));
-                adEntity.setTagDataEntity(tagDataEntity);
+                try {
+                    JSONObject jsonAdEntity = (JSONObject)jsonAdServing.get("ad");
+                    AdEntity adEntity = new AdEntity();
+                    if (jsonAdEntity != null) {
+                        Object refreshInterval = jsonAdEntity.get("refreshInterval");
+                        if (refreshInterval != null)
+                            adEntity.setRefreshInterval(Integer.parseInt(refreshInterval.toString()));
+                        response.setAdEntity(adEntity);
+                        // Parsing TagData
+                        JSONObject jsonTagDataEntity = (JSONObject)jsonAdEntity.get("tagData");
+                        if (jsonTagDataEntity != null) {
+                            TagDataEntity tagDataEntity = new TagDataEntity();
+                            tagDataEntity.setSrc((String) jsonTagDataEntity.get("src"));
+                            adEntity.setTagDataEntity(tagDataEntity);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 // Parsing meta
                 JSONObject jsonMeta = (JSONObject)jsonAdServing.get("meta");
@@ -60,6 +76,7 @@ public class AdServingEntity {
                 Object code = jsonMeta.get("code");
                 if (code != null)
                     metaEntity.setCode(Integer.parseInt(code.toString()));
+                response.setMetaEntity(metaEntity);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
