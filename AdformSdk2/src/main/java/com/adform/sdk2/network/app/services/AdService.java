@@ -52,7 +52,8 @@ public class AdService extends ObservableService implements ErrorListener, Parce
 
     private AdformNetworkTask<AdServingEntity> scheduleGetInfo(){
         AdformNetworkTask<AdServingEntity> getTask =
-                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET, Constants.SDK_INFO_PATH,
+                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET,
+                        Constants.SDK_INFO_PATH,
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);

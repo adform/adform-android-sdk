@@ -330,10 +330,10 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         return httpRequest;
     }
 
-//    protected NetworkResponse createResponseWithError(NetworkError.Type type, int code,String errorMessage){
-//        NetworkError error = new NetworkError(type,code,errorMessage);
-//        return new NetworkResponse(error);
-//    }
+    protected NetworkResponse createResponseWithError(NetworkError.Type type, int code,String errorMessage){
+        NetworkError error = new NetworkError(type,code,errorMessage);
+        return new NetworkResponse(error);
+    }
 
     private static void addHeaders(HttpRequest httpRequest, NetworkRequest networkRequest) {
         Map<String,String> headers = networkRequest.getHeaders();

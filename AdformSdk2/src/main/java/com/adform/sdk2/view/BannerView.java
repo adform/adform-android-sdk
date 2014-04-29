@@ -218,6 +218,11 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         addView(mViewFlipper, params);
     }
 
+    /**
+     * Loads content that should be displayed in webview. When content is loaded,
+     * showContent(String) is initiated.
+     * @param url
+     */
     @Override
     public void loadContent(String url) {
         Utils.p("Loading content...");
@@ -249,6 +254,19 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         }
     }
 
+    /**
+     * Flips already loaded content. If no content exist, nothing is done.
+     */
+    @Override
+    public void flipLoadedContent() {
+        if (mLoadedContent != null)
+            showContent(mLoadedContent);
+    }
+
+    /**
+     * Renders content in next in list webview
+     * @param content provided conent to load
+     */
     @Override
     public void showContent(String content) {
         Utils.p("Showing content...");

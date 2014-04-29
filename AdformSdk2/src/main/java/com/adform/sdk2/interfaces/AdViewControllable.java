@@ -6,4 +6,5 @@ package com.adform.sdk2.interfaces;
 public interface AdViewControllable {
     public void loadContent(String url);
     public void showContent(String content);
+    public void flipLoadedContent();
 }

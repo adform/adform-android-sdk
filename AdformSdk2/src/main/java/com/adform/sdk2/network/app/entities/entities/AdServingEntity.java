@@ -36,13 +36,30 @@ public class AdServingEntity {
             try {
                 JSONParser parser = new JSONParser();
                 Object obj = parser.parse(data);
+
+                // Parsing AdServing
                 JSONObject jsonAdServing = (JSONObject)((JSONObject)obj).get("adServing");
-                response.setAdEntity(new AdEntity());
+
+                // Parsing Ad
                 JSONObject jsonAdEntity = (JSONObject)jsonAdServing.get("ad");
-                TagDataEntity tagDataEntity = new TagDataEntity();
+                AdEntity adEntity = new AdEntity();
+                Object refreshInterval = jsonAdEntity.get("refreshInterval");
+                if (refreshInterval != null)
+                    adEntity.setRefreshInterval(Integer.parseInt(refreshInterval.toString()));
+                response.setAdEntity(adEntity);
+
+                // Parsing TagData
                 JSONObject jsonTagDataEntity = (JSONObject)jsonAdEntity.get("tagData");
+                TagDataEntity tagDataEntity = new TagDataEntity();
                 tagDataEntity.setSrc((String)jsonTagDataEntity.get("src"));
-                response.getAdEntity().setTagDataEntity(tagDataEntity);
+                adEntity.setTagDataEntity(tagDataEntity);
+
+                // Parsing meta
+                JSONObject jsonMeta = (JSONObject)jsonAdServing.get("meta");
+                MetaEntity metaEntity = new MetaEntity();
+                Object code = jsonMeta.get("code");
+                if (code != null)
+                    metaEntity.setCode(Integer.parseInt(code.toString()));
             } catch (final Exception e) {
                 e.printStackTrace();
             }

@@ -38,13 +38,15 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
         switch (statusCode){
             case 200:
                 //check if not empty response
-                if(mRawStringResponse != null && mRawStringResponse.length() > 0)
+                if(mRawStringResponse != null && mRawStringResponse.length() > 0) {
                     networkResponse = parseJsonResponseBody();
+                } else {
+                    networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
+                }
                 break;
-            case 400:
-            case 401:
-            case 404:
             default:
+                //TODO mariusm 29/04/14 needs proper error message
+                networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Something is off");
                 break;
         }
 

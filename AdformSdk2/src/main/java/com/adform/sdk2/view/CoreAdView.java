@@ -80,12 +80,22 @@ public class CoreAdView extends RelativeLayout implements Observer,
     /** An update from configuration json */
     @Override
     public void update(Observable observable, Object data) {
-        if (data instanceof NetworkError)
+        if (data instanceof NetworkError) {
+            mBannerView.flipLoadedContent();
             return;
+        }
         // Loading banner
         if (data != null) {
-            String content = ((AdServingEntity) data).getAdEntity().getTagDataEntity().getSrc();
-            mBannerView.loadContent(content);
+            AdServingEntity adServingEntity = (AdServingEntity) data;
+            if (adServingEntity.getAdEntity() != null
+                    && adServingEntity.getAdEntity().getTagDataEntity() != null
+                    && adServingEntity.getAdEntity().getTagDataEntity().getSrc() != null
+                    ) {
+                String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
+                mBannerView.loadContent(content);
+            } else {
+                mBannerView.flipLoadedContent();
+            }
         }
     }
 
