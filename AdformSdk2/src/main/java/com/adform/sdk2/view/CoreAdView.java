@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.services.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
+import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
 import com.adform.sdk2.utils.Utils;
 
@@ -24,7 +25,8 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends RelativeLayout implements Observer,
-        SlidingManager.SliderableWidget, BannerView.BannerViewListener {
+        SlidingManager.SliderableWidget, BannerView.BannerViewListener,
+        ContentLoadManager.ContentLoaderListener{
 
 
     private Context mContext;
@@ -37,6 +39,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     private SlidingManager mSlidingManager;
     private BannerView mBannerView;
+    private ContentLoadManager mContentLoadManager;
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,6 +63,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         super(context, attrs, defStyle);
         mContext = context;
         mSlidingManager = new SlidingManager(this);
+        mContentLoadManager = new ContentLoadManager(this);
         setBackgroundResource(android.R.color.transparent);
 
         final float scale = mContext.getResources().getDisplayMetrics().density;
@@ -104,26 +108,25 @@ public class CoreAdView extends RelativeLayout implements Observer,
                     && adServingEntity.getAdEntity().getTagDataEntity().getSrc() != null
                     ) {
                 String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
-                mBannerView.loadContent(content);
+                mContentLoadManager.loadContent(content);
             } else {
-                mBannerView.loadContent(null);
+                mBannerView.showContent(null);
                 mSlidingManager.turnOff();
             }
         }
     }
 
     @Override
-    public void onContentLoadSuccessful() {
+    public void onContentLoadSuccessful(String content) {
+        mBannerView.showContent(content);
         mSlidingManager.turnOn();
     }
 
     @Override
-    public void onContentRestore() {
+    public void onContentRestore(String content) {
+        mBannerView.showContent(content);
         mSlidingManager.turnOnImmediate();
     }
-
-    @Override
-    public void onNewContentLoad() {}
 
     @Override
     public void onContentLoadFailed() {}
