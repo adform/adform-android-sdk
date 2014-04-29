@@ -140,7 +140,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                     ViewGroup.LayoutParams.MATCH_PARENT);
             mViewFlipper.addView(webView, webViewParams);
             mWebViews.add(webView);
-        };
+        }
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -214,9 +214,12 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         else
             webView = (WebView) getNextView(mWebViews, mViewFlipper.getCurrentView());
         if (webView != null) {
+            Utils.p("Rendering content...");
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
-            if (mTimesLoaded > 0)
+            if (mTimesLoaded > 0) {
                 mViewFlipper.showNext();
+                Utils.p("Showing next item...");
+            }
             mTimesLoaded++;
         }
     }
@@ -233,7 +236,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                 if ((i+1) < views.size()) {
                     return views.get(i + 1);
                 } else {
-                    views.get(0);
+                    return views.get(0);
                 }
         }
         return null;
