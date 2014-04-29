@@ -15,6 +15,7 @@ public class AdService extends ObservableService implements ErrorListener, Parce
     public static final String INSTANCE_KEY_TIMEPASSED = "instance_key_timepassed";
     public static final String INSTANCE_KEY_TIMERSTATE = "instance_key_timerstate";
     public static final String INSTANCE_KEY_TIMERTIMEOUT = "instance_key_timertimeout";
+    private int timeLoaded = 0;
 
     private AdServingEntity mAdServingEntity;
     public AdService() {}
@@ -51,9 +52,10 @@ public class AdService extends ObservableService implements ErrorListener, Parce
     };
 
     private AdformNetworkTask<AdServingEntity> scheduleGetInfo(){
+        timeLoaded++;
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET,
-                        Constants.SDK_INFO_PATH,
+                        (timeLoaded < 3)?Constants.SDK_INFO_PATH:Constants.SDK_INFO_PATH_ERROR,
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
