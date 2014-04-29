@@ -20,16 +20,14 @@ public class SlidingManager {
 
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 500;
-    private static final int SHOW_DELAY = 500;
+    private static final int SHOW_DELAY = 1000;
     private boolean isOpen = false;
     private SliderableWidget mListener;
     private boolean isAnimating = false;
     private Animation mAnimation;
-    private AccelerateInterpolator mAnimationInterpolator;
 
     public SlidingManager(SliderableWidget listener) {
         this.mListener = listener;
-        mAnimationInterpolator = new AccelerateInterpolator(1.0f);
     }
 
     @Deprecated
@@ -50,7 +48,6 @@ public class SlidingManager {
         }
 
         anim.setDuration(SHOW_SPEED);
-        anim.setInterpolator(new AccelerateInterpolator(1.0f));
         mListener.startAnimation(anim);
     }
 
@@ -64,7 +61,6 @@ public class SlidingManager {
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getWidgetHeight());
         mAnimation.setDuration(HIDE_SPEED);
-        mAnimation.setInterpolator(mAnimationInterpolator);
         mAnimation.setAnimationListener(collapseListener);
         mListener.startAnimation(mAnimation);
     }
@@ -80,7 +76,6 @@ public class SlidingManager {
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getWidgetHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
         mAnimation.setStartOffset(SHOW_DELAY);
-        mAnimation.setInterpolator(mAnimationInterpolator);
         mAnimation.setAnimationListener(expandListener);
         mListener.startAnimation(mAnimation);
     }

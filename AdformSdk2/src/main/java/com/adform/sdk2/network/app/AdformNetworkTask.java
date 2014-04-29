@@ -29,11 +29,9 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
     protected NetworkResponse<ResponseType> handleResponse(HttpResponse response) throws IOException, AuthorizationError {
         int statusCode = response.getStatusLine().getStatusCode();
         mRawStringResponse = responseToRawString(response).toString();
-        if (BuildConfig.DEBUG) {
-            Utils.p("Raw response (" + statusCode + "):" + mRawStringResponse);
-            for (int i = 0; i < getParameters().size(); i++) {
-                Utils.p(getParameters().get(i).getName()+":"+getParameters().get(i).getValue());
-            }
+        Utils.p("Raw response (" + statusCode + "):" + mRawStringResponse);
+        for (int i = 0; i < getParameters().size(); i++) {
+            Utils.p(getParameters().get(i).getName() + ":" + getParameters().get(i).getValue());
         }
         NetworkResponse networkResponse = null;
 

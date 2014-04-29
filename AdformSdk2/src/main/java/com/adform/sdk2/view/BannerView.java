@@ -45,7 +45,7 @@ import java.util.ArrayList;
  */
 public class BannerView extends RelativeLayout implements AdViewControllable {
     public static final int FLIP_SPEED = 500;
-    public static final int FLIP_OFFSET = 500; // Needed for webview render time.
+    public static final int FLIP_OFFSET = 1000; // Needed for webview render time.
     private Context mContext = null;
     private WebSettings mWebSettings;
     private String mLoadedContent;
@@ -74,9 +74,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         // Compability issues
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        mViewCache = new ImageView(context);
-        mViewCache.setBackgroundColor(Color.BLUE);
 
+        mViewCache = new ImageView(context);
         final float scale = mContext.getResources().getDisplayMetrics().density;
         mViewCache.setLayoutParams(new RelativeLayout.LayoutParams(
                 (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f),
@@ -107,7 +106,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(mBitmap);
         }
-        if (mCanvas != null)
+        if (mCanvas != null && mBitmap != null && !mBitmap.isRecycled())
             super.draw(mCanvas);
         super.draw(canvas);
     }
@@ -329,6 +328,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
+        removeCallbacks(mClearCacheRunnable);
         savedState.loadedContent = mLoadedContent;
         savedState.screenShot = mBitmap;
         return savedState;
@@ -345,7 +345,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
-        postDelayed(mClearCacheRunnable, 300);
+        postDelayed(mClearCacheRunnable, 800);
         if(mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             showContent(savedState.loadedContent);

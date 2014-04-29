@@ -42,8 +42,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                 stopService();
-            }
-            else if (intent != null && intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
+            } else if (intent != null && intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                 startService();
             }
         }
@@ -141,14 +140,16 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     private void resumeService() {
-        mAdService = new AdService();
+        if (mAdService == null)
+            mAdService = new AdService();
         mAdService.addObserver(this);
         mAdService.restoreInstanceWithBundle(mServiceInstanceBundle, mLastTime);
         mServiceInstanceBundle = null;
     }
 
     private void startService() {
-        mAdService = new AdService();
+        if (mAdService == null)
+            mAdService = new AdService();
         mAdService.addObserver(this);
         if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
             resumeService();
