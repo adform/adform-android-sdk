@@ -2,6 +2,7 @@ package com.adform.sdk2.network.base.ito.observable;
 
 import android.os.Handler;
 import android.util.Log;
+import com.adform.sdk2.Constants;
 import com.adform.sdk2.network.base.ito.network.NetworkTask;
 
 import java.util.Observable;
@@ -14,10 +15,7 @@ import java.util.Observable;
  */
 public abstract class ObservableService extends Observable {
 
-    /* default refresh interval in seconds */
-    protected final int DEFAULT_REFRESH_INTERVAL = 10;
-
-    private int mTimerTimeout = DEFAULT_REFRESH_INTERVAL; // Timer when task should execute
+    private int mTimerTimeout = Constants.REFRESH_SECONDS; // Timer when task should execute
     private int mTimePassed; // Counted time
 
     /* repetitive request scheduler */
@@ -70,7 +68,7 @@ public abstract class ObservableService extends Observable {
 
     public void startService(){
         mTimePassed = 0;
-        mTimerTimeout = DEFAULT_REFRESH_INTERVAL;
+        mTimerTimeout = Constants.REFRESH_SECONDS;
         Log.d(getTag(), "start service");
         requestSequenceNumber = 0;
         mStatus = Status.RUNNING;
@@ -113,7 +111,7 @@ public abstract class ObservableService extends Observable {
 
     public void stopService(){
         mTimePassed = 0;
-        mTimerTimeout = DEFAULT_REFRESH_INTERVAL;
+        mTimerTimeout = Constants.REFRESH_SECONDS;
         Log.d(getTag(), "stop service");
         mStatus = Status.STOPPED;
         stopCurrentTask();

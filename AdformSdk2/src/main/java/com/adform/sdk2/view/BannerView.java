@@ -94,7 +94,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         public void run() {
             mViewCache.setImageBitmap(null);
             mViewCache.setVisibility(GONE);
-            mBitmap.recycle();
+            if (mBitmap != null)
+                mBitmap.recycle();
             mBitmap = null;
             mCanvas = null;
         }
@@ -219,12 +220,17 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     }
 
     /**
-     * Loads content that should be displayed in webview. When content is loaded,
+     * Loads url that should be displayed in webview. When url is loaded,
      * showContent(String) is initiated.
-     * @param url
+     * If url is null it resets loading content.
+     * @param url provided url to load.
      */
     @Override
     public void loadContent(String url) {
+        if (url == null) {
+            mLoadedContent = null;
+            return;
+        }
         Utils.p("Loading content...");
         if (mListener != null)
             mListener.onNewContentLoad();
@@ -366,9 +372,11 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         postDelayed(mClearCacheRunnable, 800);
         if(mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
-            showContent(savedState.loadedContent);
-            if (mListener != null)
-                mListener.onContentRestore();
+            if (mLoadedContent != null && mLoadedContent.length() > 0) {
+                showContent(savedState.loadedContent);
+                if (mListener != null)
+                    mListener.onContentRestore();
+            }
         }
     }
 
