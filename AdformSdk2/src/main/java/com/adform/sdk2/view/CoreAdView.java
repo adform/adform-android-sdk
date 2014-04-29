@@ -28,7 +28,11 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
 
     private Context mContext;
+
     private AdService mAdService;
+    /** Variable used to save time counter when reinitializing AdService */
+    private int mLastTime = -1;
+    /** Bundle that packs AdService last state when saving view instance */
     private Bundle mServiceInstanceBundle;
 
     private SlidingManager mSlidingManager;
@@ -131,6 +135,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     private void stopService() {
+        mLastTime = mAdService.getTimePassed();
         mAdService.deleteObserver(this);
         mAdService.stopService();
     }
@@ -138,7 +143,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private void resumeService() {
         mAdService = new AdService();
         mAdService.addObserver(this);
-        mAdService.restoreInstanceWithBundle(mServiceInstanceBundle);
+        mAdService.restoreInstanceWithBundle(mServiceInstanceBundle, mLastTime);
         mServiceInstanceBundle = null;
     }
 

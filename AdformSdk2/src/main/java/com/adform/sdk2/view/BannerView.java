@@ -1,8 +1,10 @@
 package com.adform.sdk2.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -14,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 import com.adform.sdk2.interfaces.AdViewControllable;
@@ -33,9 +36,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -44,8 +44,8 @@ import java.util.ArrayList;
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
 public class BannerView extends RelativeLayout implements AdViewControllable {
-    public static final int FLIP_SPEED = 1000;
-    public static final int FLIP_OFFSET = 1000; // Needed for webview render time.
+    public static final int FLIP_SPEED = 500;
+    public static final int FLIP_OFFSET = 500; // Needed for webview render time.
     private Context mContext = null;
     private WebSettings mWebSettings;
     private String mLoadedContent;
@@ -56,6 +56,9 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     private ArrayList<WebView> mWebViews;
     private int mTimesLoaded = 0;
 
+    private ImageView mViewCache;
+    private Canvas mCanvas;
+    private Bitmap mBitmap;
 
     public BannerView(Context context) {
         this(context, null);
@@ -67,10 +70,46 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     public BannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setBackgroundColor(Color.TRANSPARENT);
         mContext = context;
-        initCompatibility();
+        // Compability issues
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        mViewCache = new ImageView(context);
+        mViewCache.setBackgroundColor(Color.BLUE);
+
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        mViewCache.setLayoutParams(new RelativeLayout.LayoutParams(
+                (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f),
+                (int) (Utils.getHeightDeviceType(mContext) * scale + 0.5f)));
+        addView(mViewCache);
+        mViewCache.setVisibility(GONE);
+
+        setBackgroundColor(Color.TRANSPARENT);
         initView(2);
+
+        mViewCache.bringToFront();
+    }
+
+    private Runnable mClearCacheRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mViewCache.setImageBitmap(null);
+            mViewCache.setVisibility(GONE);
+            mBitmap.recycle();
+            mBitmap = null;
+            mCanvas = null;
+        }
+    };
+
+    @Override
+    public void draw(Canvas canvas) {
+        if (mBitmap == null && getWidth() != 0 && getHeight() != 0){
+            mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(mBitmap);
+        }
+        if (mCanvas != null)
+            super.draw(mCanvas);
+        super.draw(canvas);
     }
 
     /**
@@ -82,15 +121,13 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         final WebView webView = new WebView(context) {
             @Override
             public void draw(final Canvas canvas) {
-                if (this.getWidth() > 0 && this.getHeight() > 0)
-                    super.draw(canvas);
+                super.draw(canvas);
             }
         };
 
         mWebSettings = webView.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        setLayer(webView);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -102,6 +139,23 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+//                Picture picture = view.capturePicture();
+//                Bitmap  b = Bitmap.createBitmap( picture.getWidth(),
+//                        picture.getHeight(), Bitmap.Config.ARGB_8888);
+//                Canvas c = new Canvas( b );
+//
+//                picture.draw( c );
+//                FileOutputStream fos = null;
+//                try {
+//                    fos = new FileOutputStream( "mnt/sdcard/yahoo.jpg" );
+//                    if ( fos != null ){
+//                        b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                        fos.close();
+//                    }
+//                }
+//                catch( Exception e ) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -276,6 +330,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
         savedState.loadedContent = mLoadedContent;
+        savedState.screenShot = mBitmap;
         return savedState;
     }
 
@@ -287,6 +342,10 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         }
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
+        mBitmap = savedState.screenShot;
+        mViewCache.setImageBitmap(mBitmap);
+        mViewCache.setVisibility(VISIBLE);
+        postDelayed(mClearCacheRunnable, 300);
         if(mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             showContent(savedState.loadedContent);
@@ -298,11 +357,14 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     private static class SavedState extends BaseSavedState {
         String loadedContent;
+        Bitmap screenShot;
 
         public SavedState(Parcel source) {
             super(source);
             if (source.readInt() == 1)
                 loadedContent = source.readString();
+            if (source.readInt() == 1)
+                screenShot = source.readParcelable(Bitmap.class.getClassLoader());
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -314,6 +376,9 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             dest.writeInt((loadedContent != null)?1:0);
             if (loadedContent != null)
                 dest.writeString(loadedContent);
+            dest.writeInt((screenShot != null) ? 1 : 0);
+            if (screenShot != null)
+                dest.writeParcelable(screenShot, 0);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
@@ -341,34 +406,4 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         this.mListener = listener;
     }
 
-    private static Method SET_LAYER_TYPE;
-    private static Field LAYER_TYPE_SOFTWARE;
-
-    static {
-        initCompatibility();
-    };
-
-    private static void initCompatibility() {
-        try {
-            for(Method m:WebView.class.getMethods()){
-                if(m.getName().equals("setLayerType")){
-                    SET_LAYER_TYPE = m;
-                    break;
-                }
-            }
-            LAYER_TYPE_SOFTWARE = WebView.class.getField("LAYER_TYPE_SOFTWARE");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void setLayer(WebView webView){
-        if (SET_LAYER_TYPE != null && LAYER_TYPE_SOFTWARE !=null) {
-            try {
-                SET_LAYER_TYPE.invoke(webView, LAYER_TYPE_SOFTWARE.getInt(WebView.class), null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

@@ -17,14 +17,7 @@ public class AdService extends ObservableService implements ErrorListener, Parce
     public static final String INSTANCE_KEY_TIMERTIMEOUT = "instance_key_timertimeout";
 
     private AdServingEntity mAdServingEntity;
-//    private static AdService sInstance;
     public AdService() {}
-
-//    public static AdService getInstance() {
-//        if (sInstance == null)
-//            sInstance = new AdService();
-//        return sInstance;
-//    }
 
     public Bundle getSaveInstanceBundle() {
         Bundle bundle = new Bundle();
@@ -34,13 +27,13 @@ public class AdService extends ObservableService implements ErrorListener, Parce
         return bundle;
     }
 
-    public void restoreInstanceWithBundle(Bundle restoreBundle) {
+    public void restoreInstanceWithBundle(Bundle restoreBundle, int lastTime) {
         if (restoreBundle == null)
             restoreBundle = new Bundle(); // Mock up bundle to take default values
         setTimerTimeout(restoreBundle.getInt(INSTANCE_KEY_TIMERTIMEOUT, Constants.REFRESH_SECONDS));
         setStatus(ObservableService.Status.parseType(restoreBundle.getInt(INSTANCE_KEY_TIMERSTATE,
                 Status.RUNNING.getValue())));
-        resumeService(restoreBundle.getInt(INSTANCE_KEY_TIMEPASSED, 0));
+        resumeService((lastTime == -1)?restoreBundle.getInt(INSTANCE_KEY_TIMEPASSED, 0):lastTime);
     }
 
     @Override
