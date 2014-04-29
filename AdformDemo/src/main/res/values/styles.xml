@@ -1,8 +1,15 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
+	
+	<style name="default_text" parent="@android:style/TextAppearance.Holo.Medium">
+		<item name="android:text">@string/temp_info</item>
+		<item name="android:paddingLeft">15dp</item>
+		<item name="android:paddingRight">15dp</item>
+		<item name="android:paddingBottom">10dp</item>
+	</style>
 
 </resources>

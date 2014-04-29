@@ -4,5 +4,6 @@
     <string name="app_name">AdformSampleApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+	<string name="temp_info">Adform provides you with a digital advertising solution that unlocks your online potential. Our platform is simple and includes campaign planning, ad serving, optimisation, analytics, reports and much more. We have leading clients in all major industries and we are rapidly expanding our product palette and geographical presence. Today Adform delivers campaigns for over 3,062 clients across 7,542 global web publishers in more than 35 countries worldwide. To help you reach your digital advertising potential we always challenge the present in order to create tomorrow’s solutions.</string>
 
 </resources>

@@ -2,13 +2,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
 		>
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+	<ScrollView
+			android:layout_width="match_parent"
+			android:fillViewport="true"
+			android:layout_height="match_parent">
+
+		<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+		        android:gravity="left"
+				>
+
+			<ImageView
+					android:layout_margin="20dp"
+					android:layout_width="wrap_content"
+					android:src="@drawable/logo"
+					android:scaleType="centerInside"
+					android:layout_height="50dp" />
+
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+
+	</ScrollView>
 
 	<com.adform.sdk2.view.CoreAdView
 			android:id="@+id/custom_ad_view"
