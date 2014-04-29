@@ -45,7 +45,8 @@ import java.util.ArrayList;
  */
 public class BannerView extends RelativeLayout implements AdViewControllable {
     public static final int FLIP_SPEED = 500;
-    public static final int FLIP_OFFSET = 1000; // Needed for webview render time.
+    public static final int FLIP_OFFSET = 1500; // Needed for webview render time.
+    public static final int CLEAR_CACHE_TIMEOUT = 1000;
     private Context mContext = null;
     private WebSettings mWebSettings;
     private String mLoadedContent;
@@ -369,7 +370,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
-        postDelayed(mClearCacheRunnable, 800);
+        postDelayed(mClearCacheRunnable, CLEAR_CACHE_TIMEOUT);
         if(mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             if (mLoadedContent != null && mLoadedContent.length() > 0) {

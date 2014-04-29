@@ -22,6 +22,34 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    signingConfigs {
+        debug {
+            project.ext.loadSign = false
+        }
+        release {
+            project.ext.loadSign = true
+        }
+    }
+
+    if ( project.ext.loadSign ) {
+        Properties p = new Properties ()
+        p.load ( new FileInputStream ( rootProject.file ( 'sign.properties' ) ) )
+
+        android.signingConfigs.release.storeFile file ( p.storeFile )
+        android.signingConfigs.release.storePassword p.storePassword
+        android.signingConfigs.release.keyAlias p.keyAlias
+        android.signingConfigs.release.keyPassword p.keyPassword
+    }
+
 }
 tasks.whenTaskAdded { task ->
     if (task.name.equals("lint")) {

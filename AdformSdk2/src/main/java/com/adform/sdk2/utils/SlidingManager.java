@@ -20,7 +20,7 @@ public class SlidingManager {
 
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 500;
-    private static final int SHOW_DELAY = 1000;
+    private static final int SHOW_DELAY = 1500;
     private boolean isOpen = false;
     private SliderableWidget mListener;
     private boolean isAnimating = false;
