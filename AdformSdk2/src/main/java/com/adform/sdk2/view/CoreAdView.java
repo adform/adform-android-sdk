@@ -27,8 +27,6 @@ import java.util.Observer;
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
         ContentLoadManager.ContentLoaderListener{
-
-
     private Context mContext;
 
     private AdService mAdService;
@@ -40,6 +38,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private SlidingManager mSlidingManager;
     private BannerView mBannerView;
     private ContentLoadManager mContentLoadManager;
+
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -117,6 +116,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
+    public void onContentMraidLoadSuccessful(String content) {
+        mBannerView.showContent(content);
+        mSlidingManager.turnOn();
+    }
+
+    @Override
     public void onContentLoadSuccessful(String content) {
         mBannerView.showContent(content);
         mSlidingManager.turnOn();
@@ -182,15 +187,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
         else
             mAdService.startService();
     }
-
-
-    /** Widget height return for SliderManager */
-    @Override
-    public float getWidgetHeight() {
-        return getHeight();
-    }
-
-    // TODO: AdService should not be packed outside, but inside, though at the moment this does work properly
 
     @Override
     protected Parcelable onSaveInstanceState() {

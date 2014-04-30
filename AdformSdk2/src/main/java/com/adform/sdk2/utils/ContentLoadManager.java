@@ -9,7 +9,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,6 +17,7 @@ import java.io.IOException;
 
 /**
  * Created by mariusm on 29/04/14.
+ * Helps to load content that is parsed from json script source.
  */
 public class ContentLoadManager {
 
@@ -34,7 +34,6 @@ public class ContentLoadManager {
      * @param url provided url to load.
      */
     public void loadContent(String url) {
-
         Utils.p("Loading content...");
         String pulledUrl = pullUrlFromXmlScript(url);
         if (pulledUrl != null) {
@@ -44,9 +43,12 @@ public class ContentLoadManager {
                 @Override
                 public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
                     if (response != null && response.getEntity() != null) {
-//                        showContent(mLoadedContent);
-                        if (mListener != null)
-                            mListener.onContentLoadSuccessful(response.getEntity().getContent());
+                        if (mListener != null) {
+                            if (isMraidImpelemnetation(response.getEntity().getContent()))
+                                mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+                            else
+                                mListener.onContentLoadSuccessful(response.getEntity().getContent());
+                        }
                     }
                 }
             });
@@ -61,11 +63,29 @@ public class ContentLoadManager {
         }
     }
 
+    /**
+     * Retuns if content contains an mraid implementation
+     * @param content provided content to look into
+     * @return true if mraid.js is found, false otherwise.
+     */
+    private boolean isMraidImpelemnetation(String content) {
+        if (content.contains("mraid.js") && content.contains("script type=\"text/javascript\" src=\"mraid.js\""))
+            return true;
+        return false;
+    }
+
+    /**
+     * Pulls out an src attribute value from the script tag.
+     * @param xml provided xml that should be parsed.
+     * @return src attribute value. If there was an error parsing, null value is returned
+     */
     private String pullUrlFromXmlScript(String xml) {
         // Inserting header
         if (mDocBuilderFactory == null)
             mDocBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
+            // todo: mock up server problems
+            xml = xml.replaceAll("&lt", "<");
             DocumentBuilder dBuilder = mDocBuilderFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
             NodeList nList = doc.getElementsByTagName("script");
@@ -86,9 +106,9 @@ public class ContentLoadManager {
         return null;
     }
 
-
     public interface ContentLoaderListener {
         public void onContentLoadSuccessful(String content);
+        public void onContentMraidLoadSuccessful(String content);
         public void onContentLoadFailed();
     }
 }

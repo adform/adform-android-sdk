@@ -15,7 +15,7 @@ public class SlidingManager {
     public interface SliderableWidget {
         public void setVisibility(int visibility);
         public void startAnimation(Animation animation);
-        public float getWidgetHeight();
+        public int getHeight();
     }
 
     private static final int SHOW_SPEED = 500;
@@ -41,9 +41,9 @@ public class SlidingManager {
 
         if (isOpen) {
             mListener.setVisibility(View.VISIBLE);
-            anim = new TranslateAnimation(0.0f, 0.0f, mListener.getWidgetHeight(), 0.0f);
+            anim = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         } else {
-            anim = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getWidgetHeight());
+            anim = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
             anim.setAnimationListener(collapseListener);
         }
 
@@ -59,7 +59,7 @@ public class SlidingManager {
             return;
         if (mAnimation != null)
             mAnimation.cancel();
-        mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getWidgetHeight());
+        mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
         mAnimation.setDuration(HIDE_SPEED);
         mAnimation.setAnimationListener(collapseListener);
         mListener.startAnimation(mAnimation);
@@ -73,7 +73,7 @@ public class SlidingManager {
             return;
         if (mAnimation != null)
             mAnimation.cancel();
-        mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getWidgetHeight(), 0.0f);
+        mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
         mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setAnimationListener(expandListener);

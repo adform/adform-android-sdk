@@ -2,6 +2,7 @@ package com.adform.sample.app;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.adform.sdk2.view.CoreAdView;
 
 public class MainActivity extends Activity {
 
@@ -10,8 +11,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        AdView mAdView = (AdView) findViewById(R.id.ad_view);
-//        mAdView.loadNextAd();
-
+        CoreAdView mAdView = (CoreAdView) findViewById(R.id.custom_ad_view);
     }
 }
