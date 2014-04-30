@@ -69,7 +69,9 @@ public class ContentLoadManager {
      * @return true if mraid.js is found, false otherwise.
      */
     private boolean isMraidImpelemnetation(String content) {
-        if (content.contains("mraid.js") && content.contains("script type=\"text/javascript\" src=\"mraid.js\""))
+        if (content.contains("mraid.js")
+//                && content.contains("src=\"mraid.js\"") // Still needs tinkering
+                )
             return true;
         return false;
     }

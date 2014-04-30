@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -20,22 +22,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 import com.adform.sdk2.interfaces.AdViewControllable;
-import com.adform.sdk2.network.app.RawNetworkTask;
-import com.adform.sdk2.network.app.entities.entities.RawResponse;
-import com.adform.sdk2.network.base.ito.network.*;
+import com.adform.sdk2.resources.MraidJavascript;
+import com.adform.sdk2.utils.MraidBridge;
 import com.adform.sdk2.utils.Utils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -43,18 +35,28 @@ import java.util.ArrayList;
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
-public class BannerView extends RelativeLayout implements AdViewControllable {
+public class BannerView extends RelativeLayout implements AdViewControllable, MraidBridge.MraidHandler {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 1500; // Needed for webview render time.
     public static final int CLEAR_CACHE_TIMEOUT = 1000;
+    public static final String MRAID_JS_INTERFACE = "mraid_js_interface";
+
+    public interface BannerViewListener {
+        public void onContentRestore();
+    }
+
     private Context mContext = null;
-    private WebSettings mWebSettings;
     private String mLoadedContent;
+    private boolean mIsLoadedContentMraid = false;
     private BannerViewListener mListener;
 
     private ViewFlipper mViewFlipper;
-    private ArrayList<WebView> mWebViews;
+    private ArrayList<AdWebView> mWebViews;
     private int mTimesLoaded = 0;
+    private WebViewClient mSimpleWebViewClient;
+    private WebViewClient mMraidWebViewClient;
+    private MraidBridge mMraidBridge;
+    private Object mraidJavascript = null;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -103,7 +105,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     @Override
     public void draw(Canvas canvas) {
-        if (mBitmap == null && getWidth() != 0 && getHeight() != 0){
+        if (mBitmap == null && getWidth() != 0 && getHeight() != 0) {
             mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(mBitmap);
         }
@@ -114,32 +116,30 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     /**
      * Creates web view and returns its instance. Inside all needed clients and variables are binded.
+     *
      * @param context provided context
      * @return initialized web view
      */
-    private WebView createWebView(final Context context) {
-        final WebView webView = new WebView(context) {
-            @Override
-            public void draw(final Canvas canvas) {
-                super.draw(canvas);
-            }
-        };
+    private AdWebView createWebView(final Context context) {
+        final AdWebView webView = new AdWebView(context);
 
-        mWebSettings = webView.getSettings();
-        mWebSettings.setJavaScriptEnabled(true);
+        if (mSimpleWebViewClient == null)
+            mSimpleWebViewClient = new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(final WebView view,
+                                                        final String url) {
+                    return true;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                }
+            };
+
+        webView.setWebViewClient(mSimpleWebViewClient);
         webView.setBackgroundColor(Color.TRANSPARENT);
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(final WebView view,
-                                                    final String url) {
-                return true;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {}
-        });
-
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
 
@@ -164,12 +164,12 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     private void initView(int viewCount) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
         setLayoutParams(new RelativeLayout.LayoutParams(
-                (int)(Utils.getWidthDeviceType(mContext) * scale+0.5f), (int)(Utils.getHeightDeviceType(mContext) * scale+0.5f)));
+                (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f), (int) (Utils.getHeightDeviceType(mContext) * scale + 0.5f)));
 
         mViewFlipper = new ViewFlipper(mContext);
-        mWebViews = new ArrayList<WebView>();
+        mWebViews = new ArrayList<AdWebView>();
         for (int i = 1; i <= viewCount; i++) {
-            WebView webView = createWebView(mContext);
+            AdWebView webView = createWebView(mContext);
             final FrameLayout.LayoutParams webViewParams = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
@@ -206,22 +206,35 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
     @Override
     public void flipLoadedContent() {
         if (mLoadedContent != null)
-            showContent(mLoadedContent);
+            showContent(mLoadedContent, mIsLoadedContentMraid);
     }
 
     /**
      * Renders content in next in list webview
      * If content is null it resets loading content.
+     *
      * @param content provided conent to load
      */
     @Override
-    public void showContent(String content) {
+    public void showContent(String content, boolean isMraid) {
         if (content == null) {
             mLoadedContent = null;
+            mIsLoadedContentMraid = false;
             return;
         } else {
             mLoadedContent = content;
+            mIsLoadedContentMraid = isMraid;
         }
+        if (isMraid && mMraidWebViewClient == null) {
+            try {
+                WebViewClient.class.getMethod("shouldInterceptRequest",
+                        new Class[]{android.webkit.WebView.class, String.class});
+                mMraidWebViewClient = new MraidWebViewClientAPI11();
+            } catch (NoSuchMethodException exception) {
+                mMraidWebViewClient = new MraiWebViewClientAPI8();
+            }
+        }
+
         Utils.p("Showing content...");
 
         // Wrapping js in js tags
@@ -232,13 +245,18 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
             content = "<html><head></head><body style='margin:0;padding:0;'>" + content +
                     "</body></html>";
         }
-        WebView webView = null;
+        AdWebView webView = null;
         if (mTimesLoaded == 0)
-            webView = (WebView) mViewFlipper.getCurrentView();
+            webView = (AdWebView) mViewFlipper.getCurrentView();
         else
-            webView = (WebView) getNextView(mWebViews, mViewFlipper.getCurrentView());
+            webView = (AdWebView) getNextView(mWebViews, mViewFlipper.getCurrentView());
         if (webView != null) {
+            webView.setWebViewClient((mIsLoadedContentMraid) ? mMraidWebViewClient : mSimpleWebViewClient);
             Utils.p("Rendering content...");
+            if (mMraidBridge == null)
+                mMraidBridge = new MraidBridge(webView, this);
+            mMraidBridge.setWebView(webView);
+            webView.addJavascriptInterface(mMraidBridge, MRAID_JS_INTERFACE);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
             if (mTimesLoaded > 0) {
                 mViewFlipper.showNext();
@@ -250,14 +268,15 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     /**
      * Get next view in the list (the one that will be shown on view flipper list).
-     * @param views list of views to search in
+     *
+     * @param views       list of views to search in
      * @param currentView shown view
      * @return next view in the list
      */
     private View getNextView(ArrayList<? extends View> views, View currentView) {
         for (int i = 0; i < views.size(); i++) {
             if (views.get(i) == currentView)
-                if ((i+1) < views.size()) {
+                if ((i + 1) < views.size()) {
                     return views.get(i + 1);
                 } else {
                     return views.get(0);
@@ -277,27 +296,31 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         SavedState savedState = new SavedState(superState);
         removeCallbacks(mClearCacheRunnable);
         savedState.loadedContent = mLoadedContent;
+        savedState.isLoadedContentMraid = mIsLoadedContentMraid;
         savedState.screenShot = mBitmap;
         return savedState;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof SavedState)) {
+        if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
-        SavedState savedState = (SavedState)state;
+        SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
         postDelayed(mClearCacheRunnable, CLEAR_CACHE_TIMEOUT);
-        if(mViewFlipper != null && savedState.loadedContent != null) {
+        if (mViewFlipper != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
+            mIsLoadedContentMraid = savedState.isLoadedContentMraid;
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
-                if (mListener != null)
-                    mListener.onContentRestore(mLoadedContent);
+                if (mListener != null) {
+                    mListener.onContentRestore();
+                    showContent(mLoadedContent, mIsLoadedContentMraid);
+                }
             }
         }
     }
@@ -305,6 +328,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
 
     private static class SavedState extends BaseSavedState {
         String loadedContent;
+        boolean isLoadedContentMraid;
         Bitmap screenShot;
 
         public SavedState(Parcel source) {
@@ -313,7 +337,9 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
                 loadedContent = source.readString();
             if (source.readInt() == 1)
                 screenShot = source.readParcelable(Bitmap.class.getClassLoader());
+            isLoadedContentMraid = (source.readInt() == 1);
         }
+
         public SavedState(Parcelable superState) {
             super(superState);
         }
@@ -321,12 +347,13 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeInt((loadedContent != null)?1:0);
+            dest.writeInt((loadedContent != null) ? 1 : 0);
             if (loadedContent != null)
                 dest.writeString(loadedContent);
             dest.writeInt((screenShot != null) ? 1 : 0);
             if (screenShot != null)
                 dest.writeParcelable(screenShot, 0);
+            dest.writeInt((isLoadedContentMraid) ? 1 : 0);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
@@ -343,12 +370,63 @@ public class BannerView extends RelativeLayout implements AdViewControllable {
         };
     }
 
-    public interface BannerViewListener {
-        public void onContentRestore(String content);
-    }
 
     public void setListener(BannerViewListener listener) {
         this.mListener = listener;
+    }
+
+    private class MraiWebViewClientAPI8 extends WebViewClient {
+        public MraiWebViewClientAPI8() {
+            initJavascriptBridge();
+        }
+
+        protected void initJavascriptBridge() {
+            if (mraidJavascript == null) {
+                mraidJavascript = MraidJavascript.JAVASCRIPT_SOURCE;
+            }
+        }
+
+        @Override
+        public void onPageStarted(android.webkit.WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(android.webkit.WebView view, String url) {
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onReceivedError(android.webkit.WebView view, int errorCode, String description, String failingUrl) {
+            super.onReceivedError(view, errorCode, description, failingUrl);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
+            return true;
+        }
+    }
+
+    private class MraidWebViewClientAPI11 extends MraiWebViewClientAPI8 {
+        public MraidWebViewClientAPI11() {
+            super();
+        }
+
+        @Override
+        protected void initJavascriptBridge() {
+            InputStream is = new ByteArrayInputStream(MraidJavascript.JAVASCRIPT_SOURCE.getBytes());
+            mraidJavascript = is;
+        }
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(android.webkit.WebView webView, String url) {
+            WebResourceResponse response = null;
+            if ((TextUtils.isEmpty(url) == false) && url.endsWith("mraid.js")) {
+                response =
+                        new WebResourceResponse("text/javascript", "UTF-8", (InputStream) mraidJavascript);
+            }
+            return response;
+        }
     }
 
 }

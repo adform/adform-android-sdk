@@ -30,6 +30,10 @@ public class AdWebView extends WebView {
         super.draw(canvas);
     }
 
+    public void injectJavascript(String script) {
+        final String url = "javascript:" + script;
+        super.loadUrl(url);
+    }
 
 
     //    private static Method SET_LAYER_TYPE;

@@ -109,7 +109,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
                 mContentLoadManager.loadContent(content);
             } else {
-                mBannerView.showContent(null);
+                mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();
             }
         }
@@ -117,19 +117,18 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-        mBannerView.showContent(content);
+        mBannerView.showContent(content, true);
         mSlidingManager.turnOn();
     }
 
     @Override
     public void onContentLoadSuccessful(String content) {
-        mBannerView.showContent(content);
+        mBannerView.showContent(content, false);
         mSlidingManager.turnOn();
     }
 
     @Override
-    public void onContentRestore(String content) {
-        mBannerView.showContent(content);
+    public void onContentRestore() {
         mSlidingManager.turnOnImmediate();
     }
 
@@ -164,12 +163,18 @@ public class CoreAdView extends RelativeLayout implements Observer,
         }
     }
 
+    /**
+     * Stops service from being runned
+     */
     private void stopService() {
         mLastTime = mAdService.getTimePassed();
         mAdService.deleteObserver(this);
         mAdService.stopService();
     }
 
+    /**
+     * Resume service to run from the last time
+     */
     private void resumeService() {
         if (mAdService == null)
             mAdService = new AdService();
@@ -178,6 +183,9 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mServiceInstanceBundle = null;
     }
 
+    /**
+     * Starts to run service anew
+     */
     private void startService() {
         if (mAdService == null)
             mAdService = new AdService();

@@ -154,7 +154,11 @@ public abstract class ObservableService extends Observable {
 
     private void executeTask() {
         if (mStatus == Status.RUNNING) {
-            mRunningTask.execute();
+            try {
+                mRunningTask.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
