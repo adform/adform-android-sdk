@@ -1,5 +1,6 @@
 package com.adform.sdk2.utils;
 
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import com.adform.sdk2.view.AdWebView;
 
@@ -12,6 +13,7 @@ public class MraidBridge {
     public static final String StateExpanded = "expanded";
     public static final String StateResized = "resized";
     public static final String StateHidden = "hidden";
+
     public static final String EventReady = "ready";
 
     public enum State {
@@ -82,6 +84,16 @@ public class MraidBridge {
     public void sendReady() {
         String script = "mraid.fireEvent('" + EventReady + "');";
         webView.injectJavascript(script);
+    }
+
+    public void testAndroidReady() {
+//        String script = "Android.sayHello();";
+//        webView.injectJavascript(script);
+    }
+
+    @JavascriptInterface
+    public void sayHello(){
+        Utils.p("Js is saying finished");
     }
 
     public interface MraidHandler

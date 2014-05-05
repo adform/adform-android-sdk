@@ -3,6 +3,8 @@ package com.adform.sdk2.utils;
 import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
+import com.adform.sdk2.resources.MraidJavascript;
+import org.apache.http.entity.StringEntity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by mariusm on 29/04/14.
@@ -44,8 +47,9 @@ public class ContentLoadManager {
                 public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
                     if (response != null && response.getEntity() != null) {
                         if (mListener != null) {
-                            if (isMraidImpelemnetation(response.getEntity().getContent()))
-                                mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+                            String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
+                            if (mRaidImplementedContent != null)
+                                mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
                             else
                                 mListener.onContentLoadSuccessful(response.getEntity().getContent());
                         }
@@ -66,14 +70,15 @@ public class ContentLoadManager {
     /**
      * Retuns if content contains an mraid implementation
      * @param content provided content to look into
-     * @return true if mraid.js is found, false otherwise.
+     * @return injected mraid.js implementation, if no implementation is needed return null
      */
-    private boolean isMraidImpelemnetation(String content) {
+    private String isMraidImpelemnetation(String content) {
         if (content.contains("mraid.js")
-//                && content.contains("src=\"mraid.js\"") // Still needs tinkering
-                )
-            return true;
-        return false;
+                && content.contains("<script type=\\\"text\\/javascript\\\" src=\\\"mraid.js\\\"><\\/script>")) {
+            return content.replace("<script type=\\\"text\\/javascript\\\" src=\\\"mraid.js\\\"><\\/script>", "");
+//            return content;
+        }
+        return null;
     }
 
     /**
@@ -81,13 +86,13 @@ public class ContentLoadManager {
      * @param xml provided xml that should be parsed.
      * @return src attribute value. If there was an error parsing, null value is returned
      */
+    // todo: maybe use something more lite here than parser
     private String pullUrlFromXmlScript(String xml) {
         // Inserting header
         if (mDocBuilderFactory == null)
             mDocBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
             // todo: mock up server problems
-            xml = xml.replaceAll("&lt", "<");
             DocumentBuilder dBuilder = mDocBuilderFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(xml.getBytes("utf-8"))));
             NodeList nList = doc.getElementsByTagName("script");

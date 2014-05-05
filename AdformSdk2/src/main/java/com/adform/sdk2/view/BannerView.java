@@ -39,7 +39,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 1500; // Needed for webview render time.
     public static final int CLEAR_CACHE_TIMEOUT = 1000;
-    public static final String MRAID_JS_INTERFACE = "mraid_js_interface";
+    public static final String MRAID_JS_INTERFACE = "Android";
 
     public interface BannerViewListener {
         public void onContentRestore();
@@ -240,11 +240,16 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         // Wrapping js in js tags
         content = "<script type=\"text/javascript\">" + content + "</script>";
 
-        // If the string data lacks the HTML boilerplate, add it.
-        if (!content.contains("<html>")) {
-            content = "<html><head></head><body style='margin:0;padding:0;'>" + content +
-                    "</body></html>";
-        }
+        // Injecting mraid script if needed
+        String jsInjectionWrapper = ((isMraid) ? "<script>"+MraidJavascript.JAVASCRIPT_SOURCE+"</script>" : "");
+//        String jsInjectionWrapper = "<script src=\"mraid.js\">"+"</script>";
+        String jsLoadCallback = "<script type=\"text/javascript\">\n" +
+                "function androidFinishedLoading() {\n" +
+                "Android.sayHello();\n" +
+                "};\n" +
+                "</script>\n";
+        content = "<html><head>" + jsLoadCallback + jsInjectionWrapper + "</head><body style='margin:0;padding:0;' onload=\"androidFinishedLoading();\">" + content +
+                "</body></html>";
         AdWebView webView = null;
         if (mTimesLoaded == 0)
             webView = (AdWebView) mViewFlipper.getCurrentView();
@@ -258,11 +263,19 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
             mMraidBridge.setWebView(webView);
             webView.addJavascriptInterface(mMraidBridge, MRAID_JS_INTERFACE);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
+            mMraidBridge.sendReady();
             if (mTimesLoaded > 0) {
                 mViewFlipper.showNext();
                 Utils.p("Showing next item...");
             }
             mTimesLoaded++;
+            mMraidBridge.testAndroidReady();
+//            postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mMraidBridge.testAndroidReady();
+//                }
+//            }, 2000);
         }
     }
 
@@ -325,7 +338,6 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         }
     }
 
-
     private static class SavedState extends BaseSavedState {
         String loadedContent;
         boolean isLoadedContentMraid;
@@ -369,7 +381,6 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
             }
         };
     }
-
 
     public void setListener(BannerViewListener listener) {
         this.mListener = listener;
