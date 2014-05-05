@@ -138,7 +138,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
 
         webView.setWebViewClient(mSimpleWebViewClient);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
