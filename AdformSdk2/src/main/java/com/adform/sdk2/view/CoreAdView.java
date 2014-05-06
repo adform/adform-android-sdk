@@ -31,8 +31,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private Context mContext;
 
     private AdService mAdService;
-    /** Variable used to save time counter when reinitializing AdService */
-    private int mLastTime = -1;
     /** Bundle that packs AdService last state when saving view instance */
     private Bundle mServiceInstanceBundle;
 
@@ -97,11 +95,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (data != null) {
             AdServingEntity adServingEntity = (AdServingEntity) data;
 
-            // Setting new refresh interval
-            if (adServingEntity.getAdEntity() != null
-                    && adServingEntity.getAdEntity().getRefreshInterval() > 0)
-                mAdService.setTimerTimeout(adServingEntity.getAdEntity().getRefreshInterval());
-
             // Loading banner
             if (adServingEntity.getAdEntity() != null
                     && adServingEntity.getAdEntity().getTagDataEntity() != null
@@ -128,13 +121,11 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onContentRestore() {
-        Utils.p("onContentRestore");
         mSlidingManager.turnOnImmediate();
     }
 
     @Override
     public void onContentFirstRender() {
-        Utils.p("onContentFirstRender");
         mSlidingManager.turnOn();
     }
 
@@ -183,7 +174,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
      * Stops service from being runned
      */
     private void stopService() {
-        mLastTime = mAdService.getTimePassed();
+//        mLastTime = mAdService.getTimePassed();
         mAdService.deleteObserver(this);
         mAdService.stopService();
     }
@@ -195,7 +186,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (mAdService == null)
             mAdService = new AdService();
         mAdService.addObserver(this);
-        mAdService.restoreInstanceWithBundle(mServiceInstanceBundle, mLastTime);
+        mAdService.restoreInstanceWithBundle(mServiceInstanceBundle);
         mServiceInstanceBundle = null;
     }
 

@@ -271,7 +271,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             webView = (AdWebView) getNextView(mWebViews, mViewAnimator.getCurrentView());
         if (webView != null) {
             webView.setWebViewClient((mIsLoadedContentMraid) ? mMraidWebViewClient : mSimpleWebViewClient);
-            Utils.p("Rendering content...");
             if (mMraidBridge == null)
                 mMraidBridge = new MraidBridge(this);
             mMraidBridge.setWebView(webView);
@@ -289,7 +288,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             post(new Runnable() {
                 @Override
                 public void run() {
-                    Utils.p("Ready for mraid work");
                     mMraidBridge.setState(MraidBridge.State.DEFAULT);
                     mMraidBridge.setReady();
                 }
