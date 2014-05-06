@@ -136,10 +136,10 @@ public abstract class ObservableService extends Observable {
         @Override
         public void run() {
             if (mTimePassed < mTimerTimeout) {
-                Log.d(getTag(), "Task execution in "+(mTimerTimeout- mTimePassed));
+                Log.e(getTag(), "Task execution in "+(mTimerTimeout- mTimePassed));
                 timerTick();
             } else {
-                Log.d(getTag(), "Executing task...");
+                Log.e(getTag(), "Executing task...");
                 executeTask();
             }
         }

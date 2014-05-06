@@ -55,7 +55,7 @@ public class SlidingManager {
      * Collapses slider down
      */
     public void turnOff() {
-        if (!isOpen || isAnimating)
+        if (!isOpen)
             return;
         if (mAnimation != null)
             mAnimation.cancel();
@@ -69,7 +69,7 @@ public class SlidingManager {
      * Expands slider back up
      */
     public void turnOn(int showSpeed) {
-        if (isOpen || isAnimating)
+        if (isOpen)
             return;
         if (mAnimation != null)
             mAnimation.cancel();

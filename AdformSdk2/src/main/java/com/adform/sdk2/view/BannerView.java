@@ -18,7 +18,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
-import com.adform.sdk2.interfaces.AdViewControllable;
 import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.MraidBridge;
@@ -33,11 +32,11 @@ import java.util.ArrayList;
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
-public class BannerView extends RelativeLayout implements AdViewControllable, MraidBridge.MraidHandler,
+public class BannerView extends RelativeLayout implements MraidBridge.MraidHandler,
         JsLoadBridge.LoadBridgeHandler {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 0;
-    public static final int CLEAR_CACHE_TIMEOUT = 1000;
+    public static final int CLEAR_CACHE_TIMEOUT = 0;
 
     /**
      * A callback interface for main container
@@ -59,6 +58,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
     private Context mContext = null;
     private String mLoadedContent;
     private boolean mIsLoadedContentMraid = false;
+    /** Global variable, indicating that content is being restored. */
+    private boolean mIsRestoring = false;
     private BannerViewListener mListener;
 
     private ViewAnimator mViewAnimator;
@@ -223,7 +224,6 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
     /**
      * Flips already loaded content. If no content exist, nothing is done.
      */
-    @Override
     public void flipLoadedContent() {
         if (mLoadedContent != null)
             showContent(mLoadedContent, mIsLoadedContentMraid);
@@ -233,9 +233,9 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
      * Renders content in next in list webview
      * If content is null it resets loading content.
      *
-     * @param content provided conent to load
+     * @param content provided content to load
+     * @param isMraid true if content is mraid
      */
-    @Override
     public void showContent(String content, boolean isMraid) {
         if (content == null) {
             mLoadedContent = null;
@@ -266,8 +266,8 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
                 + "<body style='margin:0;padding:0;' "+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
                 + content
                 + "</body></html>";
-        AdWebView webView = null;
-        if (mTimesLoaded == 0)
+        AdWebView webView;
+        if (mTimesLoaded == 0 || mIsRestoring)
             webView = (AdWebView) mViewAnimator.getCurrentView();
         else
             webView = (AdWebView) getNextView(mWebViews, mViewAnimator.getCurrentView());
@@ -287,12 +287,19 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
     @Override
     public void onContentLoadedFromJsBridge() {
         Utils.p("("+mTimesLoaded+") Content should be rendered, displaying...");
-        if (mTimesLoaded > 0) {
-            Utils.p("Making a flip inside...");
-            post(mFlipContentRunnable);
+        if (!mIsRestoring) {
+            if (mTimesLoaded > 0) {
+                Utils.p("Making a flip inside...");
+                post(mFlipContentRunnable);
+            } else {
+                if (mListener != null)
+                    mListener.onContentFirstRender();
+            }
         } else {
-            if (mListener != null)
-                mListener.onContentFirstRender();
+            Utils.p("Clearing mock up display cache");
+            // The delay is not really needed here, but it removed flicker on older devices
+            postDelayed(mClearCacheRunnable, 100);
+            mIsRestoring = false;
         }
         mTimesLoaded = mTimesLoaded+1;
     }
@@ -345,7 +352,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
-        postDelayed(mClearCacheRunnable, CLEAR_CACHE_TIMEOUT);
+        mIsRestoring = true;
         if (mViewAnimator != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
