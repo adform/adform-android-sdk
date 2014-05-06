@@ -14,7 +14,7 @@ public class SlidingManager {
 
     public interface SliderableWidget {
         public void setVisibility(int visibility);
-        public void startAnimation(Animation animation);
+        public void startSliding(Animation animation);
         public int getHeight();
     }
 
@@ -30,27 +30,6 @@ public class SlidingManager {
         this.mListener = listener;
     }
 
-    @Deprecated
-    /**
-     * Toggles slider. The code is deprecated, needs inspection.
-     */
-    public void toggle() {
-        TranslateAnimation anim = null;
-
-        isOpen = !isOpen;
-
-        if (isOpen) {
-            mListener.setVisibility(View.VISIBLE);
-            anim = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
-        } else {
-            anim = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
-            anim.setAnimationListener(collapseListener);
-        }
-
-        anim.setDuration(SHOW_SPEED);
-        mListener.startAnimation(anim);
-    }
-
     /**
      * Collapses slider down
      */
@@ -62,7 +41,7 @@ public class SlidingManager {
         mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
         mAnimation.setDuration(HIDE_SPEED);
         mAnimation.setAnimationListener(collapseListener);
-        mListener.startAnimation(mAnimation);
+        mListener.startSliding(mAnimation);
     }
 
     /**
@@ -71,14 +50,13 @@ public class SlidingManager {
     public void turnOn(int showSpeed) {
         if (isOpen)
             return;
-        Utils.p("Sliding up");
         if (mAnimation != null)
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
         mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setAnimationListener(expandListener);
-        mListener.startAnimation(mAnimation);
+        mListener.startSliding(mAnimation);
     }
 
     public void turnOnImmediate() {

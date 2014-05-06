@@ -9,6 +9,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.services.AdService;
@@ -139,6 +140,16 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onContentLoadFailed() {}
+
+    @Override
+    public void startSliding(final Animation animation) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                startAnimation(animation);
+            }
+        });
+    }
 
     @Override
     protected void onAttachedToWindow() {
