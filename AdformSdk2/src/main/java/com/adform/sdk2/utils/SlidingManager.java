@@ -16,6 +16,7 @@ public class SlidingManager {
         public void setVisibility(int visibility);
         public void startSliding(Animation animation);
         public int getHeight();
+        public void onContainerVisibilityChange(boolean visible);
     }
 
     private static final int SHOW_SPEED = 500;
@@ -30,16 +31,23 @@ public class SlidingManager {
         this.mListener = listener;
     }
 
+    public void turnOffImmediate() {
+        turnOff(0);
+    }
+    public void turnOff() {
+        turnOff(HIDE_SPEED);
+    }
+
     /**
      * Collapses slider down
      */
-    public void turnOff() {
+    public void turnOff(int hideSpeed) {
         if (!isOpen)
             return;
         if (mAnimation != null)
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
-        mAnimation.setDuration(HIDE_SPEED);
+        mAnimation.setDuration(hideSpeed);
         mAnimation.setAnimationListener(collapseListener);
         mListener.startSliding(mAnimation);
     }
@@ -73,12 +81,13 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
             isAnimating = true;
+            isOpen = false;
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.INVISIBLE);
-            isOpen = false;
             isAnimating = false;
+            mListener.onContainerVisibilityChange(isOpen);
         }
     };
 
@@ -90,12 +99,13 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
             isAnimating = true;
+            isOpen = true;
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
-            isOpen = true;
             isAnimating = false;
+            mListener.onContainerVisibilityChange(isOpen);
         }
     };
 }

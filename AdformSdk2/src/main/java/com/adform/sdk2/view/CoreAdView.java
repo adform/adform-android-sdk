@@ -27,17 +27,20 @@ import java.util.Observer;
  */
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
-        ContentLoadManager.ContentLoaderListener{
-    private Context mContext;
+        ContentLoadManager.ContentLoaderListener {
 
+    public interface CoreAdViewListener {
+        public void onAdVisibilityChange(boolean visibility);
+    }
+    private Context mContext;
     private AdService mAdService;
     /** Bundle that packs AdService last state when saving view instance */
     private Bundle mServiceInstanceBundle;
-
     private SlidingManager mSlidingManager;
+    private boolean isShown = false;
     private BannerView mBannerView;
     private ContentLoadManager mContentLoadManager;
-
+    private CoreAdViewListener mListener;
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,6 +63,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        if (mContext instanceof CoreAdViewListener)
+            mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
         mContentLoadManager = new ContentLoadManager(this);
         setBackgroundResource(android.R.color.transparent);
@@ -89,6 +94,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         }
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
+            mBannerView.showContent(null, false);
             mSlidingManager.turnOff();
             return;
         }
@@ -120,17 +126,30 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    public void onContentRestore() {
-        mSlidingManager.turnOnImmediate();
+    public void onContentRestore(boolean state) {
+        if (state)
+            mSlidingManager.turnOnImmediate();
+        else
+            mSlidingManager.turnOffImmediate();
+        if (mListener != null)
+            mListener.onAdVisibilityChange(state);
     }
 
     @Override
-    public void onContentFirstRender() {
+    public void onContentRender() {
         mSlidingManager.turnOn();
     }
 
     @Override
-    public void onContentLoadFailed() {}
+    public void onContentLoadFailed() {
+        mBannerView.showContent(null, false);
+    }
+
+    @Override
+    public void onContainerVisibilityChange(boolean visible) {
+        if (mListener != null)
+            mListener.onAdVisibilityChange(visible);
+    }
 
     @Override
     public void startSliding(final Animation animation) {
@@ -174,7 +193,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
      * Stops service from being runned
      */
     private void stopService() {
-//        mLastTime = mAdService.getTimePassed();
         mAdService.deleteObserver(this);
         mAdService.stopService();
     }
@@ -208,6 +226,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
         savedState.saveBundle = mAdService.getSaveInstanceBundle();
+        savedState.isOpen = isShown;
         return savedState;
     }
 
@@ -220,14 +239,17 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
+        isShown = savedState.isOpen;
     }
 
     private static class SavedState extends BaseSavedState {
         public Bundle saveBundle;
+        public boolean isOpen;
 
         public SavedState(Parcel source) {
             super(source);
             saveBundle = source.readBundle();
+            isOpen = (source.readInt()==1);
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -237,6 +259,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeBundle(saveBundle);
+            dest.writeInt((isOpen) ? 1 : 0);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
@@ -253,5 +276,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         };
     }
 
-
+    public void setListener(CoreAdViewListener l) {
+        this.mListener = l;
+    }
 }

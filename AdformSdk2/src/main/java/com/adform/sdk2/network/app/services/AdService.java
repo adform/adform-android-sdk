@@ -10,6 +10,7 @@ import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 
 public class AdService extends ObservableService2 implements ErrorListener {
     private static final String TAG = AdService.class.getSimpleName();
+    public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
 
     private AdServingEntity mAdServingEntity;
@@ -28,7 +29,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
             mTimerStop = restoreBundle.getLong(INSTANCE_KEY_STOP);
         setStatus(Status.RUNNING);
         long executionTime = mTimerStop - System.currentTimeMillis();
-        scheduleRequest(getRequest(), (executionTime > 0)?executionTime:500);
+        scheduleRequest(getRequest(), (executionTime > 0)?executionTime:INSTANT_EXECUTION_DELAY);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
     @Override
     protected void onResumeService() {
         long executionTime = mTimerStop - System.currentTimeMillis();
-        scheduleRequest(getRequest(), (executionTime > 0)?executionTime:500);
+        scheduleRequest(getRequest(), (executionTime > 0)?executionTime:INSTANT_EXECUTION_DELAY);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
         Log.d(TAG, "error:" + error.getType());
         //notify UI on error
         notifyError(error);
-        scheduleRequest(getRequest(), Constants.REFRESH_SECONDS);
+        scheduleNextGetInfo(Constants.REFRESH_SECONDS);
     }
 
     private void notifyError(NetworkError error){

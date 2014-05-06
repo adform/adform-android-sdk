@@ -40,15 +40,16 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     public interface BannerViewListener {
         /**
          * An indicator that is called when content is restored from instance
+         * @param state provided restore state. If false, content is null
          */
-        public void onContentRestore();
+        public void onContentRestore(boolean state);
 
         /**
          * An indicator that is called when content is rendered for the first time.
          * This is needed for, that first time whole container is drawn with animation,
          * later on a mViewAnimator is used for inner animations.
          */
-        public void onContentFirstRender();
+        public void onContentRender();
     }
 
     private Context mContext = null;
@@ -243,13 +244,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
         // Lazy instantiation for mraid type of client
         if (isMraid && mMraidWebViewClient == null) {
-//            try {
-//                WebViewClient.class.getMethod("shouldInterceptRequest",
-//                        new Class[]{android.webkit.WebView.class, String.class});
-//                mMraidWebViewClient = new MraidWebViewClientAPI11();
-//            } catch (NoSuchMethodException exception) {
-//                mMraidWebViewClient = new MraiWebViewClientAPI8();
-//            }
             mMraidWebViewClient = new MraidWebViewClient();
         }
         // Wrapping js in js tags
@@ -295,12 +289,11 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
 
         if (!mIsRestoring) {
+            if (mListener != null)
+                mListener.onContentRender();
             if (mTimesLoaded > 0) {
                 Utils.p("Making a flip inside...");
                 post(mFlipContentRunnable);
-            } else {
-                if (mListener != null)
-                    mListener.onContentFirstRender();
             }
         } else {
             Utils.p("Clearing mock up display cache");
@@ -365,14 +358,17 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
         mIsRestoring = true;
-        if (mViewAnimator != null && savedState.loadedContent != null) {
+        if (mViewAnimator != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
+
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
-                if (mListener != null) {
-                    mListener.onContentRestore();
-                    showContent(mLoadedContent, mIsLoadedContentMraid, true);
-                }
+                if (mListener != null)
+                    mListener.onContentRestore(true);
+                showContent(mLoadedContent, mIsLoadedContentMraid, true);
+            } else {
+                if (mListener != null)
+                    mListener.onContentRestore(false);
             }
         }
     }

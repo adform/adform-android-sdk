@@ -120,7 +120,7 @@ public abstract class ObservableService2 extends Observable {
     }
 
     public void scheduleRequest(final NetworkTask<?> task, long millis) {
-        Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "s" );
+        Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );
         requestSequenceNumber++;
         mScheduler.postDelayed(new Runnable() {
             @Override
