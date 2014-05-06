@@ -237,6 +237,21 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
      * @param isMraid true if content is mraid
      */
     public void showContent(String content, boolean isMraid) {
+        showContent(content, isMraid, false);
+    }
+
+    /**
+     * Description in showContent(String, boolean)
+     * This sets an additional setting for if content is being restored.
+     *
+     * @param isRestoring This flag only can be set from inside.
+     *                    By default, from outside this flag will always be false
+     */
+    private void showContent(String content, boolean isMraid, boolean isRestoring) {
+        if (!isRestoring) {
+            mIsRestoring = false;
+            post(mClearCacheRunnable);
+        }
         if (content == null) {
             mLoadedContent = null;
             mIsLoadedContentMraid = false;
@@ -245,6 +260,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
             mLoadedContent = content;
             mIsLoadedContentMraid = isMraid;
         }
+        // Lazy instantiation for mraid type of client
         if (isMraid && mMraidWebViewClient == null) {
             try {
                 WebViewClient.class.getMethod("shouldInterceptRequest",
@@ -359,7 +375,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
                 if (mListener != null) {
                     mListener.onContentRestore();
-                    showContent(mLoadedContent, mIsLoadedContentMraid);
+                    showContent(mLoadedContent, mIsLoadedContentMraid, true);
                 }
             }
         }
