@@ -397,8 +397,8 @@ public class MraidJavascript {
             "  bridge.addEventListener('change', function(properties) {\n" +
             "    for (var p in properties) {\n" +
             "      if (properties.hasOwnProperty(p)) {\n" +
-            "        var handler = changeHandlers[p];\n" +
-            "        handler(properties[p]);\n" +
+            "        var mHandler = changeHandlers[p];\n" +
+            "        mHandler(properties[p]);\n" +
             "      }\n" +
             "    }\n" +
             "  });\n" +

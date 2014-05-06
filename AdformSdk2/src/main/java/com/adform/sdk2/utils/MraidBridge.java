@@ -8,6 +8,8 @@ import com.adform.sdk2.view.AdWebView;
  * Created by mariusm on 30/04/14.
  */
 public class MraidBridge {
+    public static final String MRAID_JS_INTERFACE = "AndroidMRaid";
+
     public static final String StateLoading = "loading";
     public static final String StateDefault = "default";
     public static final String StateExpanded = "expanded";
@@ -24,27 +26,23 @@ public class MraidBridge {
         HIDDEN,
     }
 
-    public AdWebView webView;
+    public AdWebView mWebView;
     public MraidHandler handler;
 
-    public MraidBridge(AdWebView webView, MraidHandler handler) {
-        if (webView == null)
-            throw new IllegalArgumentException("webView null");
-
+    public MraidBridge(MraidHandler handler) {
         if (handler == null)
             throw new IllegalArgumentException("handler null");
-
-        this.webView = webView;
         this.handler = handler;
     }
 
     public void setWebView(AdWebView webView) {
-        this.webView = webView;
+        mWebView = webView;
+        webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
     }
 
     public void sendErrorMessage(String message, String action) {
         String script = "mraid.fireErrorEvent('" + message + "','" + action + "');";
-        webView.injectJavascript(script);
+        mWebView.injectJavascript(script);
     }
     private State state = State.LOADING;
     /**
@@ -78,22 +76,12 @@ public class MraidBridge {
         }
 
         String script = "mraid.setState('" + stateString + "');";
-        webView.injectJavascript(script);
+        mWebView.injectJavascript(script);
     }
 
     public void sendReady() {
         String script = "mraid.fireEvent('" + EventReady + "');";
-        webView.injectJavascript(script);
-    }
-
-    public void testAndroidReady() {
-//        String script = "Android.sayHello();";
-//        webView.injectJavascript(script);
-    }
-
-    @JavascriptInterface
-    public void sayHello(){
-        Utils.p("Js is saying finished");
+        mWebView.injectJavascript(script);
     }
 
     public interface MraidHandler

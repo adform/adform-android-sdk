@@ -17,12 +17,10 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.ViewFlipper;
+import android.widget.*;
 import com.adform.sdk2.interfaces.AdViewControllable;
 import com.adform.sdk2.resources.MraidJavascript;
+import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.MraidBridge;
 import com.adform.sdk2.utils.Utils;
 
@@ -35,14 +33,27 @@ import java.util.ArrayList;
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
-public class BannerView extends RelativeLayout implements AdViewControllable, MraidBridge.MraidHandler {
+public class BannerView extends RelativeLayout implements AdViewControllable, MraidBridge.MraidHandler,
+        JsLoadBridge.LoadBridgeHandler {
     public static final int FLIP_SPEED = 500;
-    public static final int FLIP_OFFSET = 1500; // Needed for webview render time.
+    public static final int FLIP_OFFSET = 0;
     public static final int CLEAR_CACHE_TIMEOUT = 1000;
-    public static final String MRAID_JS_INTERFACE = "Android";
 
+    /**
+     * A callback interface for main container
+     */
     public interface BannerViewListener {
+        /**
+         * An indicator that is called when content is restored from instance
+         */
         public void onContentRestore();
+
+        /**
+         * An indicator that is called when content is rendered for the first time.
+         * This is needed for, that first time whole container is drawn with animation,
+         * later on a mViewAnimator is used for inner animations.
+         */
+        public void onContentFirstRender();
     }
 
     private Context mContext = null;
@@ -50,12 +61,13 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
     private boolean mIsLoadedContentMraid = false;
     private BannerViewListener mListener;
 
-    private ViewFlipper mViewFlipper;
+    private ViewAnimator mViewAnimator;
     private ArrayList<AdWebView> mWebViews;
     private int mTimesLoaded = 0;
     private WebViewClient mSimpleWebViewClient;
     private WebViewClient mMraidWebViewClient;
     private MraidBridge mMraidBridge;
+    private JsLoadBridge mLoadBridge;
     private Object mraidJavascript = null;
 
     private ImageView mViewCache;
@@ -103,6 +115,14 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         }
     };
 
+    private Runnable mFlipContentRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mViewAnimator != null)
+                mViewAnimator.showNext();
+        }
+    };
+
     @Override
     public void draw(Canvas canvas) {
         if (mBitmap == null && getWidth() != 0 && getHeight() != 0) {
@@ -138,7 +158,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
 
         webView.setWebViewClient(mSimpleWebViewClient);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
@@ -166,14 +186,14 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         setLayoutParams(new RelativeLayout.LayoutParams(
                 (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f), (int) (Utils.getHeightDeviceType(mContext) * scale + 0.5f)));
 
-        mViewFlipper = new ViewFlipper(mContext);
+        mViewAnimator = new ViewAnimator(mContext);
         mWebViews = new ArrayList<AdWebView>();
         for (int i = 1; i <= viewCount; i++) {
             AdWebView webView = createWebView(mContext);
             final FrameLayout.LayoutParams webViewParams = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
-            mViewFlipper.addView(webView, webViewParams);
+            mViewAnimator.addView(webView, webViewParams);
             mWebViews.add(webView);
         }
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
@@ -194,10 +214,10 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
                 Animation.RELATIVE_TO_PARENT, -1.0f);
         fadeOutAnimation.setDuration(FLIP_SPEED);
         fadeOutAnimation.setStartOffset(FLIP_OFFSET);
-        mViewFlipper.setInAnimation(fadeInAnimation);
-        mViewFlipper.setOutAnimation(fadeOutAnimation);
+        mViewAnimator.setInAnimation(fadeInAnimation);
+        mViewAnimator.setOutAnimation(fadeOutAnimation);
 
-        addView(mViewFlipper, params);
+        addView(mViewAnimator, params);
     }
 
     /**
@@ -234,49 +254,47 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
                 mMraidWebViewClient = new MraiWebViewClientAPI8();
             }
         }
-
-        Utils.p("Showing content...");
-
         // Wrapping js in js tags
         content = "<script type=\"text/javascript\">" + content + "</script>";
 
         // Injecting mraid script if needed
         String jsInjectionWrapper = ((isMraid) ? "<script>"+MraidJavascript.JAVASCRIPT_SOURCE+"</script>" : "");
-//        String jsInjectionWrapper = "<script src=\"mraid.js\">"+"</script>";
-        String jsLoadCallback = "<script type=\"text/javascript\">\n" +
-                "function androidFinishedLoading() {\n" +
-                "Android.sayHello();\n" +
-                "};\n" +
-                "</script>\n";
-        content = "<html><head>" + jsLoadCallback + jsInjectionWrapper + "</head><body style='margin:0;padding:0;' onload=\"androidFinishedLoading();\">" + content +
-                "</body></html>";
+        content = "<html><head>"
+                + JsLoadBridge.NATIVE_JS_CALLBACK_HEADER
+                + jsInjectionWrapper
+                + "</head>"
+                + "<body style='margin:0;padding:0;' "+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
+                + content
+                + "</body></html>";
         AdWebView webView = null;
         if (mTimesLoaded == 0)
-            webView = (AdWebView) mViewFlipper.getCurrentView();
+            webView = (AdWebView) mViewAnimator.getCurrentView();
         else
-            webView = (AdWebView) getNextView(mWebViews, mViewFlipper.getCurrentView());
+            webView = (AdWebView) getNextView(mWebViews, mViewAnimator.getCurrentView());
         if (webView != null) {
             webView.setWebViewClient((mIsLoadedContentMraid) ? mMraidWebViewClient : mSimpleWebViewClient);
             Utils.p("Rendering content...");
             if (mMraidBridge == null)
-                mMraidBridge = new MraidBridge(webView, this);
+                mMraidBridge = new MraidBridge(this);
             mMraidBridge.setWebView(webView);
-            webView.addJavascriptInterface(mMraidBridge, MRAID_JS_INTERFACE);
+            if (mLoadBridge == null)
+                mLoadBridge = new JsLoadBridge(this);
+            mLoadBridge.setWebView(webView);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
-            mMraidBridge.sendReady();
-            if (mTimesLoaded > 0) {
-                mViewFlipper.showNext();
-                Utils.p("Showing next item...");
-            }
-            mTimesLoaded++;
-            mMraidBridge.testAndroidReady();
-//            postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mMraidBridge.testAndroidReady();
-//                }
-//            }, 2000);
         }
+    }
+
+    @Override
+    public void onContentLoadedFromJsBridge() {
+        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying...");
+        if (mTimesLoaded > 0) {
+            Utils.p("Making a flip inside...");
+            post(mFlipContentRunnable);
+        } else {
+            if (mListener != null)
+                mListener.onContentFirstRender();
+        }
+        mTimesLoaded = mTimesLoaded+1;
     }
 
     /**
@@ -311,6 +329,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         savedState.loadedContent = mLoadedContent;
         savedState.isLoadedContentMraid = mIsLoadedContentMraid;
         savedState.screenShot = mBitmap;
+        savedState.timesLoaded = mTimesLoaded;
         return savedState;
     }
 
@@ -322,11 +341,12 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         }
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
+        mTimesLoaded = savedState.timesLoaded;
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
         postDelayed(mClearCacheRunnable, CLEAR_CACHE_TIMEOUT);
-        if (mViewFlipper != null && savedState.loadedContent != null) {
+        if (mViewAnimator != null && savedState.loadedContent != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
@@ -342,6 +362,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
         String loadedContent;
         boolean isLoadedContentMraid;
         Bitmap screenShot;
+        int timesLoaded;
 
         public SavedState(Parcel source) {
             super(source);
@@ -350,6 +371,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
             if (source.readInt() == 1)
                 screenShot = source.readParcelable(Bitmap.class.getClassLoader());
             isLoadedContentMraid = (source.readInt() == 1);
+            timesLoaded = source.readInt();
         }
 
         public SavedState(Parcelable superState) {
@@ -366,6 +388,7 @@ public class BannerView extends RelativeLayout implements AdViewControllable, Mr
             if (screenShot != null)
                 dest.writeParcelable(screenShot, 0);
             dest.writeInt((isLoadedContentMraid) ? 1 : 0);
+            dest.writeInt(timesLoaded);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {

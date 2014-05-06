@@ -118,18 +118,23 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public void onContentMraidLoadSuccessful(String content) {
         mBannerView.showContent(content, true);
-        mSlidingManager.turnOn();
     }
 
     @Override
     public void onContentLoadSuccessful(String content) {
         mBannerView.showContent(content, false);
-        mSlidingManager.turnOn();
     }
 
     @Override
     public void onContentRestore() {
+        Utils.p("onContentRestore");
         mSlidingManager.turnOnImmediate();
+    }
+
+    @Override
+    public void onContentFirstRender() {
+        Utils.p("onContentFirstRender");
+        mSlidingManager.turnOn();
     }
 
     @Override

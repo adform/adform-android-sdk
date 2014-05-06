@@ -20,7 +20,7 @@ public class SlidingManager {
 
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 500;
-    private static final int SHOW_DELAY = 1500;
+    private static final int SHOW_DELAY = 0;
     private boolean isOpen = false;
     private SliderableWidget mListener;
     private boolean isAnimating = false;
@@ -55,7 +55,7 @@ public class SlidingManager {
      * Collapses slider down
      */
     public void turnOff() {
-        if (!isOpen)
+        if (!isOpen || isAnimating)
             return;
         if (mAnimation != null)
             mAnimation.cancel();
@@ -69,7 +69,7 @@ public class SlidingManager {
      * Expands slider back up
      */
     public void turnOn(int showSpeed) {
-        if (isOpen)
+        if (isOpen || isAnimating)
             return;
         if (mAnimation != null)
             mAnimation.cancel();
@@ -89,11 +89,22 @@ public class SlidingManager {
     }
 
     Animation.AnimationListener collapseListener = new Animation.AnimationListener() {
+        public void onAnimationRepeat(Animation animation) {}
+
+        public void onAnimationStart(Animation animation) {
+            mListener.setVisibility(View.VISIBLE);
+            isAnimating = true;
+        }
+
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.INVISIBLE);
             isOpen = false;
             isAnimating = false;
         }
+    };
+
+    Animation.AnimationListener expandListener = new Animation.AnimationListener() {
+
 
         public void onAnimationRepeat(Animation animation) {}
 
@@ -101,20 +112,11 @@ public class SlidingManager {
             mListener.setVisibility(View.VISIBLE);
             isAnimating = true;
         }
-    };
 
-    Animation.AnimationListener expandListener = new Animation.AnimationListener() {
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
             isOpen = true;
             isAnimating = false;
-        }
-
-        public void onAnimationRepeat(Animation animation) {}
-
-        public void onAnimationStart(Animation animation) {
-            mListener.setVisibility(View.VISIBLE);
-            isAnimating = true;
         }
     };
 }
