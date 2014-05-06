@@ -7,24 +7,21 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
+import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.resources.MraidJavascript;
+import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.utils.JsLoadBridge;
-import com.adform.sdk2.utils.MraidBridge;
 import com.adform.sdk2.utils.Utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -32,11 +29,10 @@ import java.util.ArrayList;
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
-public class BannerView extends RelativeLayout implements MraidBridge.MraidHandler,
+public class BannerView extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
         JsLoadBridge.LoadBridgeHandler {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 0;
-    public static final int CLEAR_CACHE_TIMEOUT = 0;
 
     /**
      * A callback interface for main container
@@ -164,21 +160,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
 
-        // todo: fix this method deprecation, when its provided
-        // This methods seems to be deprecated, but still there is no alternative to this
-        // As closest alternative is onPageFinished, but it indicated content loading, not rendering it
-        // Some sources:
-        // http://stackoverflow.com/questions/7822481/picturelistener-and-onnewpicture-are-deprecated-alternatives
-        // http://stackoverflow.com/questions/7166534/picturelistener-is-deprecated-and-obsolete-is-there-a-replacement
-        // http://stackoverflow.com/questions/17873341/android-webview-picturelistener-deprecated-still-no-alternative
-        // https://code.google.com/p/android/issues/detail?id=38646
-//        webView.setPictureListener(new WebView.PictureListener() {
-//            @Override
-//            public void onNewPicture(WebView view, Picture picture) {
-//                if (mListener != null)
-//                    mListener.onContentLoadSuccessful();
-//            }
-//        });
         return webView;
     }
 
@@ -262,13 +243,14 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
         }
         // Lazy instantiation for mraid type of client
         if (isMraid && mMraidWebViewClient == null) {
-            try {
-                WebViewClient.class.getMethod("shouldInterceptRequest",
-                        new Class[]{android.webkit.WebView.class, String.class});
-                mMraidWebViewClient = new MraidWebViewClientAPI11();
-            } catch (NoSuchMethodException exception) {
-                mMraidWebViewClient = new MraiWebViewClientAPI8();
-            }
+//            try {
+//                WebViewClient.class.getMethod("shouldInterceptRequest",
+//                        new Class[]{android.webkit.WebView.class, String.class});
+//                mMraidWebViewClient = new MraidWebViewClientAPI11();
+//            } catch (NoSuchMethodException exception) {
+//                mMraidWebViewClient = new MraiWebViewClientAPI8();
+//            }
+            mMraidWebViewClient = new MraidWebViewClient();
         }
         // Wrapping js in js tags
         content = "<script type=\"text/javascript\">" + content + "</script>";
@@ -302,7 +284,18 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
 
     @Override
     public void onContentLoadedFromJsBridge() {
-        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying...");
+        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
+        if (mIsLoadedContentMraid) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.p("Ready for mraid work");
+                    mMraidBridge.setState(MraidBridge.State.DEFAULT);
+                    mMraidBridge.setReady();
+                }
+            });
+        }
+
         if (!mIsRestoring) {
             if (mTimesLoaded > 0) {
                 Utils.p("Making a flip inside...");
@@ -318,6 +311,11 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
             mIsRestoring = false;
         }
         mTimesLoaded = mTimesLoaded+1;
+    }
+
+    @Override
+    public void onNativeCall(String nativeCall) {
+        Utils.p("JS: "+nativeCall);
     }
 
     /**
@@ -430,60 +428,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidHandl
 
     public void setListener(BannerViewListener listener) {
         this.mListener = listener;
-    }
-
-    private class MraiWebViewClientAPI8 extends WebViewClient {
-        public MraiWebViewClientAPI8() {
-            initJavascriptBridge();
-        }
-
-        protected void initJavascriptBridge() {
-            if (mraidJavascript == null) {
-                mraidJavascript = MraidJavascript.JAVASCRIPT_SOURCE;
-            }
-        }
-
-        @Override
-        public void onPageStarted(android.webkit.WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-        }
-
-        @Override
-        public void onPageFinished(android.webkit.WebView view, String url) {
-            super.onPageFinished(view, url);
-        }
-
-        @Override
-        public void onReceivedError(android.webkit.WebView view, int errorCode, String description, String failingUrl) {
-            super.onReceivedError(view, errorCode, description, failingUrl);
-        }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
-            return true;
-        }
-    }
-
-    private class MraidWebViewClientAPI11 extends MraiWebViewClientAPI8 {
-        public MraidWebViewClientAPI11() {
-            super();
-        }
-
-        @Override
-        protected void initJavascriptBridge() {
-            InputStream is = new ByteArrayInputStream(MraidJavascript.JAVASCRIPT_SOURCE.getBytes());
-            mraidJavascript = is;
-        }
-
-        @Override
-        public WebResourceResponse shouldInterceptRequest(android.webkit.WebView webView, String url) {
-            WebResourceResponse response = null;
-            if ((TextUtils.isEmpty(url) == false) && url.endsWith("mraid.js")) {
-                response =
-                        new WebResourceResponse("text/javascript", "UTF-8", (InputStream) mraidJavascript);
-            }
-            return response;
-        }
     }
 
 }

@@ -18,15 +18,17 @@ public class JsLoadBridge {
     /** A registered callback interface. This should be used something like this:
      * webView.addJavascriptInterface(mLoadBridge, JsLoadBridge.NATIVE_JS_INTERFACE);
      */
-    public static final String NATIVE_JS_INTERFACE = "Android";
-    public static final String NATIVE_JS_FUNCTION = "finishedLoading";
+    public static final String NATIVE_JS_INTERFACE = "AdformNativeJs";
     /** A header that should be used for callback to occur */
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
-            "function "+NATIVE_JS_FUNCTION+"() {\n" +
+            "function finishedLoading() {\n" +
             NATIVE_JS_INTERFACE+".contentLoaded();\n" +
             "};\n" +
+            "function nativeCall(call) {\n" +
+            NATIVE_JS_INTERFACE+".nativeCall(call);\n" +
+            "};\n" +
             "</script>\n";
-    public static final String NATIVE_JS_CALLBACK_BODY_ONLOAD =  "onload=\""+NATIVE_JS_FUNCTION+"();\"";
+    public static final String NATIVE_JS_CALLBACK_BODY_ONLOAD =  "onload=\"finishedLoading();\"";
 
     public AdWebView mWebView;
     public LoadBridgeHandler mHandler;
@@ -52,6 +54,12 @@ public class JsLoadBridge {
             mHandler.onContentLoadedFromJsBridge();
     }
 
+    @JavascriptInterface
+    public void nativeCall(String nativeCall){
+        if (mHandler != null)
+            mHandler.onNativeCall(nativeCall);
+    }
+
     /**
      * An callback interface that indicates content load state
      */
@@ -60,6 +68,7 @@ public class JsLoadBridge {
          * Content has been rendered
          */
         public void onContentLoadedFromJsBridge();
+        public void onNativeCall(String nativeCall);
     }
 
 }

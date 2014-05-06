@@ -71,6 +71,7 @@ public class SlidingManager {
     public void turnOn(int showSpeed) {
         if (isOpen)
             return;
+        Utils.p("Sliding up");
         if (mAnimation != null)
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
