@@ -2,24 +2,17 @@ package com.adform.sdk2.network.base.ito.observable;
 
 import android.os.Handler;
 import android.util.Log;
-import com.adform.sdk2.Constants;
 import com.adform.sdk2.network.base.ito.network.NetworkTask;
 
 import java.util.Observable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: andrius
- * Date: 8/2/13
- * Time: 4:53
+ * Created by mariusm on 06/05/14.
  */
-public abstract class ObservableService extends Observable {
-
-    private int mTimerTimeout = Constants.REFRESH_SECONDS; // Timer when task should execute
-    private int mTimePassed; // Counted time
+public abstract class ObservableService2 extends Observable {
 
     /* repetitive request scheduler */
-    private Handler mScheduler;
+    private final Handler mScheduler;
 
     /* for debugging purposes */
     private int requestSequenceNumber;
@@ -54,7 +47,7 @@ public abstract class ObservableService extends Observable {
 
     private Status mStatus = Status.STOPPED;
 
-    protected ObservableService() {
+    protected ObservableService2() {
         mScheduler = new Handler();
         mStatus = Status.STOPPED;
     }
@@ -62,13 +55,9 @@ public abstract class ObservableService extends Observable {
     /**
      *  tag must be returned by inheriting classes!
      */
-    public String getTag() {
-        return null;
-    }
+    public abstract String getTag();
 
     public void startService(){
-        mTimePassed = 0;
-        mTimerTimeout = Constants.REFRESH_SECONDS;
         Log.d(getTag(), "start service");
         requestSequenceNumber = 0;
         mStatus = Status.RUNNING;
@@ -78,7 +67,7 @@ public abstract class ObservableService extends Observable {
     protected abstract void onStartService();
 
     public void pauseService() {
-        Log.d(getTag(), "pause service");
+        Log.d(getTag(),"pause service");
         //pause only running service
         if(mStatus == Status.RUNNING){
             mStatus = Status.PAUSED;
@@ -86,7 +75,8 @@ public abstract class ObservableService extends Observable {
             stopCurrentTask();
             onPauseService();
         } else {
-            Log.d(getTag(), "service not running nothing to pause");
+            Log.d(getTag(),"service not running nothing to pause");
+
         }
     }
 
@@ -95,24 +85,21 @@ public abstract class ObservableService extends Observable {
     /**
      * Resumes service. It only resumes if service was stopped before. Calls onResumeService() after resume
      */
-    public void resumeService(int timePassed) {
-        mTimePassed = timePassed;
-        Log.d(getTag(), "resume service");
-        if(mStatus == Status.PAUSED || mStatus == Status.RUNNING){
-            Log.d(getTag(), "resuming...");
+    public void resumeService() {
+        Log.d(getTag(),"resume service");
+        if(mStatus == Status.PAUSED){
+            Log.d(getTag(),"resuming...");
             mStatus = Status.RUNNING;
             onResumeService();
         } else {
-            Log.d(getTag(), "ignoring resume, service was not paused.");
+            Log.d(getTag(),"ignoring resume, service not started yes");
         }
     }
 
     protected abstract void onResumeService();
 
     public void stopService(){
-        mTimePassed = 0;
-        mTimerTimeout = Constants.REFRESH_SECONDS;
-        Log.d(getTag(), "stop service");
+        Log.d(getTag(),"stop service");
         mStatus = Status.STOPPED;
         stopCurrentTask();
 
@@ -132,54 +119,23 @@ public abstract class ObservableService extends Observable {
         }
     }
 
-    private Runnable tickRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (mTimePassed < mTimerTimeout) {
-                Log.e(getTag(), "Task execution in "+(mTimerTimeout- mTimePassed));
-                timerTick();
-            } else {
-                Log.e(getTag(), "Executing task...");
-                executeTask();
-            }
-        }
-    };
-
-    private void timerTick() {
-        if (mStatus == Status.RUNNING) {
-            mScheduler.postDelayed(tickRunnable, 1000);
-            mTimePassed++;
-        }
-    }
-
-    private void executeTask() {
-        if (mStatus == Status.RUNNING) {
-            try {
-                mRunningTask.execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void scheduleNewRequest(final NetworkTask<?> task, int seconds) {
-        mTimePassed = 0;
-        mTimerTimeout = seconds;
-        Log.d(getTag(), "#" + requestSequenceNumber + " scheduleNewRequest: " + task.getRequest().getUrl() + " in " + seconds + "s");
+    public void scheduleRequest(final NetworkTask<?> task, long millis) {
+        Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );
         requestSequenceNumber++;
-        mRunningTask = task;
-        timerTick();
-    }
-
-    public void resumeScheduledRequest(final NetworkTask<?> task) {
-        Log.d(getTag(), "#" + requestSequenceNumber + " resuming scheduled request: " + task.getRequest().getUrl());
-        requestSequenceNumber++;
-        mRunningTask = task;
-        timerTick();
+        mScheduler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // only when service is running
+                if (mStatus == Status.RUNNING) {
+                    mRunningTask = task;
+                    mRunningTask.execute();
+                }
+            }
+        }, millis);
     }
 
     public void scheduleRequestImmediate(final NetworkTask<?> task) {
-        Log.d(getTag(), "#" + requestSequenceNumber + " schedule request immediate: " + task.getRequest().getUrl());
+        Log.e(getTag(),"#"+requestSequenceNumber+ " schedule request immediate: " + task.getRequest().getUrl());
         stopCurrentTask();
         requestSequenceNumber++;
 
@@ -187,6 +143,7 @@ public abstract class ObservableService extends Observable {
             mRunningTask = task;
             mRunningTask.execute();
         }
+
     }
 
     void setRunningTask(NetworkTask mRunningTask) {
@@ -202,14 +159,6 @@ public abstract class ObservableService extends Observable {
         }
     }
 
-    public int getTimePassed() {
-        return mTimePassed;
-    }
-
-    public void setTimePassed(int timePassed) {
-        this.mTimePassed = timePassed;
-    }
-
     public Status getStatus() {
         return mStatus;
     }
@@ -218,11 +167,4 @@ public abstract class ObservableService extends Observable {
         this.mStatus = status;
     }
 
-    public int getTimerTimeout() {
-        return mTimerTimeout;
-    }
-
-    public void setTimerTimeout(int timerTimeout) {
-        this.mTimerTimeout = timerTimeout;
-    }
 }

@@ -1,14 +1,17 @@
 package com.adform.sdk2;
 
+import android.content.ContentValues;
+
 /**
  * Created by mariusm on 28/04/14.
  */
 public class Constants {
     // Refresh service constants
-    public static final int REFRESH_SECONDS = 15;
-    public static final int ERROR_REFRESH_SECONDS = 15;
+    //TODO mariusm 07/05/14 Fix this to the proper value
+    public static final int REFRESH_SECONDS = 30;
     // Network
     public static final String SERVER_URL = "http://37.157.0.44/";
+//    public static final String SERVER_URL = "http://192.168.2.122/";
     public static final String SDK_INFO_PATH = "mobilesdk/";
     public static final String SDK_INFO_PATH_ERROR = "mobilesdk/error.php";
     public static final String SDK_INFO_PATH_EMPTY = "mobilesdk/tricky.php";

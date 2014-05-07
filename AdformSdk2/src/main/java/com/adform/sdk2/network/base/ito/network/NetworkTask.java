@@ -181,6 +181,10 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
                     lastError = new NetworkError(NetworkError.Type.NETWORK,0,null);
                     publishProgress(lastError);
                     host.printStackTrace();
+                } catch (IllegalStateException e) {
+                    lastError = new NetworkError(NetworkError.Type.NETWORK,0,null);
+                    publishProgress(lastError);
+                    e.printStackTrace();
                 } catch (IOException e) {
                     lastError = new NetworkError(NetworkError.Type.SERVER,0,null);
                     publishProgress(lastError);
