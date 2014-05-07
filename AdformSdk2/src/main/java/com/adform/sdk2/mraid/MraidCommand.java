@@ -62,7 +62,7 @@ class MraidCommandOpen extends MraidCommand {
     void execute() {
         String url = getStringFromParamsForKey("url");
         if (url == null) {
-//            mWebView.fireErrorEvent(OPEN, "Url can not be null.");
+            mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.OPEN, "Url can not be null.");
             return;
         }
         mWebView.open(url);

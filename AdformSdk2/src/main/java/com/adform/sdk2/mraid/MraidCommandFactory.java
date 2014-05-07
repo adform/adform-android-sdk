@@ -36,10 +36,10 @@ import com.adform.sdk2.view.AdWebView;
 
 import java.util.Map;
 
-class MraidCommandFactory {
+public class MraidCommandFactory {
     protected static MraidCommandFactory instance = new MraidCommandFactory();
 
-    enum MraidJavascriptCommand {
+    public enum MraidJavascriptCommand {
         CLOSE("close"),
         EXPAND("expand"),
         OPEN("open"),
@@ -62,7 +62,7 @@ class MraidCommandFactory {
             return UNSPECIFIED;
         }
 
-        String getCommand() {
+        public String getCommand() {
             return mCommand;
         }
     }

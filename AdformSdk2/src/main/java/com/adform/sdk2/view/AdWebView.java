@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.adform.sdk2.mraid.MraidBridge;
+import com.adform.sdk2.mraid.MraidCommandFactory;
 import com.adform.sdk2.mraid.MraidWebViewClient;
 
 import java.lang.reflect.Field;
@@ -54,4 +56,19 @@ public class AdWebView extends WebView {
         if (client instanceof MraidWebViewClient)
             ((MraidWebViewClient) client).setWebView(this);
     }
+
+    public void fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand mraidJavascriptCommand,
+                                  String message) {
+        String action = mraidJavascriptCommand.getCommand();
+        injectJavascript("window.mraidbridge.fireErrorEvent('" + action + "', '" + message + "');");
+    }
+
+    public void fireReady() {
+        injectJavascript("mraidbridge.fireReadyEvent();");
+    }
+
+    public void fireState(MraidBridge.State state) {
+        injectJavascript("mraidbridge.fireChangeEvent('" + MraidBridge.State.getStateString(state) + "');");
+    }
+
 }
