@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.view.CoreAdView;
 
 public class MainActivity extends Activity implements CoreAdView.CoreAdViewListener {
