@@ -5,7 +5,8 @@ package com.adform.sdk2;
  */
 public class Constants {
     // Refresh service constants
-    public static final int REFRESH_SECONDS = 30;
+    //TODO mariusm 07/05/14 Fix this to the proper value
+    public static final int REFRESH_SECONDS = 15;
     // Network
 //    public static final String SERVER_URL = "http://37.157.0.44/";
     public static final String SERVER_URL = "http://192.168.2.122/";

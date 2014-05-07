@@ -62,7 +62,6 @@ public class SlidingManager {
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
-        mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setAnimationListener(expandListener);
         mListener.startSliding(mAnimation);
     }
@@ -81,31 +80,27 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
             isAnimating = true;
-            isOpen = false;
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.INVISIBLE);
+            isOpen = false;
             isAnimating = false;
-            mListener.onContainerVisibilityChange(isOpen);
         }
     };
 
     Animation.AnimationListener expandListener = new Animation.AnimationListener() {
-
-
         public void onAnimationRepeat(Animation animation) {}
 
         public void onAnimationStart(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
             isAnimating = true;
-            isOpen = true;
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.setVisibility(View.VISIBLE);
+            isOpen = true;
             isAnimating = false;
-            mListener.onContainerVisibilityChange(isOpen);
         }
     };
 }

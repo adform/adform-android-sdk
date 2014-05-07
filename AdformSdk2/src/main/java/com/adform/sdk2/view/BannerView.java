@@ -301,7 +301,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(mClearCacheRunnable, 100);
             mIsRestoring = false;
         }
-        mTimesLoaded = mTimesLoaded+1;
+        setTimesLoaded(mTimesLoaded+1);
     }
 
     @Override
@@ -353,7 +353,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
-        mTimesLoaded = savedState.timesLoaded;
+        setTimesLoaded(savedState.timesLoaded);
         mBitmap = savedState.screenShot;
         mViewCache.setImageBitmap(mBitmap);
         mViewCache.setVisibility(VISIBLE);
@@ -424,4 +424,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         this.mListener = listener;
     }
 
+    public void setTimesLoaded(int timesLoaded) {
+        this.mTimesLoaded = timesLoaded;
+    }
 }
