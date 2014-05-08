@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
@@ -30,6 +32,11 @@ import java.util.Observer;
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
         ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder {
+
+    // Special variables that can be set by the view
+    public static final String MASTER_ID = "master_id";
+    public static final String API_VERSION = "api_version";
+    public static final String HIDDEN_STATE = "hidden_state";
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(ViewState viewState);
@@ -80,6 +87,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     // Should be taken from some kind of configuration
     private String mApiVersion = "0.1";
     private MraidDeviceIdProperty mDeviceId;
+    // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
+    private int mHiddenState = GONE;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
@@ -124,6 +133,28 @@ public class CoreAdView extends RelativeLayout implements Observer,
         addView(mBannerView);
 
         setVisibility(INVISIBLE);
+    }
+
+    private void initializeCustomParameters(AttributeSet attributes) {
+        if (attributes != null) {
+            int count = attributes.getAttributeCount();
+            for (int i = 0; i < count; i++) {
+                String name = attributes.getAttributeName(i);
+                if (name.equals(MASTER_ID)) {
+                    mMasterId = attributes.getAttributeValue(i);
+                } else if (name.equals(API_VERSION)) {
+                    mApiVersion = attributes.getAttributeValue(i);
+                } else if (name.equals(HIDDEN_STATE)) {
+                    String hiddenState = attributes.getAttributeValue(i);
+                    if (hiddenState.equals("invisible"))
+                        mHiddenState = View.INVISIBLE;
+                    else if (hiddenState.equals("gone"))
+                        mHiddenState = View.GONE;
+                    else
+                        mHiddenState = View.INVISIBLE;
+                }
+            }
+        }
     }
 
     /** An update from configuration json */
@@ -189,18 +220,29 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mBannerView.showContent(null, false);
     }
 
-    //TODO mariusm 07/05/14 Called from slider manager, though might not be needed
     @Override
-    public void onContainerVisibilityChange(boolean visible) {}
-
-    @Override
-    public void startSliding(final Animation animation) {
+    public void onSliderAnimating(final Animation animation) {
         post(new Runnable() {
             @Override
             public void run() {
-                startAnimation(animation);
+                mBannerView.startAnimation(animation);
             }
         });
+    }
+
+    @Override
+    public void onSliderVisibilityChange(final int visibility) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                setVisibility(visibility);
+            }
+        });
+    }
+
+    @Override
+    public int getHiddenState() {
+        return mHiddenState;
     }
 
     @Override
