@@ -11,9 +11,11 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
+import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
-import com.adform.sdk2.network.app.services.AdService;
+import com.adform.sdk2.mraid.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
+import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
 import com.adform.sdk2.utils.Utils;
@@ -27,7 +29,7 @@ import java.util.Observer;
  */
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
-        ContentLoadManager.ContentLoaderListener {
+        ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder {
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(ViewState viewState);
@@ -72,6 +74,13 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private ContentLoadManager mContentLoadManager;
     private CoreAdViewListener mListener;
     private ViewState mViewState = ViewState.HIDDEN;
+    private AdDimension mPlacementDimen;
+    // Should be taken from some kind of configuration
+    private String mMasterId = "1234";
+    // Should be taken from some kind of configuration
+    private String mApiVersion = "0.1";
+    private MraidDeviceIdProperty mDeviceId;
+
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -94,16 +103,18 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        mPlacementDimen = new AdDimension(mContext);
+        //TODO mariusm 08/05/14 Make a view parameter picker from view xml attributes here
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
         mContentLoadManager = new ContentLoadManager(this);
         setBackgroundResource(android.R.color.transparent);
 
-        final float scale = mContext.getResources().getDisplayMetrics().density;
+
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
-                (int)(Utils.getWidthDeviceType(mContext) * scale+0.5f),
-                (int)(Utils.getHeightDeviceType(mContext) * scale+0.5f));
+                mPlacementDimen.getWidth(),
+                mPlacementDimen.getHeight());
         setLayoutParams(params);
 
         mBannerView = new BannerView(mContext);
@@ -220,6 +231,26 @@ public class CoreAdView extends RelativeLayout implements Observer,
         }
     }
 
+    @Override
+    public AdDimension getAdDimension() {
+        return mPlacementDimen;
+    }
+
+    @Override
+    public String getMasterId() {
+        return mMasterId;
+    }
+
+    @Override
+    public String getVersion() {
+        return mApiVersion;
+    }
+
+    @Override
+    public MraidDeviceIdProperty getDeviceId() {
+        return mDeviceId;
+    }
+
     /**
      * Stops service from being runned
      */
@@ -233,7 +264,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
      */
     private void resumeService() {
         if (mAdService == null)
-            mAdService = new AdService();
+            mAdService = new AdService(this);
         mAdService.addObserver(this);
         mAdService.restoreInstanceWithBundle(mServiceInstanceBundle);
         mServiceInstanceBundle = null;
@@ -244,20 +275,34 @@ public class CoreAdView extends RelativeLayout implements Observer,
      */
     private void startService() {
         if (mAdService == null)
-            mAdService = new AdService();
+            mAdService = new AdService(this);
         mAdService.addObserver(this);
         if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
             resumeService();
-        else
-            mAdService.startService();
+        else {
+            Thread thr = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mDeviceId = MraidDeviceIdProperty.createWithDeviceId(mContext);
+                        mAdService.startService();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thr.start();
+        }
     }
 
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
-        savedState.saveBundle = mAdService.getSaveInstanceBundle();
+        if (mAdService != null)
+            savedState.saveBundle = mAdService.getSaveInstanceBundle();
         savedState.viewState = getViewState().getValue();
+        savedState.deviceIdProperty = mDeviceId;
         return savedState;
     }
 
@@ -271,16 +316,20 @@ public class CoreAdView extends RelativeLayout implements Observer,
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
         setViewState(ViewState.parseType(savedState.viewState));
+        mDeviceId = savedState.deviceIdProperty;
     }
 
     private static class SavedState extends BaseSavedState {
         public Bundle saveBundle;
         public int viewState;
+        public MraidDeviceIdProperty deviceIdProperty;
 
         public SavedState(Parcel source) {
             super(source);
             saveBundle = source.readBundle();
             viewState = source.readInt();
+            if (source.readInt() == 1)
+            deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -291,6 +340,9 @@ public class CoreAdView extends RelativeLayout implements Observer,
             super.writeToParcel(dest, flags);
             dest.writeBundle(saveBundle);
             dest.writeInt(viewState);
+            dest.writeInt((deviceIdProperty != null)?1:0);
+            if (deviceIdProperty != null)
+                dest.writeParcelable(deviceIdProperty, 0);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {

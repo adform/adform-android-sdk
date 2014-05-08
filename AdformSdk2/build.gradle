@@ -31,5 +31,7 @@ tasks.whenTaskAdded { task ->
     }
 }
 dependencies {
+//    compile 'com.google.android.gms:play-services:4.3.23'
+    compile 'com.google.android.gms:play-services:4.2.42'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import com.adform.sdk2.mraid.commands.MraidBaseCommand;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.view.AdWebView;
 import org.apache.http.NameValuePair;
@@ -64,7 +65,7 @@ public class MraidWebViewClient extends WebViewClient {
             params.put(pair.getName(), pair.getValue());
         }
 
-        MraidCommand command = MraidCommandFactory.create(commandType, params, mWebView);
+        MraidBaseCommand command = MraidCommandFactory.create(commandType, params, mWebView);
         if (command != null) {
             command.execute();
 //            fireNativeCommandCompleteEvent(commandType);

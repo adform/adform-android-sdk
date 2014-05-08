@@ -1,22 +1,40 @@
-package com.adform.sdk2.network.app.services;
+package com.adform.sdk2.mraid;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import com.adform.sdk2.Constants;
+import com.adform.sdk2.mraid.properties.*;
 import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService2;
+import com.adform.sdk2.resources.AdDimension;
+
+import java.util.ArrayList;
 
 public class AdService extends ObservableService2 implements ErrorListener {
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
 
+    public interface AdServiceBinder {
+        public AdDimension getAdDimension();
+        public String getMasterId();
+        public Context getContext();
+        public String getVersion();
+        public MraidDeviceIdProperty getDeviceId();
+    }
+
     private AdServingEntity mAdServingEntity;
     private long mTimerStop;
+//    private final AdDimension mAdDimension;
+//    private String mMasterId;
+    private AdServiceBinder mListener;
 
-    public AdService() {}
+    public AdService(AdServiceBinder l) {
+        mListener = l;
+    }
 
     public Bundle getSaveInstanceBundle() {
         Bundle bundle = new Bundle();
@@ -57,13 +75,30 @@ public class AdService extends ObservableService2 implements ErrorListener {
     }
 
     private AdformNetworkTask<AdServingEntity> getRequest(){
+
+        String additionalGetProperties = getGeneratedPropertiesToString();
+
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET,
-                        Constants.SDK_INFO_PATH,
+                        Constants.SDK_INFO_PATH
+                                + ((additionalGetProperties != null)?additionalGetProperties:""),
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
         return getTask;
+    }
+
+    private String getGeneratedPropertiesToString() {
+        if (mListener == null)
+//            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
+            return null;
+        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
+        properties.add(MraidPlacementSizeProperty.createWithDimension(mListener.getAdDimension()));
+        properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
+        properties.add(mListener.getDeviceId());
+        properties.add(MraidVersionProperty.createWithVersion(mListener.getVersion()));
+        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
+        return MraidBaseProperty.generatePropertiesToString(properties);
     }
 
     @Override

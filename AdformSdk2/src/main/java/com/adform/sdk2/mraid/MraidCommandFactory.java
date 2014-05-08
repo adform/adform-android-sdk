@@ -32,6 +32,8 @@
 
 package com.adform.sdk2.mraid;
 
+import com.adform.sdk2.mraid.commands.MraidBaseCommand;
+import com.adform.sdk2.mraid.commands.MraidCommandOpen;
 import com.adform.sdk2.view.AdWebView;
 
 import java.util.Map;
@@ -67,11 +69,11 @@ public class MraidCommandFactory {
         }
     }
 
-    public static MraidCommand create(String command, Map<String, String> params, AdWebView view) {
+    public static MraidBaseCommand create(String command, Map<String, String> params, AdWebView view) {
         return instance.internalCreate(command, params, view);
     }
 
-    protected MraidCommand internalCreate(String command, Map<String, String> params, AdWebView view) {
+    protected MraidBaseCommand internalCreate(String command, Map<String, String> params, AdWebView view) {
         MraidJavascriptCommand mraidJavascriptCommand = MraidJavascriptCommand.fromString(command);
 
         switch (mraidJavascriptCommand) {
