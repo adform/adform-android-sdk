@@ -4,6 +4,7 @@ import java.util.Random;
 
 /**
  * Created by mariusm on 08/05/14.
+ * A property that hold a randomly generated number. Number is always positive.
  */
 public class MraidRandomNumberProperty extends MraidBaseProperty {
     private final int mRandomNumber;

@@ -4,6 +4,7 @@ import com.adform.sdk2.resources.AdDimension;
 
 /**
  * Created by mariusm on 08/05/14.
+ * A property that holds placement coordinates for the view.
  */
 public class MraidPlacementSizeProperty extends MraidBaseProperty {
     private final int mPlacementWidth;

@@ -8,6 +8,8 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 
 /**
  * Created by mariusm on 08/05/14.
+ * A property that holds unique information about the device.
+ * Hardware id *should* not be null, advertising id might be null
  */
 public class MraidDeviceIdProperty extends MraidBaseProperty implements Parcelable {
     // More info on advertising id: https://developer.android.com/google/play-services/id.html

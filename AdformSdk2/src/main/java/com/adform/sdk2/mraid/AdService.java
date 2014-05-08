@@ -13,35 +13,53 @@ import com.adform.sdk2.resources.AdDimension;
 
 import java.util.ArrayList;
 
+/**
+ * Created by mariusm on 23/04/14.
+ * A service that controls when the ad should be loaded from the network.
+ */
 public class AdService extends ObservableService2 implements ErrorListener {
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
 
+    /**
+     * A helper interface that helps to bind re-occuring service for additional
+     * information, that is needed when forming the request.
+     */
     public interface AdServiceBinder {
+        /** @return ad dimensions */
         public AdDimension getAdDimension();
+        /** @return ad unique */
         public String getMasterId();
+        /** @return view context */
         public Context getContext();
+        /** @return defined api version */
         public String getVersion();
+        /** @return unique device id */
         public MraidDeviceIdProperty getDeviceId();
     }
 
     private AdServingEntity mAdServingEntity;
     private long mTimerStop;
-//    private final AdDimension mAdDimension;
-//    private String mMasterId;
     private AdServiceBinder mListener;
 
     public AdService(AdServiceBinder l) {
         mListener = l;
     }
 
+    /**
+     * @return a bundle of variables that should be saved into instance
+     */
     public Bundle getSaveInstanceBundle() {
         Bundle bundle = new Bundle();
         bundle.putLong(INSTANCE_KEY_STOP, mTimerStop);
         return bundle;
     }
 
+    /**
+     * Restores service state from the instance provided bundle
+     * @param restoreBundle variable bundle with stored information
+     */
     public void restoreInstanceWithBundle(Bundle restoreBundle) {
         if (mTimerStop == 0 && restoreBundle != null)
             mTimerStop = restoreBundle.getLong(INSTANCE_KEY_STOP);
@@ -69,11 +87,19 @@ public class AdService extends ObservableService2 implements ErrorListener {
         }
     };
 
+    /**
+     * Schedules when the next request should occur.
+     * @param delay provided delay, when will the next request will occur. Time is in seconds.
+     */
     private void scheduleNextGetInfo(long delay) {
         mTimerStop = System.currentTimeMillis() + delay * 1000;
         scheduleRequest(getRequest(), mTimerStop - System.currentTimeMillis());
     }
 
+    /**
+     * Creates and returns the request for the ad contract
+     * @return formed network request
+     */
     private AdformNetworkTask<AdServingEntity> getRequest(){
 
         String additionalGetProperties = getGeneratedPropertiesToString();
@@ -88,6 +114,9 @@ public class AdService extends ObservableService2 implements ErrorListener {
         return getTask;
     }
 
+    /**
+     * @return properties that needs to be generated when forming the request
+     */
     private String getGeneratedPropertiesToString() {
         if (mListener == null)
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
