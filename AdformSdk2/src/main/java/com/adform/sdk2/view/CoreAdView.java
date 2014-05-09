@@ -112,6 +112,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        initializeCustomParameters(attrs);
         mPlacementDimen = new AdDimension(mContext);
         //TODO mariusm 08/05/14 Make a view parameter picker from view xml attributes here
         if (mContext instanceof CoreAdViewListener)
@@ -235,7 +236,19 @@ public class CoreAdView extends RelativeLayout implements Observer,
         post(new Runnable() {
             @Override
             public void run() {
+//                mBannerView.setVisibility(View.VISIBLE);
                 setVisibility(visibility);
+            }
+        });
+    }
+
+    @Override
+    public void onSliderPreOn() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+//                mBannerView.setVisibility(View.GONE);
+                setVisibility(View.VISIBLE);
             }
         });
     }

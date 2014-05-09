@@ -23,6 +23,12 @@ public class SlidingManager {
         public void onSliderVisibilityChange(int visibility);
 
         /**
+         * Function is called, before animation starts, when turning on banner.
+         * This is a small fix, when there is a flicker.
+         */
+        public void onSliderPreOn();
+
+        /**
          * A callback when animation should occur.
          * @param animation prided animation
          */
@@ -85,7 +91,7 @@ public class SlidingManager {
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
         mAnimation.setAnimationListener(expandListener);
-        mListener.onSliderVisibilityChange(View.VISIBLE);
+        mListener.onSliderPreOn();
         mListener.onSliderAnimating(mAnimation);
     }
 
