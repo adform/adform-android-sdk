@@ -282,8 +282,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             post(new Runnable() {
                 @Override
                 public void run() {
-                    mMraidBridge.setState(MraidBridge.State.DEFAULT);
-                    mMraidBridge.setReady();
+                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                    mMraidBridge.getWebView().fireReady();
                 }
             });
         }

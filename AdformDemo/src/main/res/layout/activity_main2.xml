@@ -28,6 +28,15 @@
 					style="@style/default_text"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
+
+
+			<com.adform.sdk2.view.CoreAdView
+					android:id="@+id/custom_ad_view"
+					android:background="@android:color/transparent"
+					hidden_state="gone"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+
 			<TextView
 					style="@style/default_text"
 					android:layout_width="wrap_content"
@@ -40,6 +49,8 @@
 					style="@style/default_text"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
+
+
 			<TextView
 					style="@style/default_text"
 					android:layout_width="wrap_content"
@@ -81,22 +92,15 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
 
-			<View android:id="@+id/place_holder"
+			<View
+					android:id="@+id/place_holder"
 					android:layout_width="match_parent"
-			      android:layout_height="@dimen/banner_height_margin"
-			      />
+					android:layout_height="@dimen/banner_height_margin"
+					/>
 
 		</LinearLayout>
 
 
 	</ScrollView>
-
-	<com.adform.sdk2.view.CoreAdView
-			android:id="@+id/custom_ad_view"
-			android:background="@android:color/transparent"
-			android:layout_centerHorizontal="true"
-			android:layout_alignParentBottom="true"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
 
 </RelativeLayout>

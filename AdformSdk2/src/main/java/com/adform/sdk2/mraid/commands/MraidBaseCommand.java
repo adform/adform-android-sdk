@@ -1,23 +1,23 @@
-package com.adform.sdk2.mraid;
+package com.adform.sdk2.mraid.commands;
 
 import com.adform.sdk2.view.AdWebView;
 
 import java.util.Map;
 
 /**
- * Created by mariusm on 06/05/14.
+ * Created by mariusm on 08/05/14.
  */
-abstract class MraidCommand {
+public abstract class MraidBaseCommand {
     protected static final String URI_KEY = "uri";
     protected Map<String, String> mParams;
     protected AdWebView mWebView;
 
-    MraidCommand(Map<String, String> params, AdWebView view) {
+    public MraidBaseCommand(Map<String, String> params, AdWebView view) {
         mParams = params;
         mWebView = view;
     }
 
-    abstract void execute();
+    public abstract void execute();
 
     protected int getIntFromParamsForKey(String key) {
         String s = mParams.get(key);
@@ -52,21 +52,3 @@ abstract class MraidCommand {
     }
 
 }
-
-class MraidCommandOpen extends MraidCommand {
-    MraidCommandOpen(Map<String, String> params, AdWebView view) {
-        super(params, view);
-    }
-
-    @Override
-    void execute() {
-        String url = getStringFromParamsForKey("url");
-        if (url == null) {
-//            mWebView.fireErrorEvent(OPEN, "Url can not be null.");
-            return;
-        }
-        mWebView.open(url);
-    }
-}
-
-

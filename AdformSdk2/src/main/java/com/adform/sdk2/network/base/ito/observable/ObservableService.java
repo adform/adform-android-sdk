@@ -13,6 +13,7 @@ import java.util.Observable;
  * Date: 8/2/13
  * Time: 4:53
  */
+@Deprecated // Instead use ObservableService2
 public abstract class ObservableService extends Observable {
 
     private int mTimerTimeout = Constants.REFRESH_SECONDS; // Timer when task should execute

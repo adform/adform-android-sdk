@@ -62,27 +62,12 @@ public class MraidBridge {
         this.handler = handler;
     }
 
-    public void setReady() {
-        injectJavascript("mraidbridge.fireReadyEvent();");
-    }
-
-    public void setState(State state) {
-        injectJavascript("mraidbridge.fireChangeEvent('" + State.getStateString(state) + "');");
-    }
-
-    private void injectJavascript(String js) {
-        if (mWebView != null)
-            mWebView.injectJavascript(js);
-    }
-
     public void setWebView(AdWebView webView) {
         mWebView = webView;
         webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
     }
 
-//    protected void fireErrorEvent(MraidJavascriptCommand mraidJavascriptCommand, String message) {
-//        String action = mraidJavascriptCommand.getCommand();
-//
-//        injectJavascript("window.mraidbridge.fireErrorEvent('" + action + "', '" + message + "');");
-//    }
+    public AdWebView getWebView() {
+        return mWebView;
+    }
 }
