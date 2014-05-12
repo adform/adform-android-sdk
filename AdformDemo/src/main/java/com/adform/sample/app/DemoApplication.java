@@ -15,7 +15,7 @@ public class DemoApplication extends Application {
                 "http://sentry.ito.lt",
                 "http://aa87856ef768460aad2337eb93f0b2d0:7efe8759dd3a445193bca146b56fd0b8@sentry.ito.lt/24");
         NewRelic.withApplicationToken(
-                "AA1120dc2bdadc1695f347de9edc474ab7cf9786ea"
+                "AAffa2478f84ca37388d54a7d66b0e17b2c69a6aa8"
         ).start(this);
 
     }
