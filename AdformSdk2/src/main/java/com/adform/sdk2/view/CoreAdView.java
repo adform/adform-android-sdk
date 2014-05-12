@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -103,7 +102,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
             }
         }
     };
-
     public CoreAdView(Context context) {
         this(context, null);
     }
@@ -293,12 +291,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mVisibilityManager.checkVisibility();
+        mVisibilityManager.checkVisibilityService();
     }
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        Utils.p("is view Visible: "+visibility);
+        Utils.p("is view Visible: " + visibility);
     }
 
     @Override
