@@ -167,6 +167,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
             mBannerView.flipLoadedContent();
             setViewState(ViewState.SHOWN);
+            resetTimesLoaded();
             return;
         }
         if (data instanceof NetworkError
@@ -174,6 +175,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             mBannerView.showContent(null, false);
             mSlidingManager.turnOff();
             setViewState(ViewState.HIDDEN);
+            resetTimesLoaded();
             return;
         }
         if (data != null) {
@@ -190,6 +192,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();
                 setViewState(ViewState.HIDDEN);
+                resetTimesLoaded();
             }
         }
     }
@@ -216,6 +219,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public void onContentRender() {
         mSlidingManager.turnOn();
         setViewState(ViewState.SHOWN);
+        resetTimesLoaded();
     }
 
     @Override
@@ -296,7 +300,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        Utils.p("is view Visible: " + visibility);
+        setViewState((visibility)?ViewState.SHOWN:ViewState.HIDDEN);
     }
 
     @Override
@@ -384,6 +388,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
         setViewState(ViewState.parseType(savedState.viewState));
+        resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
     }
 
@@ -427,10 +432,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
         };
     }
 
-    public void setViewState(ViewState state) {
-        this.mViewState = state;
+    private void resetTimesLoaded() {
         if (mViewState == ViewState.HIDDEN)
             mBannerView.setTimesLoaded(0);
+    }
+
+    public void setViewState(ViewState state) {
+        if (state == mViewState)
+            return;
+        this.mViewState = state;
         if (mListener != null)
             mListener.onAdVisibilityChange(mViewState);
     }
