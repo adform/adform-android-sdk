@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.view.CoreAdView;
 
-public class MainActivity2 extends Activity {
+public class MainActivity2 extends Activity implements CoreAdView.CoreAdViewListener {
 
 
     @Override
@@ -15,5 +16,10 @@ public class MainActivity2 extends Activity {
         setContentView(R.layout.activity_main2);
 
         CoreAdView mAdView = (CoreAdView) findViewById(R.id.custom_ad_view);
+    }
+
+    @Override
+    public void onAdVisibilityChange(CoreAdView.ViewState viewState) {
+        Utils.p("Ad changed to "+CoreAdView.ViewState.printType(viewState));
     }
 }

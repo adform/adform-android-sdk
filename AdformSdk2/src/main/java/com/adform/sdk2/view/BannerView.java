@@ -223,7 +223,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     /**
-     * Description in showContent(String, boolean)
+     * Description in
+     * @see #showContent(String, boolean)
      * This sets an additional setting for if content is being restored.
      *
      * @param isRestoring This flag only can be set from inside.

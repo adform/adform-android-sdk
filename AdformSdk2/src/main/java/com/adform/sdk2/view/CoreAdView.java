@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,6 +20,7 @@ import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
 import com.adform.sdk2.utils.Utils;
+import com.adform.sdk2.utils.VisibilityManager;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -31,7 +31,8 @@ import java.util.Observer;
  */
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
-        ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder {
+        ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder,
+        VisibilityManager.VisibilityManagerListener {
 
     // Special variables that can be set by the view
     public static final String MASTER_ID = "master_id";
@@ -89,6 +90,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private MraidDeviceIdProperty mDeviceId;
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     private int mHiddenState = GONE;
+    private VisibilityManager mVisibilityManager;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
@@ -100,7 +102,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
             }
         }
     };
-
     public CoreAdView(Context context) {
         this(context, null);
     }
@@ -118,6 +119,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
+        mVisibilityManager = new VisibilityManager(mContext, this);
         mContentLoadManager = new ContentLoadManager(this);
         setBackgroundResource(android.R.color.transparent);
 
@@ -165,6 +167,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
             mBannerView.flipLoadedContent();
             setViewState(ViewState.SHOWN);
+            resetTimesLoaded();
             return;
         }
         if (data instanceof NetworkError
@@ -172,6 +175,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             mBannerView.showContent(null, false);
             mSlidingManager.turnOff();
             setViewState(ViewState.HIDDEN);
+            resetTimesLoaded();
             return;
         }
         if (data != null) {
@@ -188,6 +192,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();
                 setViewState(ViewState.HIDDEN);
+                resetTimesLoaded();
             }
         }
     }
@@ -214,6 +219,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public void onContentRender() {
         mSlidingManager.turnOn();
         setViewState(ViewState.SHOWN);
+        resetTimesLoaded();
     }
 
     @Override
@@ -284,6 +290,17 @@ public class CoreAdView extends RelativeLayout implements Observer,
         } else {
             stopService();
         }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        mVisibilityManager.checkVisibilityService();
+    }
+
+    @Override
+    public void onVisibilityUpdate(boolean visibility) {
+        setViewState((visibility)?ViewState.SHOWN:ViewState.HIDDEN);
     }
 
     @Override
@@ -371,6 +388,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
         setViewState(ViewState.parseType(savedState.viewState));
+        resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
     }
 
@@ -414,10 +432,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
         };
     }
 
-    public void setViewState(ViewState state) {
-        this.mViewState = state;
+    private void resetTimesLoaded() {
         if (mViewState == ViewState.HIDDEN)
             mBannerView.setTimesLoaded(0);
+    }
+
+    public void setViewState(ViewState state) {
+        if (state == mViewState)
+            return;
+        this.mViewState = state;
         if (mListener != null)
             mListener.onAdVisibilityChange(mViewState);
     }
