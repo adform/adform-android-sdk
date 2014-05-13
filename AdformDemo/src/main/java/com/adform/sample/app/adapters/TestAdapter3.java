@@ -14,15 +14,17 @@ import java.util.ArrayList;
 /**
  * Created by mariusm on 13/05/14.
  */
-public class TestAdapter2 extends ArrayAdapter<String> {
+public class TestAdapter3 extends ArrayAdapter<String> {
     private final Context context;
     private final ArrayList<String> values;
 
-    public TestAdapter2(Context context, ArrayList<String> values) {
+    public TestAdapter3(Context context, ArrayList<String> values) {
         super(context, R.layout.lw_layout_1_3, values);
         this.context = context;
         this.values = values;
     }
+
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -31,7 +33,6 @@ public class TestAdapter2 extends ArrayAdapter<String> {
         View rowView = convertView;
         if (getItemViewType(position) == 1) {
             if ((rowView != null && !(rowView.getTag() instanceof ViewAdHolder)) || rowView == null) {
-                Utils.p("Creating new ad view");
                 rowView = inflater.inflate(R.layout.lw_layout_2_3, parent, false);
                 ViewAdHolder viewHolder = new ViewAdHolder();
                 rowView.setTag(viewHolder);
@@ -51,16 +52,17 @@ public class TestAdapter2 extends ArrayAdapter<String> {
         return rowView;
     }
 
+
     @Override
     public int getItemViewType(int position) {
-        if (position == 5)
+        if (position % 5 == 0)
             return 1;
         return 0;
     }
 
     @Override
     public int getViewTypeCount() {
-        return 1;
+        return 2;
     }
 
     static class ViewTextHolder {

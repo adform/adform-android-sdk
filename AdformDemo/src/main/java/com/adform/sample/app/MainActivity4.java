@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.ListView;
 import com.adform.sample.app.adapters.TestAdapter;
 import com.adform.sample.app.adapters.TestAdapter2;
+import com.adform.sample.app.adapters.TestAdapter3;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class MainActivity4 extends Activity {
             templateList.add(getString(R.string.temp_info));
         }
 
-        final TestAdapter2 adapter = new TestAdapter2(this, templateList);
+        final TestAdapter3 adapter = new TestAdapter3(this, templateList);
         listView.setAdapter(adapter);
     }
 

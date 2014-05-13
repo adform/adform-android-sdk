@@ -300,7 +300,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        Utils.p("Visibility: "+visibility);
         setViewState((visibility) ? ViewState.SHOWN : ViewState.HIDDEN);
     }
 
