@@ -3,8 +3,6 @@ package com.adform.sample.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ListView;
-import com.adform.sample.app.adapters.TestAdapter;
-import com.adform.sample.app.adapters.TestAdapter2;
 import com.adform.sample.app.adapters.TestAdapter3;
 
 import java.util.ArrayList;
