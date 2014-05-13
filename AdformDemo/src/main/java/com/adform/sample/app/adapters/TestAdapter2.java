@@ -31,13 +31,13 @@ public class TestAdapter2 extends ArrayAdapter<String> {
         View rowView = convertView;
         if (getItemViewType(position) == 1) {
             if ((rowView != null && !(rowView.getTag() instanceof ViewAdHolder)) || rowView == null) {
+                Utils.p("Creating new ad view");
                 rowView = inflater.inflate(R.layout.lw_layout_2_3, parent, false);
                 ViewAdHolder viewHolder = new ViewAdHolder();
                 rowView.setTag(viewHolder);
             }
             ViewAdHolder holder = (ViewAdHolder) rowView.getTag();
         } else {
-            Utils.p("Using text view");
             if ((rowView != null && !(rowView.getTag() instanceof ViewTextHolder)) || rowView == null) {
                 rowView = inflater.inflate(R.layout.lw_layout_1_3, parent, false);
                 ViewTextHolder viewHolder = new ViewTextHolder();

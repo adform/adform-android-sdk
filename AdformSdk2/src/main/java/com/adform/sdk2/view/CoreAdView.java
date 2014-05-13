@@ -266,7 +266,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
+         super.onAttachedToWindow();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
         mContext.registerReceiver(mScreenStateReceiver, filter);
@@ -300,7 +300,18 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        setViewState((visibility)?ViewState.SHOWN:ViewState.HIDDEN);
+        Utils.p("Visibility: "+visibility);
+        setViewState((visibility) ? ViewState.SHOWN : ViewState.HIDDEN);
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    @Override
+    public void onMoveToScrap() {
+        stopService();
     }
 
     @Override

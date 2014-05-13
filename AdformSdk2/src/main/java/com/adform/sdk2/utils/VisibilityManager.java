@@ -3,13 +3,15 @@ package com.adform.sdk2.utils;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.*;
+import android.widget.AbsListView;
+import android.widget.ListView;
 import android.widget.ScrollView;
 
 /**
  * Created by mariusm on 12/05/14.
  * A manager that handles various events that shows if view is visible
  */
-public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener {
+public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener, AbsListView.OnScrollListener {
 
     public static final int VISIBILITY_CHECK_DELAY = 400;
     private final VisibilityManagerListener mVisibilityManagerListener;
@@ -26,7 +28,9 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         public int getWidth();
         public ViewParent getParent();
         // Callback functions
+        public View getView();
         public void onVisibilityUpdate(boolean visibility);
+        public void onMoveToScrap();
     }
     private Runnable mVisibilityRunnable;
     private Runnable parentGetterRunnable;
@@ -131,11 +135,22 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
             return;
         if (view instanceof ScrollView && view.getViewTreeObserver() != null)
             view.getViewTreeObserver().addOnScrollChangedListener(this);
+        if (view instanceof ListView)
+            ((ListView) view).setOnScrollListener(this);
         if (view instanceof ViewGroup) {
             ViewParent viewParent = view.getParent();
             if (viewParent != null)
                 hookScrollViewListeners((View)viewParent);
         }
+    }
+
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        checkVisibilityService();
     }
 
 
