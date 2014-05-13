@@ -1,19 +1,14 @@
 package com.adform.sample.app;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.adform.sample.app.adapters.TestAdapter;
+import com.adform.sample.app.adapters.TestAdapter2;
 
 import java.util.ArrayList;
 
-public class MainActivity3 extends Activity {
+public class MainActivity4 extends Activity {
 
 
     @Override
@@ -24,10 +19,10 @@ public class MainActivity3 extends Activity {
         final ListView listView = (ListView) findViewById(R.id.list_view);
         final ArrayList<String> templateList = new ArrayList<String>();
         for (int i = 0; i < 200; ++i) {
-            templateList.add("Template value #" + i);
+            templateList.add(getString(R.string.temp_info));
         }
 
-        final TestAdapter adapter = new TestAdapter(this, templateList);
+        final TestAdapter2 adapter = new TestAdapter2(this, templateList);
         listView.setAdapter(adapter);
     }
 
