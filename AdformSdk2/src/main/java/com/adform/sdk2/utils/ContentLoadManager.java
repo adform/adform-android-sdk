@@ -37,7 +37,7 @@ public class ContentLoadManager {
      * @param url provided url to load.
      */
     public void loadContent(String url) {
-        Utils.p("Loading content...");
+//        Utils.p("Loading content...");
         String pulledUrl = pullUrlFromXmlScript(url);
         if (pulledUrl != null) {
             RawNetworkTask getTask =

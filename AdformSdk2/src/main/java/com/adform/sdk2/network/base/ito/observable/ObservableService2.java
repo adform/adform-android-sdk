@@ -3,6 +3,7 @@ package com.adform.sdk2.network.base.ito.observable;
 import android.os.Handler;
 import android.util.Log;
 import com.adform.sdk2.network.base.ito.network.NetworkTask;
+import com.adform.sdk2.utils.Utils;
 
 import java.util.Observable;
 
@@ -120,6 +121,10 @@ public abstract class ObservableService2 extends Observable {
     }
 
     public void scheduleRequest(final NetworkTask<?> task, long millis) {
+        if (countObservers() == 0) {
+            Utils.p("No observers...");
+            stopService();
+        }
         Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );
         requestSequenceNumber++;
         mScheduler.postDelayed(new Runnable() {
@@ -135,7 +140,7 @@ public abstract class ObservableService2 extends Observable {
     }
 
     public void scheduleRequestImmediate(final NetworkTask<?> task) {
-        Log.e(getTag(),"#"+requestSequenceNumber+ " schedule request immediate: " + task.getRequest().getUrl());
+//        Log.e(getTag(),"#"+requestSequenceNumber+ " schedule request immediate: " + task.getRequest().getUrl());
         stopCurrentTask();
         requestSequenceNumber++;
 

@@ -21,7 +21,11 @@ public class DemoFragment3 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         final ArrayList<String> templateList = new ArrayList<String>();
         for (int i = 0; i < 200; ++i) {
             templateList.add(getString(R.string.temp_info));

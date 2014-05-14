@@ -106,8 +106,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         public void run() {
             mViewCache.setImageBitmap(null);
             mViewCache.setVisibility(GONE);
-            if (mBitmap != null)
-                mBitmap.recycle();
+            //TODO mariusm 14/05/14 Bitmaps should be recycled, but it causes trouble at the moment when quickly switching view instances
+//            if (mBitmap != null && !mBitmap.isRecycled())
+//                mBitmap.recycle();
             mBitmap = null;
             mCanvas = null;
         }
@@ -123,6 +124,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     @Override
     public void draw(Canvas canvas) {
+        if (mBitmap != null && mBitmap.isRecycled())
+            mBitmap = null;
         if (mBitmap == null && getWidth() != 0 && getHeight() != 0) {
             mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(mBitmap);

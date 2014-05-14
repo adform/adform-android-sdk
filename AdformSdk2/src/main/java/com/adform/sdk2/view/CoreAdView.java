@@ -19,7 +19,6 @@ import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
-import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityManager;
 
 import java.util.Observable;
@@ -279,7 +278,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    protected void onWindowVisibilityChanged(int visibility) {
+    protected void onWindowVisibilityChanged(final int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
             if (mServiceInstanceBundle == null) {
@@ -337,8 +336,10 @@ public class CoreAdView extends RelativeLayout implements Observer,
      * Stops service from being runned
      */
     private void stopService() {
-        mAdService.deleteObserver(this);
-        mAdService.stopService();
+        if (mAdService != null) {
+            mAdService.deleteObserver(this);
+            mAdService.stopService();
+        }
     }
 
     /**
