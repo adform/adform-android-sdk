@@ -13,7 +13,7 @@ import android.widget.ScrollView;
  */
 public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener, AbsListView.OnScrollListener {
 
-    public static final int VISIBILITY_CHECK_DELAY = 400;
+    public static final int VISIBILITY_CHECK_DELAY = 100;
     private final VisibilityManagerListener mVisibilityManagerListener;
     private final int mScreenWidth;
     private final int mScreenHeight;

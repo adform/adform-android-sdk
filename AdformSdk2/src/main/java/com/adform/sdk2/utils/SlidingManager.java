@@ -3,6 +3,7 @@ package com.adform.sdk2.utils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import com.adform.sdk2.view.CoreAdView;
 
 /**
  * Created by mariusm on 28/04/14.
@@ -37,11 +38,12 @@ public class SlidingManager {
         public int getHeight();
         /** Gets state that should be set when hiding slider */
         public int getHiddenState();
+        public void setViewState(CoreAdView.ViewState state);
     }
 
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 500;
-    private static final int SHOW_DELAY = 50;
+//    private static final int SHOW_DELAY = 50;
     private boolean isOpen = false;
     private SliderableWidget mListener;
     private boolean isAnimating = false;
@@ -90,7 +92,6 @@ public class SlidingManager {
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
-        mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setAnimationListener(expandListener);
         mListener.onSliderPreOn();
         mListener.onSliderAnimating(mAnimation);
@@ -102,12 +103,14 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
+            mListener.setViewState(CoreAdView.ViewState.ANIMATING);
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.onSliderVisibilityChange(mListener.getHiddenState());
             isOpen = false;
             isAnimating = false;
+            mListener.setViewState(CoreAdView.ViewState.OFF_SCREEN);
         }
     };
 
@@ -117,12 +120,14 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
+            mListener.setViewState(CoreAdView.ViewState.ANIMATING);
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isOpen = true;
             isAnimating = false;
+            mListener.setViewState(CoreAdView.ViewState.ON_SCREEN);
         }
     };
 }

@@ -17,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
 import com.adform.sdk2.mraid.MraidWebViewClient;
+import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.utils.JsLoadBridge;
@@ -279,15 +280,27 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
     }
 
+    public void changeVisibility(final boolean visible) {
+//        Utils.p("Changing property to "+visible);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
+            }
+        });
+    }
+
     @Override
     public void onContentLoadedFromJsBridge() {
-        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
+//        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
         if (mIsLoadedContentMraid) {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                    Utils.p("Setting content ready");
                     mMraidBridge.getWebView().fireReady();
+                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                 }
             });
         }
@@ -296,11 +309,10 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             if (mListener != null)
                 mListener.onContentRender();
             if (mTimesLoaded > 0) {
-                Utils.p("Making a flip inside...");
                 post(mFlipContentRunnable);
             }
         } else {
-            Utils.p("Clearing mock up display cache");
+//            Utils.p("Clearing mock up display cache");
             // The delay is not really needed here, but it removed flicker on older devices
             postDelayed(mClearCacheRunnable, 100);
             mIsRestoring = false;

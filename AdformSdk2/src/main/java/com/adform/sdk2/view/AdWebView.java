@@ -5,14 +5,17 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.mraid.MraidCommandFactory;
 import com.adform.sdk2.mraid.MraidWebViewClient;
+import com.adform.sdk2.mraid.properties.MraidBaseProperty;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by mariusm on 29/04/14.
@@ -70,5 +73,16 @@ public class AdWebView extends WebView {
     public void fireState(MraidBridge.State state) {
         injectJavascript("mraidbridge.fireChangeEvent('" + MraidBridge.State.getStateString(state) + "');");
     }
+    public void fireChangeEventForProperty(MraidBaseProperty property) {
+        String json = "{" + property.toString() + "}";
+        injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
+    }
 
+    public void fireChangeEventForProperties(ArrayList<MraidBaseProperty> properties) {
+        String props = properties.toString();
+        if (props.length() < 2) return;
+
+        String json = "{" + props.substring(1, props.length() - 1) + "}";
+        injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
+    }
 }

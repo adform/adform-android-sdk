@@ -71,12 +71,12 @@ public class AdServingEntity {
                 }
 
                 // Parsing meta
-                JSONObject jsonMeta = (JSONObject)jsonAdServing.get("meta");
-                MetaEntity metaEntity = new MetaEntity();
-                Object code = jsonMeta.get("code");
-                if (code != null)
-                    metaEntity.setCode(Integer.parseInt(code.toString()));
-                response.setMetaEntity(metaEntity);
+//                JSONObject jsonMeta = (JSONObject)jsonAdServing.get("meta");
+//                MetaEntity metaEntity = new MetaEntity();
+//                Object code = jsonMeta.get("code");
+//                if (code != null)
+//                    metaEntity.setCode(Integer.parseInt(code.toString()));
+//                response.setMetaEntity(metaEntity);
             } catch (final Exception e) {
                 e.printStackTrace();
             }

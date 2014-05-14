@@ -16,7 +16,11 @@ public class MraidMasterTagProperty extends MraidBaseProperty {
     }
 
     @Override
-    public String toGetPair() {
+    public String toGet() {
         return "mid="+ mMasterId;
+    }
+    @Override
+    public String toJson() {
+        return null;
     }
 }

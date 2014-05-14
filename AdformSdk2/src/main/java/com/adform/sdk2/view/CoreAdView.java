@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
+import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.mraid.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
@@ -45,7 +46,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
         LOAD_SUCCESSFUL(0),
         LOAD_FAIL(1),
         ON_SCREEN(2),
-        OFF_SCREEN(3);
+        OFF_SCREEN(3),
+        ANIMATING(4);
 
         private int value;
 
@@ -63,6 +65,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 case 1: return LOAD_FAIL;
                 case 2: return ON_SCREEN;
                 case 3: return OFF_SCREEN;
+                case 4: return ANIMATING;
                 default: return LOAD_SUCCESSFUL;
             }
         }
@@ -72,6 +75,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 case LOAD_FAIL: return "LOAD_FAIL";
                 case ON_SCREEN: return "ON_SCREEN";
                 case OFF_SCREEN: return "OFF_SCREEN";
+                case ANIMATING: return "ANIMATING";
             }
             return null;
         }
@@ -94,7 +98,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private String mApiVersion = "0.1";
     private MraidDeviceIdProperty mDeviceId;
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
-    private int mHiddenState = GONE;
+    private int mHiddenState = INVISIBLE;
     private VisibilityManager mVisibilityManager;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
@@ -249,7 +253,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
         post(new Runnable() {
             @Override
             public void run() {
-//                mBannerView.setVisibility(View.VISIBLE);
                 setVisibility(visibility);
             }
         });
@@ -260,7 +263,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
         post(new Runnable() {
             @Override
             public void run() {
-//                mBannerView.setVisibility(View.GONE);
                 setVisibility(View.VISIBLE);
             }
         });
@@ -479,6 +481,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (mListener != null)
             mListener.onAdVisibilityChange((mInternalViewState == ViewState.LOAD_SUCCESSFUL ||
                     mInternalViewState == ViewState.ON_SCREEN));
+        mBannerView.changeVisibility((mInternalViewState == ViewState.LOAD_SUCCESSFUL || mInternalViewState == ViewState.ON_SCREEN));
     }
 
     private ViewState getViewState() {

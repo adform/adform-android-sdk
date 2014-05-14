@@ -22,7 +22,11 @@ public class MraidRandomNumberProperty extends MraidBaseProperty {
 
 
     @Override
-    public String toGetPair() {
+    public String toGet() {
         return "rnd="+ mRandomNumber;
+    }
+    @Override
+    public String toJson() {
+        return null;
     }
 }

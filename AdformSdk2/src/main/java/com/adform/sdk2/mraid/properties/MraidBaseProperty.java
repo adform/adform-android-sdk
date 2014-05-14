@@ -8,10 +8,16 @@ import java.util.ArrayList;
 public abstract class MraidBaseProperty {
     @Override
     public String toString() {
-        return toGetPair();
+        if (toGet() != null)
+            return toGet();
+        if (toJson() != null)
+            return toJson();
+        return null;
     }
 
-    public abstract String toGetPair();
+    public abstract String toJson();
+
+    public abstract String toGet();
 
     public static String generatePropertiesToString(ArrayList<MraidBaseProperty> properties) {
         if (properties == null)
@@ -21,7 +27,7 @@ public abstract class MraidBaseProperty {
             MraidBaseProperty property = properties.get(i);
             if (i != 0)
                 path.append("&");
-            path.append(property.toGetPair());
+            path.append(property.toGet());
         }
         return path.toString();
     }

@@ -16,7 +16,11 @@ public class MraidVersionProperty extends MraidBaseProperty {
     }
 
     @Override
-    public String toGetPair() {
+    public String toGet() {
         return "ver="+ mVersion;
+    }
+    @Override
+    public String toJson() {
+        return null;
     }
 }
