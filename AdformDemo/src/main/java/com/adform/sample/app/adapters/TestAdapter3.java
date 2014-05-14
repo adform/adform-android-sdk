@@ -17,11 +17,17 @@ import java.util.ArrayList;
 public class TestAdapter3 extends ArrayAdapter<String> {
     private final Context context;
     private final ArrayList<String> values;
+    private final TestAdapterListener mTestAdapterListener;
 
-    public TestAdapter3(Context context, ArrayList<String> values) {
+    public interface TestAdapterListener {
+        public int getCustomViewType(int position);
+    }
+
+    public TestAdapter3(Context context, ArrayList<String> values, TestAdapterListener l) {
         super(context, R.layout.lw_layout_1_3, values);
         this.context = context;
         this.values = values;
+        this.mTestAdapterListener = l;
     }
 
 
@@ -55,9 +61,7 @@ public class TestAdapter3 extends ArrayAdapter<String> {
 
     @Override
     public int getItemViewType(int position) {
-        if (position % 5 == 0)
-            return 1;
-        return 0;
+        return mTestAdapterListener.getCustomViewType(position);
     }
 
     @Override

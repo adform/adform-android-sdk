@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTabHost;
 import com.adform.sample.app.fragments.DemoFragment1;
 import com.adform.sample.app.fragments.DemoFragment2;
 import com.adform.sample.app.fragments.DemoFragment3;
+import com.adform.sample.app.fragments.DemoFragment4;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -24,16 +25,17 @@ public class DemoActivity extends FragmentActivity {
         mTabHost.setup(this, getSupportFragmentManager(), R.id.tabFrameLayout);
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("tab1").setIndicator("Tab 1"),
+                mTabHost.newTabSpec("tab1").setIndicator("Glued"),
                 DemoFragment1.class, null
         );
         mTabHost.addTab(
-                mTabHost.newTabSpec("tab2").setIndicator("Tab 2"),
+                mTabHost.newTabSpec("tab2").setIndicator("Inside"),
                 DemoFragment2.class, null);
         mTabHost.addTab(
-                mTabHost.newTabSpec("tab3").setIndicator("Tab 3"),
+                mTabHost.newTabSpec("tab3").setIndicator("ListView each 5"),
                 DemoFragment3.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("tab4").setIndicator("ListView only 5"),
+                DemoFragment4.class, null);
     }
-
-
 }

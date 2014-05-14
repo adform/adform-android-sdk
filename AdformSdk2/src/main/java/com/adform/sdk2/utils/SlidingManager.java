@@ -41,7 +41,7 @@ public class SlidingManager {
 
     private static final int SHOW_SPEED = 500;
     private static final int HIDE_SPEED = 500;
-    private static final int SHOW_DELAY = 0;
+    private static final int SHOW_DELAY = 50;
     private boolean isOpen = false;
     private SliderableWidget mListener;
     private boolean isAnimating = false;
@@ -90,6 +90,7 @@ public class SlidingManager {
             mAnimation.cancel();
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
+        mAnimation.setStartOffset(SHOW_DELAY);
         mAnimation.setAnimationListener(expandListener);
         mListener.onSliderPreOn();
         mListener.onSliderAnimating(mAnimation);

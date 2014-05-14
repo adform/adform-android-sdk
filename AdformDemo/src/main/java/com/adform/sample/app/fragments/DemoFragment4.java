@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Created by mariusm on 13/05/14.
  */
-public class DemoFragment3 extends Fragment implements TestAdapter3.TestAdapterListener {
+public class DemoFragment4 extends Fragment implements TestAdapter3.TestAdapterListener {
 
     private ListView mListView;
 
@@ -44,7 +44,7 @@ public class DemoFragment3 extends Fragment implements TestAdapter3.TestAdapterL
 
     @Override
     public int getCustomViewType(int position) {
-        if (position % 5 == 0)
+        if (position == 5)
             return 1;
         return 0;
     }

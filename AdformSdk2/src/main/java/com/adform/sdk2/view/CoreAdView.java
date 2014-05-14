@@ -39,11 +39,13 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public static final String HIDDEN_STATE = "hidden_state";
 
     public interface CoreAdViewListener {
-        public void onAdVisibilityChange(ViewState viewState);
+        public void onAdVisibilityChange(boolean visible);
     }
     public enum ViewState {
-        SHOWN(0),
-        HIDDEN(1);
+        LOAD_SUCCESSFUL(0),
+        LOAD_FAIL(1),
+        ON_SCREEN(2),
+        OFF_SCREEN(3);
 
         private int value;
 
@@ -57,15 +59,19 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
         public static ViewState parseType(int status) {
             switch (status) {
-                case 0: return SHOWN;
-                case 1: return HIDDEN;
-                default: return SHOWN;
+                case 0: return LOAD_SUCCESSFUL;
+                case 1: return LOAD_FAIL;
+                case 2: return ON_SCREEN;
+                case 3: return OFF_SCREEN;
+                default: return LOAD_SUCCESSFUL;
             }
         }
         public static String printType(ViewState state) {
             switch (state) {
-                case SHOWN: return "SHOWN";
-                case HIDDEN: return "HIDDEN";
+                case LOAD_SUCCESSFUL: return "LOAD_SUCCESSFUL";
+                case LOAD_FAIL: return "LOAD_FAIL";
+                case ON_SCREEN: return "ON_SCREEN";
+                case OFF_SCREEN: return "OFF_SCREEN";
             }
             return null;
         }
@@ -80,7 +86,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private BannerView mBannerView;
     private ContentLoadManager mContentLoadManager;
     private CoreAdViewListener mListener;
-    private ViewState mViewState = ViewState.HIDDEN;
+    private ViewState mInternalViewState = ViewState.LOAD_FAIL;
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
@@ -165,7 +171,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
             mBannerView.flipLoadedContent();
-            setViewState(ViewState.SHOWN);
+            setViewState(ViewState.LOAD_SUCCESSFUL);
             resetTimesLoaded();
             return;
         }
@@ -173,7 +179,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
             mBannerView.showContent(null, false);
             mSlidingManager.turnOff();
-            setViewState(ViewState.HIDDEN);
+            setViewState(ViewState.LOAD_FAIL);
             resetTimesLoaded();
             return;
         }
@@ -190,7 +196,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             } else {
                 mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();
-                setViewState(ViewState.HIDDEN);
+                setViewState(ViewState.LOAD_FAIL);
                 resetTimesLoaded();
             }
         }
@@ -212,12 +218,14 @@ public class CoreAdView extends RelativeLayout implements Observer,
             mSlidingManager.turnOnImmediate();
         else
             mSlidingManager.turnOffImmediate();
+        if (mListener != null)
+            mListener.onAdVisibilityChange(state);
     }
 
     @Override
     public void onContentRender() {
         mSlidingManager.turnOn();
-        setViewState(ViewState.SHOWN);
+        setViewState(ViewState.LOAD_SUCCESSFUL);
         resetTimesLoaded();
     }
 
@@ -313,17 +321,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        setViewState((visibility) ? ViewState.SHOWN : ViewState.HIDDEN);
+        setViewState((visibility) ? ViewState.ON_SCREEN : ViewState.OFF_SCREEN);
     }
 
     @Override
     public View getView() {
         return this;
-    }
-
-    @Override
-    public void onMoveToScrap() {
-        stopService();
     }
 
     @Override
@@ -462,20 +465,31 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     private void resetTimesLoaded() {
-        if (mViewState == ViewState.HIDDEN)
+        if (mInternalViewState == ViewState.LOAD_FAIL)
             mBannerView.setTimesLoaded(0);
     }
 
     public void setViewState(ViewState state) {
-        if (state == mViewState)
+        if (mInternalViewState == ViewState.LOAD_FAIL &&
+                (state == ViewState.OFF_SCREEN || state == ViewState.ON_SCREEN))
             return;
-        this.mViewState = state;
+        if (state == mInternalViewState)
+            return;
+        this.mInternalViewState = state;
         if (mListener != null)
-            mListener.onAdVisibilityChange(mViewState);
+            mListener.onAdVisibilityChange((mInternalViewState == ViewState.LOAD_SUCCESSFUL ||
+                    mInternalViewState == ViewState.ON_SCREEN));
     }
 
-    public ViewState getViewState() {
-        return mViewState;
+    private ViewState getViewState() {
+        return mInternalViewState;
+    }
+
+    public boolean isAdVisible() {
+        if (mInternalViewState == ViewState.LOAD_SUCCESSFUL ||
+                mInternalViewState == ViewState.ON_SCREEN)
+            return true;
+        return false;
     }
 
     public void setListener(CoreAdViewListener l) {

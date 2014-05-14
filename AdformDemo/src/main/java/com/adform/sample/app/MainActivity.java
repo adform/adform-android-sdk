@@ -18,17 +18,15 @@ public class MainActivity extends Activity implements CoreAdView.CoreAdViewListe
 
         CoreAdView mAdView = (CoreAdView) findViewById(R.id.custom_ad_view);
         mPlaceHolder = findViewById(R.id.place_holder);
-        mPlaceHolder.setVisibility(
-                (mAdView.getViewState() == CoreAdView.ViewState.SHOWN)?View.VISIBLE:View.GONE);
+        mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);
     }
 
     @Override
-    public void onAdVisibilityChange(final CoreAdView.ViewState viewState) {
+    public void onAdVisibilityChange(final boolean visible) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mPlaceHolder.setVisibility(
-                        (viewState == CoreAdView.ViewState.SHOWN) ? View.VISIBLE : View.GONE);
+                mPlaceHolder.setVisibility((visible)?View.VISIBLE:View.GONE);
             }
         });
     }

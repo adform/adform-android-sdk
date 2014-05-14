@@ -30,7 +30,6 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         // Callback functions
         public View getView();
         public void onVisibilityUpdate(boolean visibility);
-        public void onMoveToScrap();
     }
     private Runnable mVisibilityRunnable;
     private Runnable parentGetterRunnable;
