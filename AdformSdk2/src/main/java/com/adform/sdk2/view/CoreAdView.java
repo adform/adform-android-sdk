@@ -277,16 +277,30 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mContext.unregisterReceiver(mScreenStateReceiver);
     }
 
+    /* Start service runnable is needed as of this moment there is no better way to check
+     * if view is being restored from an instance, or is created anew.
+     */
+    private Runnable mStartServiceRunnable = null;
+
     @Override
     protected void onWindowVisibilityChanged(final int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
-            if (mServiceInstanceBundle == null) {
-                startService();
-            } else {
-                resumeService();
-            }
+            mStartServiceRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (mServiceInstanceBundle == null) {
+                        startService();
+                    } else {
+                        resumeService();
+                    }
+                }
+            };
+            postDelayed(mStartServiceRunnable, 500);
         } else {
+            if (mStartServiceRunnable != null)
+                removeCallbacks(mStartServiceRunnable);
+            mStartServiceRunnable = null;
             stopService();
         }
     }
@@ -401,6 +415,10 @@ public class CoreAdView extends RelativeLayout implements Observer,
         setViewState(ViewState.parseType(savedState.viewState));
         resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
+        if (mStartServiceRunnable != null) {
+            removeCallbacks(mStartServiceRunnable);
+            post(mStartServiceRunnable);
+        }
     }
 
     private static class SavedState extends BaseSavedState {
