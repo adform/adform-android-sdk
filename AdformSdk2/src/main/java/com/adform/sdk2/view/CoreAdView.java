@@ -19,7 +19,6 @@ import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
-import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityManager;
 
 import java.util.Observable;
@@ -111,6 +110,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private CoreAdViewListener mListener;
     private VisibilityGeneralState mVisibilityGeneralState = VisibilityGeneralState.LOAD_FAIL;
     private VisibilityOnScreenState mVisibilityOnScreenState = VisibilityOnScreenState.OFF_SCREEN;
+    private boolean isAnimating;
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
@@ -423,7 +423,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = new SavedState(superState);
         if (mAdService != null)
             savedState.saveBundle = mAdService.getSaveInstanceBundle();
-        savedState.viewState = getViewState().getValue();
+        savedState.visibilityGeneralState = getGeneralState().getValue();
+        savedState.visibilityOnScreenState = getOnScreenState().getValue();
         savedState.deviceIdProperty = mDeviceId;
         return savedState;
     }
@@ -437,7 +438,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
-        setViewState(VisibilityGeneralState.parseType(savedState.viewState));
+        setViewState(VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
+                VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
         resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
         if (mStartServiceRunnable != null) {
@@ -448,13 +450,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     private static class SavedState extends BaseSavedState {
         public Bundle saveBundle;
-        public int viewState;
+        public int visibilityGeneralState;
+        public int visibilityOnScreenState;
         public MraidDeviceIdProperty deviceIdProperty;
 
         public SavedState(Parcel source) {
             super(source);
             saveBundle = source.readBundle();
-            viewState = source.readInt();
+            visibilityGeneralState = source.readInt();
+            visibilityOnScreenState = source.readInt();
             if (source.readInt() == 1)
             deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
         }
@@ -466,7 +470,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeBundle(saveBundle);
-            dest.writeInt(viewState);
+            dest.writeInt(visibilityGeneralState);
+            dest.writeInt(visibilityOnScreenState);
             dest.writeInt((deviceIdProperty != null)?1:0);
             if (deviceIdProperty != null)
                 dest.writeParcelable(deviceIdProperty, 0);
@@ -504,16 +509,22 @@ public class CoreAdView extends RelativeLayout implements Observer,
         this.mVisibilityOnScreenState = onScreenState;
         boolean newVisibility = (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL &&
                 mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN);
-        if (mListener != null)
-            mListener.onAdVisibilityChange(newVisibility);
-        mBannerView.changeVisibility(newVisibility);
+        if (!isAnimating) {
+            if (mListener != null)
+                mListener.onAdVisibilityChange(newVisibility);
+            mBannerView.changeVisibility(newVisibility);
+        }
     }
 
-    private VisibilityGeneralState getViewState() {
+    private VisibilityGeneralState getGeneralState() {
         return mVisibilityGeneralState;
+    }
+    private VisibilityOnScreenState getOnScreenState() {
+        return mVisibilityOnScreenState;
     }
 
     public boolean isAdVisible() {
+
         if (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL ||
                 mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN)
             return true;

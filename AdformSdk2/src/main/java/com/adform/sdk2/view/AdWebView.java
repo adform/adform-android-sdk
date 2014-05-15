@@ -12,6 +12,7 @@ import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.mraid.MraidCommandFactory;
 import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.mraid.properties.MraidBaseProperty;
+import com.adform.sdk2.utils.Utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -68,6 +69,11 @@ public class AdWebView extends WebView {
 
     public void fireReady() {
         injectJavascript("mraidbridge.fireReadyEvent();");
+    }
+
+    public void fireViewportUpdate() {
+//        Utils.p("Updating viewport with "+getWidth());
+//        injectJavascript("document.querySelector('meta[name=viewport]')" + String.format(".setAttribute('content', 'width=%d;', false);", getWidth()));
     }
 
     public void fireState(MraidBridge.State state) {

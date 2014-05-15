@@ -7,6 +7,7 @@
 			android:id="@+id/custom_ad_view"
 			android:background="@android:color/transparent"
 			hidden_state="gone"
+			android:layout_centerHorizontal="true"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
 
