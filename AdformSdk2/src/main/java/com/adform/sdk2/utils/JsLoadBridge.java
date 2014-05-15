@@ -21,14 +21,21 @@ public class JsLoadBridge {
     public static final String NATIVE_JS_INTERFACE = "AdformNativeJs";
     /** A header that should be used for callback to occur */
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
+            "var globalLoaded = 0;"+
             "function finishedLoading() {\n" +
-            NATIVE_JS_INTERFACE+".contentLoaded();\n" +
+            "   if (globalLoaded == 0) {\n"+
+            "       "+
+            "       "+NATIVE_JS_INTERFACE+".contentLoaded();\n" +
+            "       nativeCall('Executing content with '+globalLoaded);" +
+            "       globalLoaded=1;\n"+
+            "   }\n"+
             "};\n" +
             "function nativeCall(call) {\n" +
-            NATIVE_JS_INTERFACE+".nativeCall(call);\n" +
+            "   "+NATIVE_JS_INTERFACE+".nativeCall(call);\n" +
             "};\n" +
+            "window.onload = function(){finishedLoading();};"+
             "</script>\n";
-    public static final String NATIVE_JS_CALLBACK_BODY_ONLOAD =  "onload=\"finishedLoading();\"";
+    public static final String NATIVE_JS_CALLBACK_BODY_ONLOAD =  "";
 
     public AdWebView mWebView;
     public LoadBridgeHandler mHandler;

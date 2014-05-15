@@ -51,6 +51,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
          * later on a mViewAnimator is used for inner animations.
          */
         public void onContentRender();
+        public void setAnimating(boolean isAnimating);
     }
 
     private Context mContext = null;
@@ -194,6 +195,22 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 Animation.RELATIVE_TO_PARENT, 0.0f);
         fadeInAnimation.setDuration(FLIP_SPEED);
         fadeInAnimation.setStartOffset(FLIP_OFFSET);
+        fadeInAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mListener.setAnimating(true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mListener.setAnimating(false);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         TranslateAnimation fadeOutAnimation = new TranslateAnimation(
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -201,6 +218,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 Animation.RELATIVE_TO_PARENT, -1.0f);
         fadeOutAnimation.setDuration(FLIP_SPEED);
         fadeOutAnimation.setStartOffset(FLIP_OFFSET);
+        // We need listener only on one animation, as both are animating when executing
         mViewAnimator.setInAnimation(fadeInAnimation);
         mViewAnimator.setOutAnimation(fadeOutAnimation);
 
@@ -235,6 +253,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
      *                    By default, from outside this flag will always be false
      */
     private void showContent(String content, boolean isMraid, boolean isRestoring) {
+        Utils.p("Calling to show content");
         if (!isRestoring) {
             mIsRestoring = false;
             post(mClearCacheRunnable);
@@ -281,7 +300,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     public void changeVisibility(final boolean visible) {
-//        Utils.p("Changing property to "+visible);
         post(new Runnable() {
             @Override
             public void run() {
@@ -293,12 +311,11 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     @Override
     public void onContentLoadedFromJsBridge() {
-//        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
+        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
         if (mIsLoadedContentMraid) {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    Utils.p("Setting content ready");
                     mMraidBridge.getWebView().fireReady();
                     mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                 }
@@ -377,7 +394,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (mViewAnimator != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
-
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
                 if (mListener != null)
                     mListener.onContentRestore(true);

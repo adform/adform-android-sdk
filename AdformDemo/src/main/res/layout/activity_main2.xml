@@ -29,6 +29,28 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
 
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+
+
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
+			<TextView
+					style="@style/default_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"/>
 
 			<com.adform.sdk2.view.CoreAdView
 					android:id="@+id/custom_ad_view"
@@ -50,27 +72,6 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
 
-
-			<TextView
-					style="@style/default_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
-			<TextView
-					style="@style/default_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
-			<TextView
-					style="@style/default_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
-			<TextView
-					style="@style/default_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
-			<TextView
-					style="@style/default_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
 			<TextView
 					style="@style/default_text"
 					android:layout_width="wrap_content"

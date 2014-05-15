@@ -13,13 +13,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
-import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.mraid.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
+import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityManager;
 
 import java.util.Observable;
@@ -42,16 +42,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
     }
-    public enum ViewState {
-        LOAD_SUCCESSFUL(0),
-        LOAD_FAIL(1),
-        ON_SCREEN(2),
-        OFF_SCREEN(3),
-        ANIMATING(4);
-
+    public enum VisibilityOnScreenState {
+        ON_SCREEN(0),
+        OFF_SCREEN(1);
         private int value;
 
-        private ViewState(int value) {
+        private VisibilityOnScreenState(int value) {
             this.value = value;
         }
 
@@ -59,23 +55,46 @@ public class CoreAdView extends RelativeLayout implements Observer,
             return value;
         }
 
-        public static ViewState parseType(int status) {
+        public static VisibilityOnScreenState parseType(int status) {
+            switch (status) {
+                case 1: return ON_SCREEN;
+                case 2: return OFF_SCREEN;
+                default: return OFF_SCREEN;
+            }
+        }
+        public static String printType(VisibilityOnScreenState state) {
+            switch (state) {
+                case ON_SCREEN: return "ON_SCREEN";
+                case OFF_SCREEN: return "OFF_SCREEN";
+            }
+            return null;
+        }
+        }
+    public enum VisibilityGeneralState {
+        LOAD_SUCCESSFUL(0),
+        LOAD_FAIL(1);
+
+        private int value;
+
+        private VisibilityGeneralState(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static VisibilityGeneralState parseType(int status) {
             switch (status) {
                 case 0: return LOAD_SUCCESSFUL;
                 case 1: return LOAD_FAIL;
-                case 2: return ON_SCREEN;
-                case 3: return OFF_SCREEN;
-                case 4: return ANIMATING;
                 default: return LOAD_SUCCESSFUL;
             }
         }
-        public static String printType(ViewState state) {
+        public static String printType(VisibilityGeneralState state) {
             switch (state) {
                 case LOAD_SUCCESSFUL: return "LOAD_SUCCESSFUL";
                 case LOAD_FAIL: return "LOAD_FAIL";
-                case ON_SCREEN: return "ON_SCREEN";
-                case OFF_SCREEN: return "OFF_SCREEN";
-                case ANIMATING: return "ANIMATING";
             }
             return null;
         }
@@ -90,7 +109,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private BannerView mBannerView;
     private ContentLoadManager mContentLoadManager;
     private CoreAdViewListener mListener;
-    private ViewState mInternalViewState = ViewState.LOAD_FAIL;
+    private VisibilityGeneralState mVisibilityGeneralState = VisibilityGeneralState.LOAD_FAIL;
+    private VisibilityOnScreenState mVisibilityOnScreenState = VisibilityOnScreenState.OFF_SCREEN;
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
@@ -175,7 +195,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
             mBannerView.flipLoadedContent();
-            setViewState(ViewState.LOAD_SUCCESSFUL);
+            setViewState(VisibilityGeneralState.LOAD_SUCCESSFUL);
             resetTimesLoaded();
             return;
         }
@@ -183,7 +203,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
             mBannerView.showContent(null, false);
             mSlidingManager.turnOff();
-            setViewState(ViewState.LOAD_FAIL);
+            setViewState(VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
             return;
         }
@@ -200,7 +220,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             } else {
                 mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();
-                setViewState(ViewState.LOAD_FAIL);
+                setViewState(VisibilityGeneralState.LOAD_FAIL);
                 resetTimesLoaded();
             }
         }
@@ -229,7 +249,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public void onContentRender() {
         mSlidingManager.turnOn();
-        setViewState(ViewState.LOAD_SUCCESSFUL);
+        setViewState(VisibilityGeneralState.LOAD_SUCCESSFUL);
         resetTimesLoaded();
     }
 
@@ -323,7 +343,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onVisibilityUpdate(boolean visibility) {
-        setViewState((visibility) ? ViewState.ON_SCREEN : ViewState.OFF_SCREEN);
+        setViewState((visibility) ? VisibilityOnScreenState.ON_SCREEN : VisibilityOnScreenState.OFF_SCREEN);
     }
 
     @Override
@@ -417,7 +437,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
-        setViewState(ViewState.parseType(savedState.viewState));
+        setViewState(VisibilityGeneralState.parseType(savedState.viewState));
         resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
         if (mStartServiceRunnable != null) {
@@ -467,32 +487,47 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     private void resetTimesLoaded() {
-        if (mInternalViewState == ViewState.LOAD_FAIL)
+        if (mVisibilityGeneralState == VisibilityGeneralState.LOAD_FAIL)
             mBannerView.setTimesLoaded(0);
     }
 
-    public void setViewState(ViewState state) {
-        if (mInternalViewState == ViewState.LOAD_FAIL &&
-                (state == ViewState.OFF_SCREEN || state == ViewState.ON_SCREEN))
-            return;
-        if (state == mInternalViewState)
-            return;
-        this.mInternalViewState = state;
-        if (mListener != null)
-            mListener.onAdVisibilityChange((mInternalViewState == ViewState.LOAD_SUCCESSFUL ||
-                    mInternalViewState == ViewState.ON_SCREEN));
-        mBannerView.changeVisibility((mInternalViewState == ViewState.LOAD_SUCCESSFUL || mInternalViewState == ViewState.ON_SCREEN));
+    public void setViewState(VisibilityGeneralState state) {
+        setViewState(state, mVisibilityOnScreenState);
     }
 
-    private ViewState getViewState() {
-        return mInternalViewState;
+    public void setViewState(VisibilityOnScreenState state) {
+        setViewState(mVisibilityGeneralState, state);
+    }
+
+    public void setViewState(VisibilityGeneralState generalState, VisibilityOnScreenState onScreenState) {
+        this.mVisibilityGeneralState = generalState;
+        this.mVisibilityOnScreenState = onScreenState;
+        boolean newVisibility = (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL &&
+                mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN);
+        if (mListener != null)
+            mListener.onAdVisibilityChange(newVisibility);
+        mBannerView.changeVisibility(newVisibility);
+    }
+
+    private VisibilityGeneralState getViewState() {
+        return mVisibilityGeneralState;
     }
 
     public boolean isAdVisible() {
-        if (mInternalViewState == ViewState.LOAD_SUCCESSFUL ||
-                mInternalViewState == ViewState.ON_SCREEN)
+        if (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL ||
+                mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN)
             return true;
         return false;
+    }
+
+    public void setAnimating(boolean isAnimating) {
+        if (isAnimating) {
+            if (mListener != null)
+                mListener.onAdVisibilityChange(false);
+            mBannerView.changeVisibility(false);
+        } else {
+            setViewState(mVisibilityGeneralState, mVisibilityOnScreenState);
+        }
     }
 
     public void setListener(CoreAdViewListener l) {

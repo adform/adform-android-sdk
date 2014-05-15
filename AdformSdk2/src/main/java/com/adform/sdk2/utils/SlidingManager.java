@@ -38,7 +38,7 @@ public class SlidingManager {
         public int getHeight();
         /** Gets state that should be set when hiding slider */
         public int getHiddenState();
-        public void setViewState(CoreAdView.ViewState state);
+        public void setAnimating(boolean isAnimating);
     }
 
     private static final int SHOW_SPEED = 500;
@@ -103,14 +103,14 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
-            mListener.setViewState(CoreAdView.ViewState.ANIMATING);
+            mListener.setAnimating(true);
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.onSliderVisibilityChange(mListener.getHiddenState());
             isOpen = false;
             isAnimating = false;
-            mListener.setViewState(CoreAdView.ViewState.OFF_SCREEN);
+            mListener.setAnimating(false);
         }
     };
 
@@ -120,14 +120,14 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
-            mListener.setViewState(CoreAdView.ViewState.ANIMATING);
+            mListener.setAnimating(true);
         }
 
         public void onAnimationEnd(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isOpen = true;
             isAnimating = false;
-            mListener.setViewState(CoreAdView.ViewState.ON_SCREEN);
+            mListener.setAnimating(false);
         }
     };
 }

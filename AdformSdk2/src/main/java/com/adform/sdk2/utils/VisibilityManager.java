@@ -2,21 +2,22 @@ package com.adform.sdk2.utils;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
+import java.util.ArrayList;
+
 /**
  * Created by mariusm on 12/05/14.
  * A manager that handles various events that shows if view is visible
  */
-public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener, AbsListView.OnScrollListener {
+public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener {
 
     public static final int VISIBILITY_CHECK_DELAY = 100;
     private final VisibilityManagerListener mVisibilityManagerListener;
-    private final int mScreenWidth;
-    private final int mScreenHeight;
     private boolean isVisible = false;
 
     public interface VisibilityManagerListener {
@@ -34,6 +35,7 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
     private Runnable mVisibilityRunnable;
     private Runnable parentGetterRunnable;
     private ViewParent mViewParent;
+    private ArrayList<ViewCoords> mParentCoords;
 
     public VisibilityManager(Context context, View view) {
         if (view == null)
@@ -45,15 +47,18 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         // Getting screen dimensions
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
+        ViewCoords screenCoords = ViewCoords.createViewCoord(0, 0);
         if (android.os.Build.VERSION.SDK_INT >= 13) {
             Point size = new Point();
             display.getSize(size);
-            mScreenWidth = size.x;
-            mScreenHeight = size.y;
+            screenCoords.setWidth(size.x);
+            screenCoords.setHeight(size.y);
         } else {
-            mScreenWidth = display.getWidth();
-            mScreenHeight = display.getHeight();
+            screenCoords.setWidth(display.getWidth());
+            screenCoords.setHeight(display.getHeight());
         }
+        mParentCoords = new ArrayList<ViewCoords>();
+
     }
 
     /**
@@ -68,7 +73,7 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         mVisibilityRunnable = new Runnable() {
             @Override
             public void run() {
-                isVisible = isViewVisible();
+                isVisible = isViewVisibleInPresetContainers();
                 mVisibilityManagerListener.onVisibilityUpdate(isVisible);
                 mVisibilityRunnable = null;
             }
@@ -77,19 +82,31 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
     }
 
     /**
-     * @return true if a view is in the window.
+     * Runs the checks through all the containers if something has changed.
+     * @see #isViewVisible(int[], ViewCoords)
+     * @return false if main view is not visible.
      */
-    private boolean isViewVisible() {
+    private boolean isViewVisibleInPresetContainers() {
         int[] location = new int[2];
         mVisibilityManagerListener.getLocationInWindow(location);
+        for (ViewCoords mParentCoord : mParentCoords) {
+            if (!isViewVisible(location, mParentCoord))
+                return false;
+        }
+        return true;
+    }
+    /**
+     * @return true if a view is in the window.
+     */
+    private boolean isViewVisible(int[] mainViewLocationXY, ViewCoords viewCoords) {
         boolean isVisible = true;
-        if (location[0] < 0)
+        if (mainViewLocationXY[0] < viewCoords.getX())
             isVisible = false;
-        else if (location[1] < 0)
+        else if (mainViewLocationXY[1] < viewCoords.getY())
             isVisible = false;
-        else if ((location[0] + mVisibilityManagerListener.getWidth()) > mScreenWidth)
+        else if ((mainViewLocationXY[0] + mVisibilityManagerListener.getWidth()) > (viewCoords.getX() + viewCoords.getWidth()))
             isVisible = false;
-        else if ((location[1] + mVisibilityManagerListener.getHeight()) > mScreenHeight)
+        else if ((mainViewLocationXY[1] + mVisibilityManagerListener.getHeight()) > (viewCoords.getY() + viewCoords.getHeight()))
             isVisible = false;
         return isVisible;
     }
@@ -132,29 +149,25 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         if (view.getClass().getName()
                 .equals("com.android.internal.policy.impl.PhoneWindow$DecorView"))
             return;
-        if (view instanceof ScrollView && view.getViewTreeObserver() != null)
+        if (view instanceof ScrollView && view.getViewTreeObserver() != null) {
             view.getViewTreeObserver().addOnScrollChangedListener(this);
-        if (view instanceof ListView)
-            ((ListView) view).setOnScrollListener(this);
+            mParentCoords.add(ViewCoords.createViewCoord(view));
+        }
+        if (view instanceof ListView) {
+            view.getViewTreeObserver().addOnScrollChangedListener(this);
+            mParentCoords.add(ViewCoords.createViewCoord(view));
+        }
         if (view instanceof ViewGroup) {
             ViewParent viewParent = view.getParent();
-            if (viewParent != null)
-                hookScrollViewListeners((View)viewParent);
+            if (viewParent != null) {
+                hookScrollViewListeners((View) viewParent);
+            }
         }
     }
-
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {}
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        checkVisibilityService();
-    }
-
 
     @Override
     public void onScrollChanged() {
         checkVisibilityService();
     }
+
 }
