@@ -296,7 +296,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 mLoadBridge = new JsLoadBridge(this);
             mLoadBridge.setWebView(webView);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
-            Utils.p("Width: " + webView.getWidth());
         }
     }
 
@@ -312,7 +311,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     @Override
     public void onContentLoadedFromJsBridge() {
-//        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
         if (mIsLoadedContentMraid) {
             postDelayed(new Runnable() {
                 @Override

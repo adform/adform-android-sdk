@@ -326,12 +326,17 @@ public class CoreAdView extends RelativeLayout implements Observer,
                     }
                 }
             };
+            /* Service starting is delayed here as for the same instance can be started
+            from the on #onRestoreInstanceState(Parcelable). If it is started from there,
+            this Runnable is not used.
+             */
             postDelayed(mStartServiceRunnable, 500);
         } else {
             if (mStartServiceRunnable != null)
                 removeCallbacks(mStartServiceRunnable);
             mStartServiceRunnable = null;
             stopService();
+
         }
     }
 
