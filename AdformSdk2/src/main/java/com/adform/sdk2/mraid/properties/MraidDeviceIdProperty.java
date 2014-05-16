@@ -25,15 +25,15 @@ public class MraidDeviceIdProperty extends MraidBaseProperty implements Parcelab
     public static MraidDeviceIdProperty createWithDeviceId(Context context) {
         String uniqueId = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        AdvertisingIdClient.Info adInfo = null;
+        String advertisingId = null;
         try {
+            AdvertisingIdClient.Info adInfo = null;
             adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
+            if (adInfo != null)
+                advertisingId = adInfo.getId();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String advertisingId = null;
-        if (adInfo != null)
-            advertisingId = adInfo.getId();
         return new MraidDeviceIdProperty(advertisingId, uniqueId);
     }
 

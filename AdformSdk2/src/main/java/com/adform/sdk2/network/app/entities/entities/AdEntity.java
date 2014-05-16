@@ -1,9 +1,6 @@
 package com.adform.sdk2.network.app.entities.entities;
 
-import com.adform.sdk2.network.base.ito.network.NetworkResponse;
-import com.adform.sdk2.network.base.ito.network.NetworkResponseParser;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import android.util.JsonReader;
 
 import java.io.IOException;
 
@@ -12,10 +9,14 @@ import java.io.IOException;
  */
 public class AdEntity {
     private String trackingUrlBase;
-    private String assetsUrlBase;
     private int refreshInterval;
     private TagDataEntity tagDataEntity;
-    private MetaEntity metaEntity;
+
+    public AdEntity(String trackingUrlBase, int refreshInterval, TagDataEntity tagDataEntity) {
+        this.trackingUrlBase = trackingUrlBase;
+        this.refreshInterval = refreshInterval;
+        this.tagDataEntity = tagDataEntity;
+    }
 
     public AdEntity() {
     }
@@ -30,14 +31,6 @@ public class AdEntity {
 
     public void setTrackingUrlBase(String trackingUrlBase) {
         this.trackingUrlBase = trackingUrlBase;
-    }
-
-    public String getAssetsUrlBase() {
-        return assetsUrlBase;
-    }
-
-    public void setAssetsUrlBase(String assetsUrlBase) {
-        this.assetsUrlBase = assetsUrlBase;
     }
 
     public int getRefreshInterval() {
@@ -56,12 +49,26 @@ public class AdEntity {
         this.tagDataEntity = tagDataEntity;
     }
 
-    public MetaEntity getMetaEntity() {
-        return metaEntity;
+    public static AdEntity readEntity(JsonReader reader) throws IOException  {
+        String trackingUrlBase = null;
+        int refreshInterval = 30;
+        TagDataEntity tagData = null;
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            if (name.equals("trackingUrlBase")) {
+                trackingUrlBase = reader.nextString();
+            } else if (name.equals("refreshInterval")) {
+                refreshInterval = reader.nextInt();
+            } else if (name.equals("tagData")) {
+                tagData = TagDataEntity.readEntity(reader);
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return new AdEntity(trackingUrlBase, refreshInterval, tagData);
     }
 
-    public void setMetaEntity(MetaEntity metaEntity) {
-        this.metaEntity = metaEntity;
-    }
 
 }
