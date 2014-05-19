@@ -49,11 +49,12 @@ To add an ad view, simply insert a view with a path `com.adform.sdk2.view.CoreAd
 
 There should not be any problems by using the AdformSDK in any kind of context that saves and returns instance (simple activity, fragment) or the one that does not destroy its instance (like fragment with retainInstance true). 
 
+
 ### ListView implementation
 
 For more complicated implementation like ListView, its adapter should *always* reuse views as every new AdView implementation starts its inner refresh service. 
 
-public class TestAdapter3 extends ArrayAdapter<String> {
+	public class TestAdapter3 extends ArrayAdapter<String> {
         private final Context context;
         private final ArrayList<String> values;
     

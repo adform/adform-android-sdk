@@ -12,6 +12,7 @@ import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 import com.adform.sdk2.resources.AdDimension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by mariusm on 23/04/14.
@@ -37,6 +38,8 @@ public class AdService extends ObservableService2 implements ErrorListener {
         public String getVersion();
         /** @return unique device id */
         public MraidDeviceIdProperty getDeviceId();
+        /** @return Custom set user parameters */
+        public HashMap<String, String> getCustomParameters();
     }
 
     private AdServingEntity mAdServingEntity;
@@ -127,6 +130,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
         properties.add(mListener.getDeviceId());
         properties.add(MraidVersionProperty.createWithVersion(mListener.getVersion()));
         properties.add(MraidRandomNumberProperty.createWithRandomNumber());
+        properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         return MraidBaseProperty.generatePropertiesToString(properties);
     }
 
