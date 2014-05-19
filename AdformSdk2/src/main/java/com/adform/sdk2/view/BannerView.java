@@ -68,7 +68,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private WebViewClient mMraidWebViewClient;
     private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
-    private Object mraidJavascript = null;
+    private String mUserAgent;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -165,7 +165,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
-
+        if (mUserAgent == null)
+            mUserAgent = webView.getSettings().getUserAgentString();
         return webView;
     }
 
@@ -253,7 +254,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
      *                    By default, from outside this flag will always be false
      */
     private void showContent(String content, boolean isMraid, boolean isRestoring) {
-        Utils.p("Calling to show content");
+//        Utils.p("Calling to show content");
         if (!isRestoring) {
             mIsRestoring = false;
             post(mClearCacheRunnable);
@@ -279,7 +280,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 + JsLoadBridge.NATIVE_JS_CALLBACK_HEADER
                 + jsInjectionWrapper
                 + "</head>"
-                + "<body style='margin:0;padding:0;' "+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
+                + "<body"+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
                 + content
                 + "</body></html>";
         AdWebView webView;
@@ -311,17 +312,15 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     @Override
     public void onContentLoadedFromJsBridge() {
-        Utils.p("("+mTimesLoaded+") Content should be rendered, displaying... (Content restored? "+mIsRestoring+")");
         if (mIsLoadedContentMraid) {
-            post(new Runnable() {
+            postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mMraidBridge.getWebView().fireReady();
                     mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                 }
-            });
+            }, 100);
         }
-
         if (!mIsRestoring) {
             if (mListener != null)
                 mListener.onContentRender();
@@ -329,8 +328,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 post(mFlipContentRunnable);
             }
         } else {
-//            Utils.p("Clearing mock up display cache");
-            // The delay is not really needed here, but it removed flicker on older devices
             postDelayed(mClearCacheRunnable, 100);
             mIsRestoring = false;
         }
@@ -458,5 +455,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     public void setTimesLoaded(int timesLoaded) {
         this.mTimesLoaded = timesLoaded;
+    }
+
+    public String getUserAgent() {
+        return mUserAgent;
     }
 }

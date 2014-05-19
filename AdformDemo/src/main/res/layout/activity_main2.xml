@@ -52,12 +52,19 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"/>
 
-			<com.adform.sdk2.view.CoreAdView
-					android:id="@+id/custom_ad_view"
-					android:background="@android:color/transparent"
-					hidden_state="gone"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content" />
+			<LinearLayout
+					android:layout_width="match_parent"
+					android:gravity="center_horizontal"
+					android:layout_height="wrap_content">
+
+				<com.adform.sdk2.view.CoreAdView
+						android:id="@+id/custom_ad_view"
+						android:background="@android:color/transparent"
+						hidden_state="gone"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"/>
+
+			</LinearLayout>
 
 			<TextView
 					style="@style/default_text"

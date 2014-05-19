@@ -12,6 +12,7 @@ import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 import com.adform.sdk2.resources.AdDimension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by mariusm on 23/04/14.
@@ -37,6 +38,13 @@ public class AdService extends ObservableService2 implements ErrorListener {
         public String getVersion();
         /** @return unique device id */
         public MraidDeviceIdProperty getDeviceId();
+        /** @return Custom set user parameters */
+        public HashMap<String, String> getCustomParameters();
+        /** @return user agent */
+        public String getUserAgent();
+        /** @return device locale */
+        public String getLocale();
+        public String getPublisherId();
     }
 
     private AdServingEntity mAdServingEntity;
@@ -102,32 +110,32 @@ public class AdService extends ObservableService2 implements ErrorListener {
      */
     private AdformNetworkTask<AdServingEntity> getRequest(){
 
-        String additionalGetProperties = getGeneratedPropertiesToString();
-
+        String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
+//        Utils.p("Generated post properties: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
-                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET,
-                        Constants.SDK_INFO_PATH
-                                + ((additionalGetProperties != null)?additionalGetProperties:""),
+                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
+                        Constants.SDK_INFO_PATH,
                         AdServingEntity.class, AdServingEntity.responseParser);
+        getTask.setJsonEntity(additionalPOSTProperties);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
         return getTask;
     }
 
-    /**
-     * @return properties that needs to be generated when forming the request
-     */
-    private String getGeneratedPropertiesToString() {
+    private String getGeneratedPOSTPropertiesToString() {
         if (mListener == null)
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
             return null;
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
         properties.add(MraidPlacementSizeProperty.createWithDimension(mListener.getAdDimension()));
         properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("version", mListener.getVersion()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mListener.getUserAgent()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("accepted_languages", mListener.getLocale()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mListener.getPublisherId()));
+        properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         properties.add(mListener.getDeviceId());
-        properties.add(MraidVersionProperty.createWithVersion(mListener.getVersion()));
-        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
-        return MraidBaseProperty.generatePropertiesToString(properties);
+        return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }
 
     @Override

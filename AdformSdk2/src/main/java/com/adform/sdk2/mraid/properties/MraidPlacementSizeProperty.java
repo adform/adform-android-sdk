@@ -35,6 +35,6 @@ public class MraidPlacementSizeProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return null;
+        return "\"width\":\""+mPlacementWidth+"\", "+"\"height\":\""+mPlacementHeight+"\"";
     }
 }

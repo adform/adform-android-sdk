@@ -19,9 +19,9 @@ import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
-import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityManager;
 
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -111,15 +111,18 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private CoreAdViewListener mListener;
     private VisibilityGeneralState mVisibilityGeneralState = VisibilityGeneralState.LOAD_FAIL;
     private VisibilityOnScreenState mVisibilityOnScreenState = VisibilityOnScreenState.OFF_SCREEN;
+    private boolean isAnimating;
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
+    private String mPublisherId = "654321"; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
-    private String mApiVersion = "0.1";
+    private String mApiVersion = "1.0";
     private MraidDeviceIdProperty mDeviceId;
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     private int mHiddenState = INVISIBLE;
     private VisibilityManager mVisibilityManager;
+    private HashMap<String, String> mCustomParams;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
@@ -150,6 +153,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mSlidingManager = new SlidingManager(this);
         mVisibilityManager = new VisibilityManager(mContext, this);
         mContentLoadManager = new ContentLoadManager(this);
+        mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
 
 
@@ -326,12 +330,17 @@ public class CoreAdView extends RelativeLayout implements Observer,
                     }
                 }
             };
+            /* Service starting is delayed here as for the same instance can be started
+            from the on #onRestoreInstanceState(Parcelable). If it is started from there,
+            this Runnable is not used.
+             */
             postDelayed(mStartServiceRunnable, 500);
         } else {
             if (mStartServiceRunnable != null)
                 removeCallbacks(mStartServiceRunnable);
             mStartServiceRunnable = null;
             stopService();
+
         }
     }
 
@@ -369,6 +378,26 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public MraidDeviceIdProperty getDeviceId() {
         return mDeviceId;
+    }
+
+    @Override
+    public HashMap<String, String> getCustomParameters() {
+        return mCustomParams;
+    }
+
+    @Override
+    public String getUserAgent() {
+        return mBannerView.getUserAgent();
+    }
+
+    @Override
+    public String getLocale() {
+        return mContext.getResources().getConfiguration().locale.toString();
+    }
+
+    @Override
+    public String getPublisherId() {
+        return mPublisherId;
     }
 
     /**
@@ -423,8 +452,10 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = new SavedState(superState);
         if (mAdService != null)
             savedState.saveBundle = mAdService.getSaveInstanceBundle();
-        savedState.viewState = getViewState().getValue();
+        savedState.visibilityGeneralState = getGeneralState().getValue();
+        savedState.visibilityOnScreenState = getOnScreenState().getValue();
         savedState.deviceIdProperty = mDeviceId;
+        savedState.customParams = mCustomParams;
         return savedState;
     }
 
@@ -437,7 +468,9 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
-        setViewState(VisibilityGeneralState.parseType(savedState.viewState));
+        mCustomParams = savedState.customParams;
+        setViewState(VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
+                VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
         resetTimesLoaded();
         mDeviceId = savedState.deviceIdProperty;
         if (mStartServiceRunnable != null) {
@@ -448,15 +481,19 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     private static class SavedState extends BaseSavedState {
         public Bundle saveBundle;
-        public int viewState;
+        public int visibilityGeneralState;
+        public int visibilityOnScreenState;
         public MraidDeviceIdProperty deviceIdProperty;
+        public HashMap customParams;
 
         public SavedState(Parcel source) {
             super(source);
             saveBundle = source.readBundle();
-            viewState = source.readInt();
+            visibilityGeneralState = source.readInt();
+            visibilityOnScreenState = source.readInt();
             if (source.readInt() == 1)
             deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
+            customParams = source.readHashMap(String.class.getClassLoader());
         }
         public SavedState(Parcelable superState) {
             super(superState);
@@ -466,10 +503,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeBundle(saveBundle);
-            dest.writeInt(viewState);
+            dest.writeInt(visibilityGeneralState);
+            dest.writeInt(visibilityOnScreenState);
             dest.writeInt((deviceIdProperty != null)?1:0);
             if (deviceIdProperty != null)
                 dest.writeParcelable(deviceIdProperty, 0);
+            dest.writeMap(customParams);
         }
 
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
@@ -504,16 +543,22 @@ public class CoreAdView extends RelativeLayout implements Observer,
         this.mVisibilityOnScreenState = onScreenState;
         boolean newVisibility = (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL &&
                 mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN);
-        if (mListener != null)
-            mListener.onAdVisibilityChange(newVisibility);
-        mBannerView.changeVisibility(newVisibility);
+        if (!isAnimating) {
+            if (mListener != null)
+                mListener.onAdVisibilityChange(newVisibility);
+            mBannerView.changeVisibility(newVisibility);
+        }
     }
 
-    private VisibilityGeneralState getViewState() {
+    private VisibilityGeneralState getGeneralState() {
         return mVisibilityGeneralState;
+    }
+    private VisibilityOnScreenState getOnScreenState() {
+        return mVisibilityOnScreenState;
     }
 
     public boolean isAdVisible() {
+
         if (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL ||
                 mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN)
             return true;
@@ -532,5 +577,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     public void setListener(CoreAdViewListener l) {
         this.mListener = l;
+    }
+
+    public void addCustomParam(String name, String value) {
+        if (mCustomParams != null && name != null && value != null)
+            mCustomParams.put(name, value);
+    }
+
+    public void clearCustomParams(){
+        if (mCustomParams != null)
+            mCustomParams.clear();
     }
 }

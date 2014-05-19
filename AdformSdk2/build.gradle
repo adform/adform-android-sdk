@@ -22,6 +22,16 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+            }
+            resources {
+                srcDir 'src/../libs'
+            }
+        }
+    }
 }
 tasks.whenTaskAdded { task ->
     if (task.name.equals("lint")) {
@@ -35,3 +45,15 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.2.42'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
+task clearJar(type: Delete) {
+    delete 'build/libs/AdformSdk.jar'
+}
+
+task makeJar(type: Copy) {
+    from('build/bundles/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename ('classes.jar', 'AdformSdk.jar')
+}
+
+makeJar.dependsOn(clearJar, build)
