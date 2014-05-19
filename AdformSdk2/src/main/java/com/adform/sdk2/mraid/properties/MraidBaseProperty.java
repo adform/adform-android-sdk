@@ -19,7 +19,7 @@ public abstract class MraidBaseProperty {
 
     public abstract String toGet();
 
-    public static String generatePropertiesToString(ArrayList<MraidBaseProperty> properties) {
+    public static String generateGETPropertiesToString(ArrayList<MraidBaseProperty> properties) {
         if (properties == null)
             return null;
         StringBuilder path = new StringBuilder("?");
@@ -29,6 +29,20 @@ public abstract class MraidBaseProperty {
                 path.append("&");
             path.append(property.toGet());
         }
+        return path.toString();
+    }
+
+    public static String generateJSONPropertiesToString(ArrayList<MraidBaseProperty> properties) {
+        if (properties == null)
+            return null;
+        StringBuilder path = new StringBuilder("{");
+        for (int i = 0; i < properties.size(); i++) {
+            MraidBaseProperty property = properties.get(i);
+            path.append(property.toJson());
+            if (i < properties.size()-1)
+                path.append(", ");
+        }
+        path.append("}");
         return path.toString();
     }
 

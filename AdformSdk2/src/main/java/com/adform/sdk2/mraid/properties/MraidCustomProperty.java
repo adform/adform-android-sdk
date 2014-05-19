@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * Created by mariusm on 08/05/14.
- * A property that holds API version
+ * A property that forms a link with custom properties
  */
 public class MraidCustomProperty extends MraidBaseProperty {
     private final HashMap<String, String> mCustomParams;

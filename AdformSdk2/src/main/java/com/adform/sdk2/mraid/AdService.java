@@ -10,6 +10,8 @@ import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 import com.adform.sdk2.resources.AdDimension;
+import com.adform.sdk2.utils.Utils;
+import org.apache.http.entity.StringEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,33 +107,28 @@ public class AdService extends ObservableService2 implements ErrorListener {
      */
     private AdformNetworkTask<AdServingEntity> getRequest(){
 
-        String additionalGetProperties = getGeneratedPropertiesToString();
-
+        String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
+//        Utils.p("Generated post properties: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
-                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.GET,
-                        Constants.SDK_INFO_PATH
-                                + ((additionalGetProperties != null)?additionalGetProperties:""),
+                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
+                        Constants.SDK_INFO_PATH,
                         AdServingEntity.class, AdServingEntity.responseParser);
+        getTask.setJsonEntity(additionalPOSTProperties);
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(AdService.this);
         return getTask;
     }
 
-    /**
-     * @return properties that needs to be generated when forming the request
-     */
-    private String getGeneratedPropertiesToString() {
+    private String getGeneratedPOSTPropertiesToString() {
         if (mListener == null)
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
             return null;
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
         properties.add(MraidPlacementSizeProperty.createWithDimension(mListener.getAdDimension()));
         properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
-        properties.add(mListener.getDeviceId());
         properties.add(MraidVersionProperty.createWithVersion(mListener.getVersion()));
-        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
-        properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
-        return MraidBaseProperty.generatePropertiesToString(properties);
+        properties.add(mListener.getDeviceId());
+        return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }
 
     @Override

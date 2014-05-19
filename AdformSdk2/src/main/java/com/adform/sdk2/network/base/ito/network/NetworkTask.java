@@ -3,6 +3,7 @@ package com.adform.sdk2.network.base.ito.network;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.adform.sdk2.utils.Utils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -16,6 +17,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -88,6 +90,8 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
 
     // raw response parsing to entity, can be externally set before executing
     private NetworkResponseParser<ResponseType> mParser;
+
+    private StringEntity mJsonEntity = null;
 
     /**
      * Note, using this constructor, base parameters such as 'version' are not added to request, it have to done manually.
@@ -320,7 +324,14 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
                 break;
             case POST:
                 httpRequest = new HttpPost(url);
-                NetworkTask.addPostParameters((HttpPost)httpRequest,networkRequest);
+                if (mJsonEntity == null) {
+                    NetworkTask.addPostParameters((HttpPost) httpRequest, networkRequest);
+                } else {
+                    networkRequest.getHeaders().clear();
+                    networkRequest.getHeaders().put("Accept", "application/json");
+                    networkRequest.getHeaders().put("Content-type", "application/json");
+                    NetworkTask.addJsonPostParameters((HttpPost) httpRequest, mJsonEntity);
+                }
                 break;
             case PUT:
                 httpRequest = new HttpPut(url);
@@ -370,6 +381,10 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void addJsonPostParameters(HttpEntityEnclosingRequestBase httpRequest, StringEntity se) {
+        httpRequest.setEntity(se);
     }
 
     private void logRequestError(String method,String url, String responseCode,String body){
@@ -590,5 +605,13 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
 
     public NetworkListenersWrapper<ResponseType> getListeners() {
         return mListeners;
+    }
+
+    public void setJsonEntity(String json) {
+        try {
+            this.mJsonEntity = new StringEntity(json, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }

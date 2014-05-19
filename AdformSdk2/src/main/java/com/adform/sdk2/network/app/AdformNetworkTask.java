@@ -4,6 +4,7 @@ import com.adform.sdk2.BuildConfig;
 import com.adform.sdk2.Constants;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.utils.Utils;
+import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
@@ -29,10 +30,7 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
     protected NetworkResponse<ResponseType> handleResponse(HttpResponse response) throws IOException, AuthorizationError {
         int statusCode = response.getStatusLine().getStatusCode();
         mRawStringResponse = responseToRawString(response).toString();
-//        Utils.p("Raw response (" + statusCode + "):" + mRawStringResponse);
-//        for (int i = 0; i < getParameters().size(); i++) {
-//            Utils.p(getParameters().get(i).getName() + ":" + getParameters().get(i).getValue());
-//        }
+        Utils.p("Raw response: "+mRawStringResponse);
         NetworkResponse networkResponse = null;
 
         switch (statusCode){
@@ -40,6 +38,8 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
                 //check if not empty response
                 if(mRawStringResponse != null && mRawStringResponse.length() > 0) {
                     networkResponse = parseJsonResponseBody();
+                    if (networkResponse == null)
+                        networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Network response failed to parse");
                 } else {
                     networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
                 }
@@ -49,7 +49,6 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
                 networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Something is off");
                 break;
         }
-
         return networkResponse;
     }
 

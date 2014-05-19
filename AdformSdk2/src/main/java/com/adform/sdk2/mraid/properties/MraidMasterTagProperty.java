@@ -21,6 +21,6 @@ public class MraidMasterTagProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return null;
+        return "\"master_tag_id\":\""+mMasterId+"\"";
     }
 }
