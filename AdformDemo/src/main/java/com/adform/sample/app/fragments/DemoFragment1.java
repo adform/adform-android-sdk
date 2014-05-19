@@ -32,6 +32,7 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         mAdView.addCustomParam("customTestId2", "1234567890");
         mAdView.addCustomParam("customTestId3", "1234567890");
         mAdView.addCustomParam("customTestId4", "1234567890");
+        mAdView.clearCustomParams();
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);
         return view;

@@ -10,8 +10,6 @@ import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 import com.adform.sdk2.resources.AdDimension;
-import com.adform.sdk2.utils.Utils;
-import org.apache.http.entity.StringEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +40,11 @@ public class AdService extends ObservableService2 implements ErrorListener {
         public MraidDeviceIdProperty getDeviceId();
         /** @return Custom set user parameters */
         public HashMap<String, String> getCustomParameters();
+        /** @return user agent */
+        public String getUserAgent();
+        /** @return device locale */
+        public String getLocale();
+        public String getPublisherId();
     }
 
     private AdServingEntity mAdServingEntity;
@@ -126,7 +129,11 @@ public class AdService extends ObservableService2 implements ErrorListener {
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
         properties.add(MraidPlacementSizeProperty.createWithDimension(mListener.getAdDimension()));
         properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
-        properties.add(MraidVersionProperty.createWithVersion(mListener.getVersion()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("version", mListener.getVersion()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mListener.getUserAgent()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("accepted_languages", mListener.getLocale()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mListener.getPublisherId()));
+        properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         properties.add(mListener.getDeviceId());
         return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }

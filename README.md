@@ -49,6 +49,22 @@ To add an ad view, simply insert a view with a path `com.adform.sdk2.view.CoreAd
 
 There should not be any problems by using the AdformSDK in any kind of context that saves and returns instance (simple activity, fragment) or the one that does not destroy its instance (like fragment with retainInstance true). 
 
+### Adding custom values to AdformSDK
+
+To add custom additional values, first View must be found.
+
+		CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+
+Later on, just add wanted values.
+
+        mAdView.addCustomParam("customTestId", "1234567890");
+        mAdView.addCustomParam("customTestId2", "1234567890");
+        mAdView.addCustomParam("customTestId3", "1234567890");
+        mAdView.addCustomParam("customTestId4", "1234567890");
+
+These values also can be cleared by using snippet below.
+
+        mAdView.clearCustomParams();
 
 ### ListView implementation
 

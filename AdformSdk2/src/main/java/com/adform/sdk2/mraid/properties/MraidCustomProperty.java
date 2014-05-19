@@ -30,6 +30,19 @@ public class MraidCustomProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return null;
+        StringBuilder paramsFormedToJson = new StringBuilder("\"dmp_profile\":");
+        paramsFormedToJson.append("[");
+        for (String key : mCustomParams.keySet()) {
+            paramsFormedToJson.append("{");
+            paramsFormedToJson.append("\"name\":\""+key+"\"");
+            paramsFormedToJson.append(",");
+            paramsFormedToJson.append("\"value\":\""+mCustomParams.get(key)+"\"");
+            paramsFormedToJson.append("},");
+        }
+        // Deleting last comma
+        if (mCustomParams.size() > 0)
+            paramsFormedToJson.deleteCharAt(paramsFormedToJson.length()-1);
+        paramsFormedToJson.append("]");
+        return paramsFormedToJson.toString();
     }
 }

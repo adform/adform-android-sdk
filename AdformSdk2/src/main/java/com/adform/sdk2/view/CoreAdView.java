@@ -115,8 +115,9 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
+    private String mPublisherId = "654321"; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
-    private String mApiVersion = "0.1";
+    private String mApiVersion = "1.0";
     private MraidDeviceIdProperty mDeviceId;
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     private int mHiddenState = INVISIBLE;
@@ -382,6 +383,21 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public HashMap<String, String> getCustomParameters() {
         return mCustomParams;
+    }
+
+    @Override
+    public String getUserAgent() {
+        return mBannerView.getUserAgent();
+    }
+
+    @Override
+    public String getLocale() {
+        return mContext.getResources().getConfiguration().locale.toString();
+    }
+
+    @Override
+    public String getPublisherId() {
+        return mPublisherId;
     }
 
     /**

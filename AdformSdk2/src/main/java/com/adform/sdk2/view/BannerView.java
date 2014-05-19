@@ -68,7 +68,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private WebViewClient mMraidWebViewClient;
     private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
-    private Object mraidJavascript = null;
+    private String mUserAgent;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -165,7 +165,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
-
+        if (mUserAgent == null)
+            mUserAgent = webView.getSettings().getUserAgentString();
         return webView;
     }
 
@@ -454,5 +455,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     public void setTimesLoaded(int timesLoaded) {
         this.mTimesLoaded = timesLoaded;
+    }
+
+    public String getUserAgent() {
+        return mUserAgent;
     }
 }
