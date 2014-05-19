@@ -17,6 +17,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by mariusm on 29/04/14.
@@ -67,16 +69,20 @@ public class ContentLoadManager {
         }
     }
 
+    private static final String HTML_TAG_PATTERN = "<script.+(mraid\\.js).*?(\\/>|script>)";
     /**
      * Retuns if content contains an mraid implementation
      * @param content provided content to look into
      * @return injected mraid.js implementation, if no implementation is needed return null
      */
     private String isMraidImpelemnetation(String content) {
-        if (content.contains("mraid.js")
-                && content.contains("<script type=\\\"text\\/javascript\\\" src=\\\"mraid.js\\\"><\\/script>")) {
-            return content.replace("<script type=\\\"text\\/javascript\\\" src=\\\"mraid.js\\\"><\\/script>", "");
-//            return content;
+        if (content.contains("mraid.js")) {
+            Pattern pTag = Pattern.compile(HTML_TAG_PATTERN);
+            Matcher mTag = pTag.matcher(content);
+
+            while (mTag.find()) {
+                return mTag.replaceAll("");
+            }
         }
         return null;
     }

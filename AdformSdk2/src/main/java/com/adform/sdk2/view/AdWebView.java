@@ -68,6 +68,7 @@ public class AdWebView extends WebView {
     }
 
     public void fireReady() {
+        Utils.p("Fireing ready event from native");
         injectJavascript("mraidbridge.fireReadyEvent();");
     }
 
