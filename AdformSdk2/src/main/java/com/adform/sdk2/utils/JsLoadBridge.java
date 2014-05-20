@@ -19,14 +19,17 @@ public class JsLoadBridge {
      * webView.addJavascriptInterface(mLoadBridge, JsLoadBridge.NATIVE_JS_INTERFACE);
      */
     public static final String NATIVE_JS_INTERFACE = "AdformNativeJs";
+    public static final String JS_CB_CONTENT_LOADED = NATIVE_JS_INTERFACE+".contentLoaded";
+    public static final String JS_CB_PRINT = NATIVE_JS_INTERFACE+".nativePrint";
+    public static final String JS_CB_CONFIGURATION_PRESET = NATIVE_JS_INTERFACE+".configurationPreset";
     /** A header that should be used for callback to occur */
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
             "function finishedLoading() {\n" +
-            "   "+NATIVE_JS_INTERFACE+".contentLoaded();\n" +
+            "   "+JS_CB_CONTENT_LOADED+"();\n" +
             "   nativePrint('Content loaded');" +
             "};\n" +
             "function nativePrint(call) {\n" +
-            "   "+NATIVE_JS_INTERFACE+".nativePrint(call);\n" +
+            "   "+JS_CB_PRINT+"(call);\n" +
             "};\n" +
             "window.onload = function(){finishedLoading();};"+
             "</script>\n";
@@ -57,9 +60,15 @@ public class JsLoadBridge {
     }
 
     @JavascriptInterface
+    public void configurationPreset(){
+        if (mHandler != null)
+            mHandler.onConfigurationPreset();
+    }
+
+    @JavascriptInterface
     public void nativePrint(String nativePrint){
-//        if (mHandler != null)
-//            mHandler.onNativePrint(nativePrint);
+        if (mHandler != null)
+            mHandler.onNativePrint(nativePrint);
     }
 
     /**
@@ -71,6 +80,7 @@ public class JsLoadBridge {
          */
         public void onContentLoadedFromJsBridge();
         public void onNativePrint(String nativeCall);
+        public void onConfigurationPreset();
     }
 
 }

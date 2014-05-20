@@ -17,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
 import com.adform.sdk2.mraid.MraidWebViewClient;
+import com.adform.sdk2.mraid.properties.MraidBaseProperty;
 import com.adform.sdk2.mraid.properties.MraidPositionProperty;
 import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.resources.MraidJavascript;
@@ -54,6 +55,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
          */
         public void onContentRender();
         public void setAnimating(boolean isAnimating);
+        public ViewCoords getDefaultPosition();
+        public ViewCoords getCurrentPosition();
     }
 
     private Context mContext = null;
@@ -72,6 +75,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private JsLoadBridge mLoadBridge;
     private String mUserAgent;
     private boolean isMraidReady = false;
+    private ViewCoords mCurrentPosition, mDefaultPosition;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -259,7 +263,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private void showContent(String content, boolean isMraid, boolean isRestoring) {
 //        Utils.p("Calling to show content");
         if (!isRestoring) {
-            isMraidReady = false;
             mIsRestoring = false;
             post(mClearCacheRunnable);
         }
@@ -271,6 +274,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             mLoadedContent = content;
             mIsLoadedContentMraid = isMraid;
         }
+        isMraidReady = false;
         // Lazy instantiation for mraid type of client
         if (isMraid && mMraidWebViewClient == null) {
             mMraidWebViewClient = new MraidWebViewClient();
@@ -305,42 +309,39 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     public void changeVisibility(final boolean visible) {
-        if (isMraidReady)
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    ((AdWebView) mViewAnimator.getCurrentView())
-                            .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
-                }
-            });
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
+            }
+        });
     }
 
     public void changeCurrentPosition(final ViewCoords viewCoords) {
-        if (isMraidReady)
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    ((AdWebView) mViewAnimator.getCurrentView())
-                            .fireChangeEventForProperty(
-                                    MraidPositionProperty.createWithPosition(
-                                            MraidPositionProperty.PositionType.CURRENT_POSITION, viewCoords)
-                            );
-                }
-            });
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidPositionProperty.createWithPosition(
+                                        MraidPositionProperty.PositionType.CURRENT_POSITION, viewCoords)
+                        );
+            }
+        });
     }
 
     public void changeDefaultPosition(final ViewCoords viewCoords) {
-        if (isMraidReady)
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    ((AdWebView) mViewAnimator.getCurrentView())
-                            .fireChangeEventForProperty(
-                                    MraidPositionProperty.createWithPosition(
-                                            MraidPositionProperty.PositionType.DEFAULT_POSITION, viewCoords)
-                            );
-                }
-            });
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidPositionProperty.createWithPosition(
+                                        MraidPositionProperty.PositionType.DEFAULT_POSITION, viewCoords)
+                        );
+            }
+        });
     }
 
     @Override
@@ -349,9 +350,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    isMraidReady = true;
-                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
-                    mMraidBridge.getWebView().fireReady();
+                    changeDefaultPosition(mListener.getDefaultPosition());
+                    changeCurrentPosition(mListener.getCurrentPosition());
+                    Utils.p(mListener.getCurrentPosition().toString());
                 }
             }, 100);
         }
@@ -366,6 +367,19 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             mIsRestoring = false;
         }
         setTimesLoaded(mTimesLoaded+1);
+    }
+
+    @Override
+    public void onConfigurationPreset() {
+        if (!isMraidReady)
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                    mMraidBridge.getWebView().fireReady();
+                    isMraidReady = true;
+                }
+            });
     }
 
     @Override
@@ -406,7 +420,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         savedState.isLoadedContentMraid = mIsLoadedContentMraid;
         savedState.screenShot = mBitmap;
         savedState.timesLoaded = mTimesLoaded;
-        savedState.isMraidReady = isMraidReady;
         return savedState;
     }
 
@@ -426,7 +439,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (mViewAnimator != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
-            isMraidReady = savedState.isMraidReady;
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
                 if (mListener != null)
                     mListener.onContentRestore(true);
@@ -443,7 +455,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         boolean isLoadedContentMraid;
         Bitmap screenShot;
         int timesLoaded;
-        boolean isMraidReady;
 
         public SavedState(Parcel source) {
             super(source);
@@ -452,7 +463,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             if (source.readInt() == 1)
                 screenShot = source.readParcelable(Bitmap.class.getClassLoader());
             isLoadedContentMraid = (source.readInt() == 1);
-            isMraidReady = (source.readInt() == 1);
             timesLoaded = source.readInt();
         }
 
@@ -470,7 +480,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             if (screenShot != null)
                 dest.writeParcelable(screenShot, 0);
             dest.writeInt((isLoadedContentMraid) ? 1 : 0);
-            dest.writeInt((isMraidReady) ? 1 : 0);
             dest.writeInt(timesLoaded);
         }
 

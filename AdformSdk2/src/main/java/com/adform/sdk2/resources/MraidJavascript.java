@@ -32,6 +32,8 @@
 
 package com.adform.sdk2.resources;
 
+import com.adform.sdk2.utils.JsLoadBridge;
+
 public class MraidJavascript {
     public static final String JAVASCRIPT_SOURCE =
             "(function() {\n" +
@@ -375,6 +377,7 @@ public class MraidJavascript {
             "      for (var key in val) {\n" +
             "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
             "      }\n" +
+            "       "+ JsLoadBridge.JS_CB_CONFIGURATION_PRESET+"();"+
             "      console.log('CurrentPositionSet: ' + stringify(currentPosition));\n" +
             "    },\n" +
             "\n" +

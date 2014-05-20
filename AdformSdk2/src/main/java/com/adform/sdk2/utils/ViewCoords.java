@@ -90,4 +90,8 @@ public class ViewCoords implements Cloneable {
         }
         return super.equals(o);
     }
+
+    public String toString() {
+        return "ViewCoords { x:"+x+","+"y:"+y+","+"width:"+width+","+"height:"+height+" }";
+    }
 }

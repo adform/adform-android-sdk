@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * Created by mariusm on 12/05/14.
  * A manager that handles various events that shows if view is visible
  */
-public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListener {
+public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChangedListener {
 
     public static final int VISIBILITY_CHECK_DELAY = 100;
     private final VisibilityManagerListener mVisibilityManagerListener;
@@ -43,7 +43,7 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
     private ViewCoords mCurrentPosition;
     private ViewCoords mMaxSize;
 
-    public VisibilityManager(Context context, View view) {
+    public VisibilityPositionManager(Context context, View view) {
         if (view == null)
             throw new IllegalArgumentException("VisibilityManager cannot be initialized without a view");
         if (view instanceof VisibilityManagerListener) {
@@ -64,6 +64,11 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
             screenCoords.setHeight(display.getHeight());
         }
         mParentCoords = new ArrayList<ViewCoords>();
+        setCurrentPosition(ViewCoords.createViewCoord(view));
+        if (mDefaultPosition == null) {
+            setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
+            mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+        }
     }
 
     /**
@@ -81,10 +86,6 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
             @Override
             public void run() {
                 setCurrentPosition(ViewCoords.createViewCoord(mVisibilityManagerListener.getView()));
-                if (mDefaultPosition == null) {
-                    setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
-                    mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
-                }
                 mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
                 isVisible = isViewVisibleInPresetContainers();
                 mVisibilityManagerListener.onVisibilityUpdate(isVisible);
@@ -191,5 +192,13 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
     public void setDefaultPosition(ViewCoords defaultPosition) {
         this.mDefaultPosition = defaultPosition;
         mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+    }
+
+    public ViewCoords getDefaultPosition() {
+        return mDefaultPosition;
+    }
+
+    public ViewCoords getCurrentPosition() {
+        return mCurrentPosition;
     }
 }

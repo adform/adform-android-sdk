@@ -30,7 +30,7 @@ import java.util.Observer;
 public class CoreAdView extends RelativeLayout implements Observer,
         SlidingManager.SliderableWidget, BannerView.BannerViewListener,
         ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder,
-        VisibilityManager.VisibilityManagerListener {
+        VisibilityPositionManager.VisibilityManagerListener {
 
     // Special variables that can be set by the view
     public static final String MASTER_ID = "master_id";
@@ -121,8 +121,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private VisibilityGeneralState mVisibilityGeneralState = VisibilityGeneralState.LOAD_FAIL;
     private VisibilityOnScreenState mVisibilityOnScreenState = VisibilityOnScreenState.OFF_SCREEN;
     private boolean isAnimating;
-    /** Manager that helps to handle visibility changes for the view */
-    private VisibilityManager mVisibilityManager;
+    /** Manager that helps to handle visibility and position changes for the view */
+    private VisibilityPositionManager mVisibilityPositionManager;
 
     /* Basic values that store persistent information */
     private AdDimension mPlacementDimen;
@@ -164,7 +164,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
-        mVisibilityManager = new VisibilityManager(mContext, this);
+        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this);
         mContentLoadManager = new ContentLoadManager(this);
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
@@ -362,7 +362,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mVisibilityManager.checkVisibilityService();
+        mVisibilityPositionManager.checkVisibilityService();
     }
 
     @Override
@@ -372,12 +372,14 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onCurrentPositionUpdate(ViewCoords viewCoords) {
-        mBannerView.changeCurrentPosition(viewCoords);
+        if (mBannerView != null)
+            mBannerView.changeCurrentPosition(viewCoords);
     }
 
     @Override
     public void onDefaultPositionUpdate(ViewCoords viewCoords) {
-        mBannerView.changeDefaultPosition(viewCoords);
+        if (mBannerView != null)
+            mBannerView.changeDefaultPosition(viewCoords);
     }
 
     @Override
@@ -423,6 +425,16 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public String getPublisherId() {
         return mPublisherId;
+    }
+
+    @Override
+    public ViewCoords getDefaultPosition() {
+        return mVisibilityPositionManager.getDefaultPosition();
+    }
+
+    @Override
+    public ViewCoords getCurrentPosition() {
+        return mVisibilityPositionManager.getCurrentPosition();
     }
 
     /**
@@ -622,7 +634,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     public void setContentMraid(boolean isContentMraid) {
         this.isContentMraid = isContentMraid;
-        mVisibilityManager.checkVisibilityService();
+        mVisibilityPositionManager.checkVisibilityService();
     }
 
     @Override
