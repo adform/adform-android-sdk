@@ -5,7 +5,7 @@ import android.view.View;
 /**
  * Created by mariusm on 15/05/14.
  */
-public class ViewCoords {
+public class ViewCoords implements Cloneable {
     private int x, y;
     private int width, height;
 
@@ -64,5 +64,24 @@ public class ViewCoords {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ViewCoords(x, y, width, height);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ViewCoords) {
+            ViewCoords viewCoords = (ViewCoords)o;
+            if (viewCoords.getX() == getX() &&
+                    viewCoords.getY() == getY() &&
+                    viewCoords.getWidth() == getWidth() &&
+                    viewCoords.getHeight() == getHeight())
+                return true;
+            return false;
+        }
+        return super.equals(o);
     }
 }

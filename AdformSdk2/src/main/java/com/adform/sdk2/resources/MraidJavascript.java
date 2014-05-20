@@ -225,6 +225,9 @@ public class MraidJavascript {
             "    inlineVideo: false\n" +
             "  };\n" +
             "\n" +
+            "  var defaultPosition = {x: 0, y: 0, width: 0, height: 0};\n" +
+            "  var currentPosition = {x: 0, y: 0, width: 0, height: 0};\n" +
+            "  var maxSize = {width: 0, height: 0};" +
             "  //////////////////////////////////////////////////////////////////////////////////////////////////\n" +
             "\n" +
             "  var EventListeners = function(event) {\n" +
@@ -359,8 +362,30 @@ public class MraidJavascript {
             "      broadcastEvent(EVENTS.INFO, 'Set supports to ' + stringify(val));\n" +
             "        supports = val;\n" +
             "    },\n" +
-            "  };\n" +
             "\n" +
+            "    defaultPosition: function(val) {\n" +
+            "      broadcastEvent(EVENTS.INFO, 'Setting defaultPosition ' + stringify(val));\n" +
+            "      for (var key in val) {\n" +
+            "        if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];\n" +
+            "      }\n" +
+            "    },\n" +
+            "\n" +
+            "    currentPosition: function(val) {\n" +
+            "      broadcastEvent(EVENTS.INFO, 'Setting currentPosition ' + stringify(val));\n" +
+            "      for (var key in val) {\n" +
+            "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
+            "      }\n" +
+            "      console.log('CurrentPositionSet: ' + stringify(currentPosition));\n" +
+            "    },\n" +
+            "\n" +
+            "    maxSize: function(val) {\n" +
+            "      broadcastEvent(EVENTS.INFO, 'Setting maxSize ' + stringify(val));\n" +
+            "      for (var key in val) {\n" +
+            "        if (val.hasOwnProperty(key)) maxSize[key] = val[key];\n" +
+            "      }\n" +
+            "          console.log('MaxSizeSet: ' + stringify(maxSize));\n" +
+            "    },\n" +
+            "  };\n" +
             "  var validate = function(obj, validators, action, merge) {\n" +
             "    if (!merge) {\n" +
             "      // Check to see if any required properties are missing.\n" +
@@ -596,15 +621,15 @@ public class MraidJavascript {
             "  };\n" +
             "\n" +
             "  mraid.getCurrentPosition = function() {\n" +
-            "    bridge.executeNativeCall('getCurrentPosition');\n" +
+            "       return currentPosition;" +
             "  };\n" +
             "\n" +
             "  mraid.getDefaultPosition = function() {\n" +
-            "    bridge.executeNativeCall('getDefaultPosition');\n" +
+            "       return defaultPosition;" +
             "  };\n" +
             "\n" +
             "  mraid.getMaxSize = function() {\n" +
-            "    bridge.executeNativeCall('getMaxSize');\n" +
+            "       return maxSize;" +
             "  };\n" +
             "\n" +
             "  mraid.getScreenSize = function() {\n" +

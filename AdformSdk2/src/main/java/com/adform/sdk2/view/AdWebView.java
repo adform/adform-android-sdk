@@ -68,7 +68,6 @@ public class AdWebView extends WebView {
     }
 
     public void fireReady() {
-        Utils.p("Firing ready");
         injectJavascript("mraidbridge.fireReadyEvent();");
     }
 
@@ -82,6 +81,7 @@ public class AdWebView extends WebView {
     }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
+//        Utils.p("Trygin to change property: "+json);
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
 

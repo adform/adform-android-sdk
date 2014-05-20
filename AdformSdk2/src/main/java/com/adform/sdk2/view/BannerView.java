@@ -17,11 +17,13 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
 import com.adform.sdk2.mraid.MraidWebViewClient;
+import com.adform.sdk2.mraid.properties.MraidPositionProperty;
 import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.Utils;
+import com.adform.sdk2.utils.ViewCoords;
 
 import java.util.ArrayList;
 
@@ -69,6 +71,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
     private String mUserAgent;
+    private boolean isMraidReady = false;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -256,6 +259,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private void showContent(String content, boolean isMraid, boolean isRestoring) {
 //        Utils.p("Calling to show content");
         if (!isRestoring) {
+            isMraidReady = false;
             mIsRestoring = false;
             post(mClearCacheRunnable);
         }
@@ -301,13 +305,42 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     public void changeVisibility(final boolean visible) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ((AdWebView) mViewAnimator.getCurrentView())
-                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
-            }
-        });
+        if (isMraidReady)
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    ((AdWebView) mViewAnimator.getCurrentView())
+                            .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
+                }
+            });
+    }
+
+    public void changeCurrentPosition(final ViewCoords viewCoords) {
+        if (isMraidReady)
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    ((AdWebView) mViewAnimator.getCurrentView())
+                            .fireChangeEventForProperty(
+                                    MraidPositionProperty.createWithPosition(
+                                            MraidPositionProperty.PositionType.CURRENT_POSITION, viewCoords)
+                            );
+                }
+            });
+    }
+
+    public void changeDefaultPosition(final ViewCoords viewCoords) {
+        if (isMraidReady)
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    ((AdWebView) mViewAnimator.getCurrentView())
+                            .fireChangeEventForProperty(
+                                    MraidPositionProperty.createWithPosition(
+                                            MraidPositionProperty.PositionType.DEFAULT_POSITION, viewCoords)
+                            );
+                }
+            });
     }
 
     @Override
@@ -316,6 +349,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Utils.p("Mraid is ready");
+                    isMraidReady = true;
                     mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                     mMraidBridge.getWebView().fireReady();
                 }

@@ -19,6 +19,7 @@ import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.ContentLoadManager;
 import com.adform.sdk2.utils.SlidingManager;
+import com.adform.sdk2.utils.ViewCoords;
 import com.adform.sdk2.utils.VisibilityManager;
 
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
     }
+
     public enum VisibilityOnScreenState {
         ON_SCREEN(0),
         OFF_SCREEN(1);
@@ -57,19 +59,25 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
         public static VisibilityOnScreenState parseType(int status) {
             switch (status) {
-                case 1: return ON_SCREEN;
-                case 2: return OFF_SCREEN;
-                default: return OFF_SCREEN;
+                case 1:
+                    return ON_SCREEN;
+                case 2:
+                    return OFF_SCREEN;
+                default:
+                    return OFF_SCREEN;
             }
         }
+
         public static String printType(VisibilityOnScreenState state) {
             switch (state) {
-                case ON_SCREEN: return "ON_SCREEN";
-                case OFF_SCREEN: return "OFF_SCREEN";
+                case ON_SCREEN:
+                    return "ON_SCREEN";
+                case OFF_SCREEN:
+                    return "OFF_SCREEN";
             }
             return null;
         }
-        }
+    }
     public enum VisibilityGeneralState {
         LOAD_SUCCESSFUL(0),
         LOAD_FAIL(1);
@@ -105,13 +113,21 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private AdService mAdService;
     /** Bundle that packs AdService last state when saving view instance */
     private Bundle mServiceInstanceBundle;
+    /** Manager that handles core container sliding animation */
     private SlidingManager mSlidingManager;
     private BannerView mBannerView;
+    /** Manager that handles contract (json) loading */
     private ContentLoadManager mContentLoadManager;
+    /** An interface for calling back handler functions for outer control */
     private CoreAdViewListener mListener;
+    /** States that helps handle various states for the view visibility */
     private VisibilityGeneralState mVisibilityGeneralState = VisibilityGeneralState.LOAD_FAIL;
     private VisibilityOnScreenState mVisibilityOnScreenState = VisibilityOnScreenState.OFF_SCREEN;
     private boolean isAnimating;
+    /** Manager that helps to handle visibility changes for the view */
+    private VisibilityManager mVisibilityManager;
+
+    /* Basic values that store persistent information */
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
     private String mMasterId = "1234";
@@ -121,8 +137,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private MraidDeviceIdProperty mDeviceId;
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     private int mHiddenState = INVISIBLE;
-    private VisibilityManager mVisibilityManager;
     private HashMap<String, String> mCustomParams;
+    private boolean isContentMraid = false;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
@@ -232,11 +248,13 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
+        setContentMraid(true);
         mBannerView.showContent(content, true);
     }
 
     @Override
     public void onContentLoadSuccessful(String content) {
+        setContentMraid(false);
         mBannerView.showContent(content, false);
     }
 
@@ -356,6 +374,16 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
+    public void onCurrentPositionUpdate(ViewCoords viewCoords) {
+        mBannerView.changeCurrentPosition(viewCoords);
+    }
+
+    @Override
+    public void onDefaultPositionUpdate(ViewCoords viewCoords) {
+        mBannerView.changeDefaultPosition(viewCoords);
+    }
+
+    @Override
     public View getView() {
         return this;
     }
@@ -455,6 +483,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         savedState.visibilityGeneralState = getGeneralState().getValue();
         savedState.visibilityOnScreenState = getOnScreenState().getValue();
         savedState.deviceIdProperty = mDeviceId;
+        savedState.isContentMraid = isContentMraid;
         savedState.customParams = mCustomParams;
         return savedState;
     }
@@ -468,6 +497,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
+        setContentMraid(isContentMraid);
         mCustomParams = savedState.customParams;
         setViewState(VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
                 VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
@@ -485,12 +515,14 @@ public class CoreAdView extends RelativeLayout implements Observer,
         public int visibilityOnScreenState;
         public MraidDeviceIdProperty deviceIdProperty;
         public HashMap customParams;
+        public boolean isContentMraid;
 
         public SavedState(Parcel source) {
             super(source);
             saveBundle = source.readBundle();
             visibilityGeneralState = source.readInt();
             visibilityOnScreenState = source.readInt();
+            isContentMraid = (source.readInt() == 1);
             if (source.readInt() == 1)
             deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
             customParams = source.readHashMap(String.class.getClassLoader());
@@ -505,6 +537,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             dest.writeBundle(saveBundle);
             dest.writeInt(visibilityGeneralState);
             dest.writeInt(visibilityOnScreenState);
+            dest.writeInt((isContentMraid)?1:0);
             dest.writeInt((deviceIdProperty != null)?1:0);
             if (deviceIdProperty != null)
                 dest.writeParcelable(deviceIdProperty, 0);
@@ -587,5 +620,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public void clearCustomParams(){
         if (mCustomParams != null)
             mCustomParams.clear();
+    }
+
+    public void setContentMraid(boolean isContentMraid) {
+        this.isContentMraid = isContentMraid;
+        mVisibilityManager.checkVisibilityService();
+    }
+
+    @Override
+    public boolean isContentMraid() {
+        return isContentMraid;
     }
 }

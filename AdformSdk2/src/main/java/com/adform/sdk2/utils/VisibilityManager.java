@@ -28,14 +28,20 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         public int getHeight();
         public int getWidth();
         public ViewParent getParent();
+        public boolean isContentMraid();
         // Callback functions
         public View getView();
         public void onVisibilityUpdate(boolean visibility);
+        public void onDefaultPositionUpdate(ViewCoords viewCoords);
+        public void onCurrentPositionUpdate(ViewCoords viewCoords);
     }
     private Runnable mVisibilityRunnable;
     private Runnable parentGetterRunnable;
     private ViewParent mViewParent;
     private ArrayList<ViewCoords> mParentCoords;
+    private ViewCoords mDefaultPosition;
+    private ViewCoords mCurrentPosition;
+    private ViewCoords mMaxSize;
 
     public VisibilityManager(Context context, View view) {
         if (view == null)
@@ -58,7 +64,6 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
             screenCoords.setHeight(display.getHeight());
         }
         mParentCoords = new ArrayList<ViewCoords>();
-
     }
 
     /**
@@ -67,12 +72,24 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
      * or something else has occured.
      */
     public void checkVisibilityService() {
+        if (!mVisibilityManagerListener.isContentMraid())
+            return;
         lookParentWhenInflated();
         if (mVisibilityRunnable != null)
             return;
         mVisibilityRunnable = new Runnable() {
             @Override
             public void run() {
+                setCurrentPosition(ViewCoords.createViewCoord(mVisibilityManagerListener.getView()));
+                if (mDefaultPosition == null) {
+                    try {
+                        setDefaultPosition((ViewCoords)mCurrentPosition.clone());
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                    mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+                }
+                mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
                 isVisible = isViewVisibleInPresetContainers();
                 mVisibilityManagerListener.onVisibilityUpdate(isVisible);
                 mVisibilityRunnable = null;
@@ -127,8 +144,9 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
                 @Override
                 public void run() {
                     mViewParent = mVisibilityManagerListener.getParent();
-                    if (mViewParent != null)
-                        hookScrollViewListeners((View)mViewParent);
+                    if (mViewParent != null) {
+                        hookScrollViewListeners((View) mViewParent);
+                    }
                 }
             };
         else
@@ -149,11 +167,8 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         if (view.getClass().getName()
                 .equals("com.android.internal.policy.impl.PhoneWindow$DecorView"))
             return;
-        if (view instanceof ScrollView && view.getViewTreeObserver() != null) {
-            view.getViewTreeObserver().addOnScrollChangedListener(this);
-            mParentCoords.add(ViewCoords.createViewCoord(view));
-        }
-        if (view instanceof ListView) {
+        if ((view instanceof ScrollView || view instanceof ListView)
+                && view.getViewTreeObserver() != null) {
             view.getViewTreeObserver().addOnScrollChangedListener(this);
             mParentCoords.add(ViewCoords.createViewCoord(view));
         }
@@ -170,4 +185,14 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
         checkVisibilityService();
     }
 
+    public void setCurrentPosition(ViewCoords currentPosition) {
+        if (!currentPosition.equals(mCurrentPosition))
+            this.mCurrentPosition = currentPosition;
+        mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
+    }
+
+    public void setDefaultPosition(ViewCoords defaultPosition) {
+        this.mDefaultPosition = defaultPosition;
+        mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+    }
 }
