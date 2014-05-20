@@ -316,8 +316,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mMraidBridge.getWebView().fireReady();
                     mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                    mMraidBridge.getWebView().fireReady();
                 }
             }, 100);
         }
@@ -335,8 +335,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     @Override
-    public void onNativeCall(String nativeCall) {
-        Utils.p("JS: "+nativeCall);
+    public void onNativePrint(String nativeCall) {
+        Utils.p("JS Console: "+nativeCall);
     }
 
     /**

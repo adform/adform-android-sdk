@@ -3,8 +3,6 @@ package com.adform.sdk2.utils;
 import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
-import com.adform.sdk2.resources.MraidJavascript;
-import org.apache.http.entity.StringEntity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,10 +47,12 @@ public class ContentLoadManager {
                     if (response != null && response.getEntity() != null) {
                         if (mListener != null) {
                             String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
-                            if (mRaidImplementedContent != null)
+                            if (mRaidImplementedContent != null) {
+                                Utils.p("Got mraid content");
                                 mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
-                            else
+                            } else {
                                 mListener.onContentLoadSuccessful(response.getEntity().getContent());
+                            }
                         }
                     }
                 }

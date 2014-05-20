@@ -35,19 +35,24 @@ package com.adform.sdk2.resources;
 public class MraidJavascript {
     public static final String JAVASCRIPT_SOURCE =
             "(function() {\n" +
-            "  var isIOS = (/iphone|ipad|ipod/i).test(window.navigator.userAgent.toLowerCase());\n" +
-            "  if (isIOS) {\n" +
-            "    console = {};\n" +
-            "    console.log = function(log) {\n" +
-            "      var iframe = document.createElement('iframe');\n" +
-            "      iframe.setAttribute('src', 'ios-log: ' + log);\n" +
-            "      document.documentElement.appendChild(iframe);\n" +
-            "      iframe.parentNode.removeChild(iframe);\n" +
-            "      iframe = null;\n" +
-            "    };\n" +
-            "    console.debug = console.info = console.warn = console.error = console.log;\n" +
-            "  }\n" +
-            "}());\n" +
+                    "  var isIOS = (/iphone|ipad|ipod/i).test(window.navigator.userAgent.toLowerCase());\n" +
+                    "  if (isIOS) {\n" +
+                    "    console = {};\n" +
+                    "    console.log = function(log) {\n" +
+                    "      var iframe = document.createElement('iframe');\n" +
+                    "      iframe.setAttribute('src', 'ios-log: ' + log);\n" +
+                    "      document.documentElement.appendChild(iframe);\n" +
+                    "      iframe.parentNode.removeChild(iframe);\n" +
+                    "      iframe = null;\n" +
+                    "    };\n" +
+                    "    console.debug = console.info = console.warn = console.error = console.log;\n" +
+                    "  } else {\n" +
+                    "    console.log = function(log) {\n" +
+                    "      AdformNativeJs.nativePrint(log);\n" +
+                    "    };\n" +
+                    "    console.debug = console.info = console.warn = console.error = console.log;    \n" +
+                    "  }\n" +
+                    "}());" +
             "\n" +
             "(function() {\n" +
             "  // Establish the root mraidbridge object.\n" +

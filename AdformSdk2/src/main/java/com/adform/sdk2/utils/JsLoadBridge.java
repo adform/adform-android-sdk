@@ -21,17 +21,12 @@ public class JsLoadBridge {
     public static final String NATIVE_JS_INTERFACE = "AdformNativeJs";
     /** A header that should be used for callback to occur */
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
-            "var globalLoaded = 0;"+
             "function finishedLoading() {\n" +
-            "   if (globalLoaded == 0) {\n"+
-            "       "+
-            "       "+NATIVE_JS_INTERFACE+".contentLoaded();\n" +
-            "       nativeCall('Executing content with '+globalLoaded);" +
-            "       globalLoaded=1;\n"+
-            "   }\n"+
+            "   "+NATIVE_JS_INTERFACE+".contentLoaded();\n" +
+            "   nativePrint('Content loaded');" +
             "};\n" +
-            "function nativeCall(call) {\n" +
-            "   "+NATIVE_JS_INTERFACE+".nativeCall(call);\n" +
+            "function nativePrint(call) {\n" +
+            "   "+NATIVE_JS_INTERFACE+".nativePrint(call);\n" +
             "};\n" +
             "window.onload = function(){finishedLoading();};"+
             "</script>\n";
@@ -62,9 +57,9 @@ public class JsLoadBridge {
     }
 
     @JavascriptInterface
-    public void nativeCall(String nativeCall){
+    public void nativePrint(String nativePrint){
         if (mHandler != null)
-            mHandler.onNativeCall(nativeCall);
+            mHandler.onNativePrint(nativePrint);
     }
 
     /**
@@ -75,7 +70,7 @@ public class JsLoadBridge {
          * Content has been rendered
          */
         public void onContentLoadedFromJsBridge();
-        public void onNativeCall(String nativeCall);
+        public void onNativePrint(String nativeCall);
     }
 
 }
