@@ -319,6 +319,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     public void changeCurrentPosition(final ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -332,6 +335,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     public void changeDefaultPosition(final ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -344,17 +350,18 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         });
     }
 
+    private Runnable forcePositionSettingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            changeDefaultPosition(mListener.getDefaultPosition());
+            changeCurrentPosition(mListener.getCurrentPosition());
+        }
+    };
+
     @Override
     public void onContentLoadedFromJsBridge() {
         if (mIsLoadedContentMraid) {
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    changeDefaultPosition(mListener.getDefaultPosition());
-                    changeCurrentPosition(mListener.getCurrentPosition());
-                    Utils.p(mListener.getCurrentPosition().toString());
-                }
-            }, 100);
+            postDelayed(forcePositionSettingRunnable, 200);
         }
         if (!mIsRestoring) {
             if (mListener != null)
@@ -371,7 +378,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
 
     @Override
     public void onConfigurationPreset() {
-        if (!isMraidReady)
+        if (!isMraidReady && mIsLoadedContentMraid)
             post(new Runnable() {
                 @Override
                 public void run() {

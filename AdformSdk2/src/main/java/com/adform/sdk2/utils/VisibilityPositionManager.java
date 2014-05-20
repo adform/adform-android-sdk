@@ -64,11 +64,6 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             screenCoords.setHeight(display.getHeight());
         }
         mParentCoords = new ArrayList<ViewCoords>();
-        setCurrentPosition(ViewCoords.createViewCoord(view));
-        if (mDefaultPosition == null) {
-            setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
-            mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
-        }
     }
 
     /**
@@ -86,7 +81,10 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             @Override
             public void run() {
                 setCurrentPosition(ViewCoords.createViewCoord(mVisibilityManagerListener.getView()));
-                mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
+                if ((mDefaultPosition != null && mDefaultPosition.isZero()) || mDefaultPosition == null) {
+                    setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
+                    mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+                }
                 isVisible = isViewVisibleInPresetContainers();
                 mVisibilityManagerListener.onVisibilityUpdate(isVisible);
                 mVisibilityRunnable = null;
@@ -183,7 +181,9 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     }
 
     public void setCurrentPosition(ViewCoords currentPosition) {
-        if (!currentPosition.equals(mCurrentPosition)) {
+        if (currentPosition == null)
+            return;
+        if (mCurrentPosition == null || (mCurrentPosition != null && !currentPosition.equals(mCurrentPosition))) {
             this.mCurrentPosition = currentPosition;
             mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
         }

@@ -36,6 +36,8 @@ public class ViewCoords implements Cloneable {
     }
 
     public static ViewCoords createViewCoord(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return null;
         return new ViewCoords(viewCoords.getX(), viewCoords.getY(),
                 viewCoords.getWidth(), viewCoords.getHeight());
     }
@@ -77,18 +79,19 @@ public class ViewCoords implements Cloneable {
         return new ViewCoords(x, y, width, height);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof ViewCoords) {
-            ViewCoords viewCoords = (ViewCoords)o;
-            if (viewCoords.getX() == getX() &&
-                    viewCoords.getY() == getY() &&
-                    viewCoords.getWidth() == getWidth() &&
-                    viewCoords.getHeight() == getHeight())
-                return true;
-            return false;
-        }
-        return super.equals(o);
+    public boolean equals(ViewCoords viewCoords) {
+        if (viewCoords.getX() == getX() &&
+                viewCoords.getY() == getY() &&
+                viewCoords.getWidth() == getWidth() &&
+                viewCoords.getHeight() == getHeight())
+            return true;
+        return false;
+    }
+
+    public boolean isZero() {
+        if (x == 0 && y == 0 && width  == 0 && height == 0)
+            return true;
+        return false;
     }
 
     public String toString() {
