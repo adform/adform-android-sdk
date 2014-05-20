@@ -30,8 +30,14 @@ public class ViewCoords implements Cloneable {
     public static ViewCoords createViewCoord(int x, int y) {
         return new ViewCoords(x, y);
     }
+
     public static ViewCoords createViewCoord(int x, int y, int width, int height) {
         return new ViewCoords(x, y, width, height);
+    }
+
+    public static ViewCoords createViewCoord(ViewCoords viewCoords) {
+        return new ViewCoords(viewCoords.getX(), viewCoords.getY(),
+                viewCoords.getWidth(), viewCoords.getHeight());
     }
 
     public int getX() {

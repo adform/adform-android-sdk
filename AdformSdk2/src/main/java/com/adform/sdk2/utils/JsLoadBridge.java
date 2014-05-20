@@ -58,8 +58,8 @@ public class JsLoadBridge {
 
     @JavascriptInterface
     public void nativePrint(String nativePrint){
-        if (mHandler != null)
-            mHandler.onNativePrint(nativePrint);
+//        if (mHandler != null)
+//            mHandler.onNativePrint(nativePrint);
     }
 
     /**

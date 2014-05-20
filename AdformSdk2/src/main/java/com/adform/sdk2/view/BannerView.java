@@ -349,7 +349,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Utils.p("Mraid is ready");
                     isMraidReady = true;
                     mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                     mMraidBridge.getWebView().fireReady();
@@ -407,6 +406,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         savedState.isLoadedContentMraid = mIsLoadedContentMraid;
         savedState.screenShot = mBitmap;
         savedState.timesLoaded = mTimesLoaded;
+        savedState.isMraidReady = isMraidReady;
         return savedState;
     }
 
@@ -426,6 +426,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (mViewAnimator != null) {
             mLoadedContent = savedState.loadedContent;
             mIsLoadedContentMraid = savedState.isLoadedContentMraid;
+            isMraidReady = savedState.isMraidReady;
             if (mLoadedContent != null && mLoadedContent.length() > 0) {
                 if (mListener != null)
                     mListener.onContentRestore(true);
@@ -442,6 +443,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         boolean isLoadedContentMraid;
         Bitmap screenShot;
         int timesLoaded;
+        boolean isMraidReady;
 
         public SavedState(Parcel source) {
             super(source);
@@ -450,6 +452,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             if (source.readInt() == 1)
                 screenShot = source.readParcelable(Bitmap.class.getClassLoader());
             isLoadedContentMraid = (source.readInt() == 1);
+            isMraidReady = (source.readInt() == 1);
             timesLoaded = source.readInt();
         }
 
@@ -467,6 +470,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             if (screenShot != null)
                 dest.writeParcelable(screenShot, 0);
             dest.writeInt((isLoadedContentMraid) ? 1 : 0);
+            dest.writeInt((isMraidReady) ? 1 : 0);
             dest.writeInt(timesLoaded);
         }
 

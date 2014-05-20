@@ -82,11 +82,7 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
             public void run() {
                 setCurrentPosition(ViewCoords.createViewCoord(mVisibilityManagerListener.getView()));
                 if (mDefaultPosition == null) {
-                    try {
-                        setDefaultPosition((ViewCoords)mCurrentPosition.clone());
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
+                    setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
                     mVisibilityManagerListener.onDefaultPositionUpdate(mDefaultPosition);
                 }
                 mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
@@ -186,9 +182,10 @@ public class VisibilityManager implements ViewTreeObserver.OnScrollChangedListen
     }
 
     public void setCurrentPosition(ViewCoords currentPosition) {
-        if (!currentPosition.equals(mCurrentPosition))
+        if (!currentPosition.equals(mCurrentPosition)) {
             this.mCurrentPosition = currentPosition;
-        mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
+            mVisibilityManagerListener.onCurrentPositionUpdate(mCurrentPosition);
+        }
     }
 
     public void setDefaultPosition(ViewCoords defaultPosition) {

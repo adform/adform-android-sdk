@@ -103,7 +103,7 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
-            mListener.setAnimating(true);
+            mListener.setAnimating((animation.getDuration() != 0));
         }
 
         public void onAnimationEnd(Animation animation) {
@@ -120,7 +120,7 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             mListener.onSliderVisibilityChange(View.VISIBLE);
             isAnimating = true;
-            mListener.setAnimating(true);
+            mListener.setAnimating((animation.getDuration() != 0));
         }
 
         public void onAnimationEnd(Animation animation) {

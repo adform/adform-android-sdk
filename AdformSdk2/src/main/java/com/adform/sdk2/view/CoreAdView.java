@@ -17,10 +17,7 @@ import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.mraid.AdService;
 import com.adform.sdk2.network.base.ito.network.NetworkError;
 import com.adform.sdk2.resources.AdDimension;
-import com.adform.sdk2.utils.ContentLoadManager;
-import com.adform.sdk2.utils.SlidingManager;
-import com.adform.sdk2.utils.ViewCoords;
-import com.adform.sdk2.utils.VisibilityManager;
+import com.adform.sdk2.utils.*;
 
 import java.util.HashMap;
 import java.util.Observable;
@@ -497,7 +494,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mServiceInstanceBundle = savedState.saveBundle;
-        setContentMraid(isContentMraid);
+        setContentMraid(savedState.isContentMraid);
         mCustomParams = savedState.customParams;
         setViewState(VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
                 VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
@@ -507,6 +504,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
             removeCallbacks(mStartServiceRunnable);
             post(mStartServiceRunnable);
         }
+        setAnimating(false);
     }
 
     private static class SavedState extends BaseSavedState {
@@ -591,7 +589,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     public boolean isAdVisible() {
-
         if (mVisibilityGeneralState == VisibilityGeneralState.LOAD_SUCCESSFUL ||
                 mVisibilityOnScreenState == VisibilityOnScreenState.ON_SCREEN)
             return true;
@@ -599,6 +596,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     public void setAnimating(boolean isAnimating) {
+        this.isAnimating = isAnimating;
         if (isAnimating) {
             if (mListener != null)
                 mListener.onAdVisibilityChange(false);
