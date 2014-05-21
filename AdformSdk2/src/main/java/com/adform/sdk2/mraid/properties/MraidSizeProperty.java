@@ -1,6 +1,7 @@
 package com.adform.sdk2.mraid.properties;
 
-import com.adform.sdk2.utils.ViewCoords;
+import com.adform.sdk2.utils.Utils;
+import com.adform.sdk2.utils.entities.ViewCoords;
 
 /**
  * Created by mariusm on 14/05/14.
@@ -45,6 +46,7 @@ public class MraidSizeProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return SizeType.printType(mSizeType)+": {width:"+mWidth+",height:"+mHeight+"}";
+        return SizeType.printType(mSizeType)+": {width:"+Utils.pxToDp(mWidth)+
+                ",height:"+ Utils.pxToDp(mHeight) + "}";
     }
 }

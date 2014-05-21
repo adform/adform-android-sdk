@@ -1,4 +1,4 @@
-package com.adform.sdk2.utils;
+package com.adform.sdk2.utils.entities;
 
 import android.view.View;
 

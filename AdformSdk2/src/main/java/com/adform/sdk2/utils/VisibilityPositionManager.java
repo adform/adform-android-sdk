@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.view.*;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import com.adform.sdk2.utils.entities.ViewCoords;
 
 import java.util.ArrayList;
 

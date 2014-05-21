@@ -136,6 +136,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private int mHiddenState = INVISIBLE;
     private HashMap<String, String> mCustomParams;
     private boolean isContentMraid = false;
+    public static float sDeviceDensity;
 
     private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
         @Override
@@ -160,6 +161,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mContext = context;
 //        setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 //                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        sDeviceDensity = mContext.getResources().getDisplayMetrics().density;
 
         initializeCustomParameters(attrs);
         mPlacementDimen = new AdDimension(mContext);

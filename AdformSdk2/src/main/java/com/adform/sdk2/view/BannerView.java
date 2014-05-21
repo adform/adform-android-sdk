@@ -24,7 +24,7 @@ import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.Utils;
-import com.adform.sdk2.utils.ViewCoords;
+import com.adform.sdk2.utils.entities.ViewCoords;
 import com.adform.sdk2.utils.VisibilityPositionManager;
 
 import java.util.ArrayList;
@@ -96,10 +96,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         mViewCache = new ImageView(context);
-        final float scale = mContext.getResources().getDisplayMetrics().density;
         mViewCache.setLayoutParams(new RelativeLayout.LayoutParams(
-                (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f),
-                (int) (Utils.getHeightDeviceType(mContext) * scale + 0.5f)));
+                (int) (Utils.getWidthDeviceType(mContext) * CoreAdView.sDeviceDensity + 0.5f),
+                (int) (Utils.getHeightDeviceType(mContext) * CoreAdView.sDeviceDensity + 0.5f)));
         addView(mViewCache);
         mViewCache.setVisibility(GONE);
 
