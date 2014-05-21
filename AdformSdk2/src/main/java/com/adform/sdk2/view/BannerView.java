@@ -28,6 +28,7 @@ import com.adform.sdk2.utils.entities.ViewCoords;
 import com.adform.sdk2.utils.VisibilityPositionManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by mariusm on 24/04/14.
@@ -73,8 +74,9 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
     private String mUserAgent;
-    private boolean isMraidReady = false;
+    private boolean mIsMraidReady = false;
     private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
+    private HashMap<String, Boolean> mConfigurationPreset;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -272,7 +274,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             mLoadedContent = content;
             mIsLoadedContentMraid = isMraid;
         }
-        isMraidReady = false;
+        resetConfigurationPreset();
+        mIsMraidReady = false;
         // Lazy instantiation for mraid type of client
         if (isMraid && mMraidWebViewClient == null) {
             mMraidWebViewClient = new MraidWebViewClient();
@@ -312,7 +315,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (viewCoords == null)
             return;
         mDefaultPosition = viewCoords;
-        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -330,7 +332,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (viewCoords == null)
             return;
         mCurrentPosition = viewCoords;
-        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -348,7 +349,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (viewCoords == null)
             return;
         mMaxSize = viewCoords;
-        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -366,7 +366,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (viewCoords == null)
             return;
         mScreenSize = viewCoords;
-        removeCallbacks(forcePositionSettingRunnable);
         post(new Runnable() {
             @Override
             public void run() {
@@ -392,12 +391,12 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private Runnable forcePositionSettingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mCurrentPosition != null && mDefaultPosition != null) {
-                onScreenSizeUpdate(mScreenSize);
-                onMaxSizeUpdate(mMaxSize);
+            onScreenSizeUpdate(mScreenSize);
+            onMaxSizeUpdate(mMaxSize);
+            if (mDefaultPosition != null)
                 onDefaultPositionUpdate(mDefaultPosition);
+            if (mCurrentPosition != null)
                 onCurrentPositionUpdate(mCurrentPosition);
-            }
         }
     };
 
@@ -406,6 +405,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (mIsLoadedContentMraid) {
             postDelayed(forcePositionSettingRunnable, 200);
         }
+
         if (!mIsRestoring) {
             if (mListener != null)
                 mListener.onContentRender();
@@ -413,23 +413,55 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
                 post(mFlipContentRunnable);
             }
         } else {
-            postDelayed(mClearCacheRunnable, 100);
+            postDelayed(mClearCacheRunnable, 200);
             mIsRestoring = false;
         }
         setTimesLoaded(mTimesLoaded+1);
     }
 
     @Override
-    public void onConfigurationPreset() {
-        if (!isMraidReady && mIsLoadedContentMraid)
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
-                    mMraidBridge.getWebView().fireReady();
-                    isMraidReady = true;
-                }
-            });
+    public void onConfigurationPreset(String configuredParam) {
+        if (!mIsMraidReady) {
+            mConfigurationPreset.put(configuredParam, true);
+            if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                        mMraidBridge.getWebView().fireReady();
+                        mIsMraidReady = true;
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Returns if all configurations are set for the loaded javascript.
+     *
+     * @see #onConfigurationPreset(String) when configurations are set from outer source, javascript callbacks function
+     * @return true if all configurations are ready.
+     */
+    private boolean isConfigurationPresetReady() {
+        for (Boolean isReady : mConfigurationPreset.values()) {
+            if (!isReady)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Resets and reinitializes a dictionary that holds which properties has been loaded.
+     * @see #onConfigurationPreset(String) sets each property for a change
+     * @see #isConfigurationPresetReady() check if configurations are all set
+     */
+    private void resetConfigurationPreset(){
+        if (mConfigurationPreset == null)
+            mConfigurationPreset = new HashMap<String, Boolean>();
+        mConfigurationPreset.put("screenSize", false);
+        mConfigurationPreset.put("maxSize", false);
+        mConfigurationPreset.put("defaultPosition", false);
+        mConfigurationPreset.put("currentPosition", false);
     }
 
     @Override

@@ -35,3 +35,4 @@ proguard/
 out/
 build/
 .gradle/
+docs/

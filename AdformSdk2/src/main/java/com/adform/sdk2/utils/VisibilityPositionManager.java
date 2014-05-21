@@ -48,6 +48,10 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     private final VisibilityManagerListener mVisibilityManagerListener;
     private PositionManagerListener mPositionManagerListener;
     private boolean isVisible = false;
+    /** This can go from 0 to 1.
+     * It reacts when visibility changes depending on the percent of the view displayed
+     * */
+    private double mVisibilityKoef = 0.5;
 
     public VisibilityPositionManager(Context context, VisibilityManagerListener visibilityManagerListener) {
         this(context, visibilityManagerListener, null);
@@ -133,14 +137,13 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     }
     /**
      * Runs the checks through all the containers if something has changed.
-     * @see #isViewVisible(int[], ViewCoords)
+     * @see #isViewVisible(ViewCoords, ViewCoords)
      * @return false if main view is not visible.
      */
     private boolean isViewVisibleInPresetContainers() {
-        int[] location = new int[2];
-        mVisibilityManagerListener.getLocationInWindow(location);
+        ViewCoords mainViewCoords = ViewCoords.createViewCoord(mVisibilityManagerListener.getView());
         for (ViewCoords mParentCoord : mParentCoords) {
-            if (!isViewVisible(location, mParentCoord))
+            if (!isViewVisible(mainViewCoords, mParentCoord))
                 return false;
         }
         return true;
@@ -148,15 +151,17 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     /**
      * @return true if a view is in the window.
      */
-    private boolean isViewVisible(int[] mainViewLocationXY, ViewCoords viewCoords) {
+    private boolean isViewVisible(ViewCoords mainView, ViewCoords viewCoords) {
         boolean isVisible = true;
-        if (mainViewLocationXY[0] < viewCoords.getX())
+        if (mainView.getX() < viewCoords.getX() - (mainView.getWidth() * mVisibilityKoef))
             isVisible = false;
-        else if (mainViewLocationXY[1] < viewCoords.getY())
+        else if (mainView.getY() < viewCoords.getY() - (mainView.getHeight() * mVisibilityKoef))
             isVisible = false;
-        else if ((mainViewLocationXY[0] + mVisibilityManagerListener.getWidth()) > (viewCoords.getX() + viewCoords.getWidth()))
+        else if (mainView.getX() + mainView.getWidth() >
+                (viewCoords.getX() + viewCoords.getWidth() + (mainView.getWidth() * mVisibilityKoef)))
             isVisible = false;
-        else if ((mainViewLocationXY[1] + mVisibilityManagerListener.getHeight()) > (viewCoords.getY() + viewCoords.getHeight()))
+        else if (mainView.getY() + mainView.getHeight() >
+                (viewCoords.getY() + viewCoords.getHeight() + (mainView.getHeight() * mVisibilityKoef)))
             isVisible = false;
         return isVisible;
     }
@@ -184,7 +189,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             };
         else
             mVisibilityManagerListener.removeCallbacks(parentGetterRunnable);
-        mVisibilityManagerListener.postDelayed(parentGetterRunnable, 500);
+        mVisibilityManagerListener.postDelayed(parentGetterRunnable, 100);
     }
 
     /**
@@ -236,10 +241,8 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     private void setCurrentPosition(ViewCoords currentPosition) {
         if (currentPosition == null)
             return;
-        if (mCurrentPosition == null || (mCurrentPosition != null && !currentPosition.equals(mCurrentPosition))) {
-            this.mCurrentPosition = currentPosition;
-            mPositionManagerListener.onCurrentPositionUpdate(mCurrentPosition);
-        }
+        this.mCurrentPosition = currentPosition;
+        mPositionManagerListener.onCurrentPositionUpdate(mCurrentPosition);
     }
 
     private void setDefaultPosition(ViewCoords defaultPosition) {

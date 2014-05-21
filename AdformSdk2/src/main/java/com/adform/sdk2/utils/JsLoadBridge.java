@@ -53,18 +53,30 @@ public class JsLoadBridge {
         webView.addJavascriptInterface(this, JsLoadBridge.NATIVE_JS_INTERFACE);
     }
 
+    /**
+     * Function is called from javascript when document is loaded.
+     */
     @JavascriptInterface
     public void contentLoaded(){
         if (mHandler != null)
             mHandler.onContentLoadedFromJsBridge();
     }
 
+    /**
+     * Function is called when some configuration occurs in javascript.
+     * This can be something like screenSize, maxSize etc.
+     * @param configuredParam parameter which was changed
+     */
     @JavascriptInterface
-    public void configurationPreset(){
+    public void configurationPreset(String configuredParam){
         if (mHandler != null)
-            mHandler.onConfigurationPreset();
+            mHandler.onConfigurationPreset(configuredParam);
     }
 
+    /**
+     * A callback when something is printed out in javascript console.
+     * @param nativePrint provided message that is printed
+     */
     @JavascriptInterface
     public void nativePrint(String nativePrint){
         if (mHandler != null)
@@ -76,11 +88,21 @@ public class JsLoadBridge {
      */
     public interface LoadBridgeHandler {
         /**
-         * Content has been rendered
+         * Callback when document is loaded
          */
         public void onContentLoadedFromJsBridge();
-        public void onNativePrint(String nativeCall);
-        public void onConfigurationPreset();
+
+        /**
+         * Callback the message that is printed in console in javascript
+         * @param nativePrint provided message
+         */
+        public void onNativePrint(String nativePrint);
+
+        /**
+         * Callback when configuration changes are made in javascript
+         * @param configuredParam provided changed configuration
+         */
+        public void onConfigurationPreset(String configuredParam);
     }
 
 }
