@@ -1,10 +1,24 @@
 #!/bin/bash
-start_time=$(date +%s)
-echo "*** Starting release script ***"
-gradle --daemon -p /Users/mariusm/Projects/ads/AdformSdk/ clean assembleRelease
-find /Users/mariusm/Projects/ads/AdformSdk/out -name "*unaligned*" -exec rm {} \;
-cp /Users/mariusm/Projects/ads/AdformSdk/out/*.apk /Users/mariusm/Google\ Drive/Android\ Builds/
-end_time=$(date +%s)
+echo "*** Cleaning old apk's ***"
+cd /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/
+rm *;
+cd /Users/mariusm/Projects/ads/AdformSdk/
+yes="y";
+start_time=$(date +%s);
+echo "*** Starting release script ***";
+gradle --daemon clean assembleRelease;
+sh build_start.sh
+echo "Copy release version? ";
+read -s isCopy;
+if [ "$isCopy" == "$yes" ]
+then
+    echo "*** Starting copy release version to GDocs ***";
+    find /Users/mariusm/Projects/ads/AdformSdk/out -name "*unaligned*" -exec rm {} \;
+    cp /Users/mariusm/Projects/ads/AdformSdk/out/*.apk /Users/mariusm/Google\ Drive/Android\ Builds/;
+else
+    echo "*** Skipping copy ***";
+fi
+end_time=$(date +%s);
 DIFF=$(( $end_time - $start_time ))
 echo "Execution completed in $DIFF s."
 osascript -e "display notification \"Execution completed in $DIFF s.\" with title \"Execution complete\""
