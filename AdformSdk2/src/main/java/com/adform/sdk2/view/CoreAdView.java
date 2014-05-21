@@ -216,8 +216,10 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public void update(Observable observable, Object data) {
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
-            mBannerView.flipLoadedContent();
-            setViewState(VisibilityGeneralState.LOAD_SUCCESSFUL);
+//            mBannerView.flipLoadedContent();
+            mBannerView.showContent(null, false);
+            mSlidingManager.turnOff();
+            setViewState(VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
             return;
         }

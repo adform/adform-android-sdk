@@ -22,6 +22,25 @@ import java.util.regex.Pattern;
  * Helps to load content that is parsed from json script source.
  */
 public class ContentLoadManager {
+    /**
+     * An interface that returns events after loading from network task
+     */
+    public interface ContentLoaderListener {
+        /**
+         * Callback when loaded basic type of content
+         * @param content provided content
+         */
+        public void onContentLoadSuccessful(String content);
+        /**
+         * Callback when loaded mraid type of content
+         * @param content provided content
+         */
+        public void onContentMraidLoadSuccessful(String content);
+        /**
+         * Callback when content load failed
+         */
+        public void onContentLoadFailed();
+    }
 
     private ContentLoaderListener mListener;
     private DocumentBuilderFactory mDocBuilderFactory;
@@ -118,9 +137,4 @@ public class ContentLoadManager {
         return null;
     }
 
-    public interface ContentLoaderListener {
-        public void onContentLoadSuccessful(String content);
-        public void onContentMraidLoadSuccessful(String content);
-        public void onContentLoadFailed();
-    }
 }

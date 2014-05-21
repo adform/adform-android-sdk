@@ -244,19 +244,19 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     /**
      * Renders content in next in list webview
      * If content is null it resets loading content.
-     *
-     * @param content provided content to load
-     * @param isMraid true if content is mraid
+     * @see #showContent(String, boolean, boolean)
      */
     public void showContent(String content, boolean isMraid) {
         showContent(content, isMraid, false);
     }
 
     /**
-     * Description in
-     * @see #showContent(String, boolean)
+     * Renders content in next in list webview
+     * If content is null it resets loading content.
      * This sets an additional setting for if content is being restored.
      *
+     * @param content provided content to load
+     * @param isMraid true if content is mraid
      * @param isRestoring This flag only can be set from inside.
      *                    By default, from outside this flag will always be false
      */
