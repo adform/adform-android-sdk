@@ -158,13 +158,15 @@ public class CoreAdView extends RelativeLayout implements Observer,
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+//        setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+
         initializeCustomParameters(attrs);
         mPlacementDimen = new AdDimension(mContext);
         //TODO mariusm 08/05/14 Make a view parameter picker from view xml attributes here
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
-        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this);
         mContentLoadManager = new ContentLoadManager(this);
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
@@ -180,9 +182,10 @@ public class CoreAdView extends RelativeLayout implements Observer,
         // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         addView(mBannerView);
-
+        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, mBannerView);
         setVisibility(INVISIBLE);
     }
+
 
     private void initializeCustomParameters(AttributeSet attributes) {
         if (attributes != null) {
@@ -371,18 +374,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    public void onCurrentPositionUpdate(ViewCoords viewCoords) {
-        if (mBannerView != null)
-            mBannerView.changeCurrentPosition(viewCoords);
-    }
-
-    @Override
-    public void onDefaultPositionUpdate(ViewCoords viewCoords) {
-        if (mBannerView != null)
-            mBannerView.changeDefaultPosition(viewCoords);
-    }
-
-    @Override
     public View getView() {
         return this;
     }
@@ -425,16 +416,6 @@ public class CoreAdView extends RelativeLayout implements Observer,
     @Override
     public String getPublisherId() {
         return mPublisherId;
-    }
-
-    @Override
-    public ViewCoords getDefaultPosition() {
-        return mVisibilityPositionManager.getDefaultPosition();
-    }
-
-    @Override
-    public ViewCoords getCurrentPosition() {
-        return mVisibilityPositionManager.getCurrentPosition();
     }
 
     /**

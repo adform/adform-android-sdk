@@ -34,25 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.adform.sample.app.MainActivity2"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.RUN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.adform.sample.app.MainActivity3"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.RUN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.adform.sample.app.MainActivity4"
+            android:name="com.adform.sample.app.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.RUN" />

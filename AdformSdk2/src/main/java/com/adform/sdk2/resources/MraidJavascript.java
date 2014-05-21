@@ -351,6 +351,7 @@ public class MraidJavascript {
             "        expandProperties['width'] = screenSize['width'];\n" +
             "        expandProperties['height'] = screenSize['height'];\n" +
             "      }\n" +
+            "      console.log('ScreenSize: ' + stringify(screenSize));\n" +
             "    },\n" +
             "\n" +
             "    expandProperties: function(val) {\n" +
@@ -378,7 +379,6 @@ public class MraidJavascript {
             "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
             "      }\n" +
             "       "+ JsLoadBridge.JS_CB_CONFIGURATION_PRESET+"();"+
-            "      console.log('CurrentPositionSet: ' + stringify(currentPosition));\n" +
             "    },\n" +
             "\n" +
             "    maxSize: function(val) {\n" +

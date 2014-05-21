@@ -17,14 +17,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
 import com.adform.sdk2.mraid.MraidWebViewClient;
-import com.adform.sdk2.mraid.properties.MraidBaseProperty;
 import com.adform.sdk2.mraid.properties.MraidPositionProperty;
+import com.adform.sdk2.mraid.properties.MraidSizeProperty;
 import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.ViewCoords;
+import com.adform.sdk2.utils.VisibilityPositionManager;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ import java.util.ArrayList;
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
 public class BannerView extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
-        JsLoadBridge.LoadBridgeHandler {
+        JsLoadBridge.LoadBridgeHandler, VisibilityPositionManager.PositionManagerListener {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 0;
 
@@ -55,8 +56,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
          */
         public void onContentRender();
         public void setAnimating(boolean isAnimating);
-        public ViewCoords getDefaultPosition();
-        public ViewCoords getCurrentPosition();
     }
 
     private Context mContext = null;
@@ -75,7 +74,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private JsLoadBridge mLoadBridge;
     private String mUserAgent;
     private boolean isMraidReady = false;
-    private ViewCoords mCurrentPosition, mDefaultPosition;
+    private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
 
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -308,6 +307,79 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
     }
 
+
+    @Override
+    public void onDefaultPositionUpdate(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        mDefaultPosition = viewCoords;
+        removeCallbacks(forcePositionSettingRunnable);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidPositionProperty.createWithPosition(
+                                        MraidPositionProperty.PositionType.DEFAULT_POSITION, mDefaultPosition)
+                        );
+            }
+        });
+    }
+
+    @Override
+    public void onCurrentPositionUpdate(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        mCurrentPosition = viewCoords;
+        removeCallbacks(forcePositionSettingRunnable);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidPositionProperty.createWithPosition(
+                                        MraidPositionProperty.PositionType.CURRENT_POSITION, mCurrentPosition)
+                        );
+            }
+        });
+    }
+
+    @Override
+    public void onMaxSizeUpdate(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        mMaxSize = viewCoords;
+        removeCallbacks(forcePositionSettingRunnable);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidSizeProperty.createWithSize(
+                                        MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
+                        );
+            }
+        });
+    }
+
+    @Override
+    public void onScreenSizeUpdate(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return;
+        mScreenSize = viewCoords;
+        removeCallbacks(forcePositionSettingRunnable);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ((AdWebView) mViewAnimator.getCurrentView())
+                        .fireChangeEventForProperty(
+                                MraidSizeProperty.createWithSize(
+                                        MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
+                        );
+            }
+        });
+    }
+
     public void changeVisibility(final boolean visible) {
         post(new Runnable() {
             @Override
@@ -318,43 +390,15 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         });
     }
 
-    public void changeCurrentPosition(final ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        removeCallbacks(forcePositionSettingRunnable);
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ((AdWebView) mViewAnimator.getCurrentView())
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.CURRENT_POSITION, viewCoords)
-                        );
-            }
-        });
-    }
-
-    public void changeDefaultPosition(final ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        removeCallbacks(forcePositionSettingRunnable);
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ((AdWebView) mViewAnimator.getCurrentView())
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.DEFAULT_POSITION, viewCoords)
-                        );
-            }
-        });
-    }
-
     private Runnable forcePositionSettingRunnable = new Runnable() {
         @Override
         public void run() {
-            changeDefaultPosition(mListener.getDefaultPosition());
-            changeCurrentPosition(mListener.getCurrentPosition());
+            if (mCurrentPosition != null && mDefaultPosition != null) {
+                onScreenSizeUpdate(mScreenSize);
+                onMaxSizeUpdate(mMaxSize);
+                onDefaultPositionUpdate(mDefaultPosition);
+                onCurrentPositionUpdate(mCurrentPosition);
+            }
         }
     };
 

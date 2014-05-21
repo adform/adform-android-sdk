@@ -4,10 +4,10 @@ start_time=$(date +%s)
 echo "*** Starting build script ***"
 gradle --daemon -p /Users/mariusm/Projects/ads/AdformSdk/ assembleDebug
 echo "*** Starting Android install ***"
-adb -s 192.168.56.101:5555 uninstall com.adform.sample.app
-adb -s 192.168.56.101:5555 install /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/AdformDemo-debug-unaligned.apk
+adb -s CB5A1VUBV2 uninstall com.adform.sample.app
+adb -s CB5A1VUBV2 install /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/AdformDemo-debug-unaligned.apk
 echo "*** Starting activity ***"
-adb -s 192.168.56.101:5555 shell am start -n "com.adform.sample.app/com.adform.sample.app.MainActivity2" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
+adb -s CB5A1VUBV2 shell am start -n "com.adform.sample.app/com.adform.sample.app.DemoActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
 end_time=$(date +%s)
 DIFF=$(( $end_time - $start_time ))
 echo "Execution completed in $DIFF s."
