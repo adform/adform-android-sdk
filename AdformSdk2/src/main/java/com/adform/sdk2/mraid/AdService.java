@@ -111,10 +111,12 @@ public class AdService extends ObservableService2 implements ErrorListener {
     private AdformNetworkTask<AdServingEntity> getRequest(){
 
         String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
+        String additionalURLProperties = getGeneratedUrlPropertiesToString();
 //        Utils.p("Generated post properties: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
-                        Constants.SDK_INFO_PATH,
+                        Constants.SDK_INFO_PATH+
+                                (additionalURLProperties != null?additionalURLProperties:""),
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setJsonEntity(additionalPOSTProperties);
         getTask.setSuccessListener(mGetSuccessListener);
@@ -136,6 +138,15 @@ public class AdService extends ObservableService2 implements ErrorListener {
         properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         properties.add(mListener.getDeviceId());
         return MraidBaseProperty.generateJSONPropertiesToString(properties);
+    }
+
+    private String getGeneratedUrlPropertiesToString() {
+        if (mListener == null)
+//            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
+            return null;
+        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
+        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
+        return MraidBaseProperty.generateGETPropertiesToString(properties);
     }
 
     @Override
