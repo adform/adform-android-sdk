@@ -87,7 +87,8 @@ public class ContentLoadManager {
         }
     }
 
-    private static final String HTML_TAG_PATTERN = "<script.+(mraid\\.js).*?(\\/>|script>)";
+//    private static final String HTML_TAG_PATTERN = "<script.+(mraid\\.js).*?(\\/>|script>)";
+    private static final String HTML_TAG_PATTERN = "(\\\\x3Cscript|<script).{1,50}(mraid\\.js).*?(\\/>|script>)";
     /**
      * Retuns if content contains an mraid implementation
      * @param content provided content to look into
