@@ -424,12 +424,13 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         if (!mIsMraidReady) {
             mConfigurationPreset.put(configuredParam, true);
             if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
+                mIsMraidReady = true;
                 post(new Runnable() {
                     @Override
                     public void run() {
+                        Utils.p("Sending ready!");
                         mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                         mMraidBridge.getWebView().fireReady();
-                        mIsMraidReady = true;
                     }
                 });
             }

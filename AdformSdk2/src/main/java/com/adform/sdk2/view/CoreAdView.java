@@ -12,10 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
+import com.adform.sdk2.Constants;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
+import com.adform.sdk2.network.app.AdformNetworkTask;
+import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.mraid.AdService;
-import com.adform.sdk2.network.base.ito.network.NetworkError;
+import com.adform.sdk2.network.app.entities.entities.RawResponse;
+import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.*;
 
@@ -277,6 +281,27 @@ public class CoreAdView extends RelativeLayout implements Observer,
         mSlidingManager.turnOn();
         setViewState(VisibilityGeneralState.LOAD_SUCCESSFUL);
         resetTimesLoaded();
+
+        // Loading impression
+        //TODO mariusm 22/05/14 There really should be a better way to check if impression exist
+        if (mAdService != null &&
+                mAdService.getAdServingEntity() != null &&
+                mAdService.getAdServingEntity().getAdEntity() != null &&
+                mAdService.getAdServingEntity().getAdEntity().getTagDataEntity() != null &&
+                mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl() != null) {
+            Utils.p("Sending impression...");
+            RawNetworkTask getTask =
+                    new RawNetworkTask(NetworkRequest.Method.GET,
+                            mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl());
+            getTask.setSuccessListener(new SuccessListener<RawResponse>() {
+                @Override
+                public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
+                    Utils.p("Impression sent");
+                }
+            });
+            getTask.execute();
+        }
+
     }
 
     @Override

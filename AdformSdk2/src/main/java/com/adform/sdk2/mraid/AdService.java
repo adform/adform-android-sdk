@@ -124,6 +124,11 @@ public class AdService extends ObservableService2 implements ErrorListener {
         return getTask;
     }
 
+    /**
+     * Generates required parameters that are needed with the request for a contract.
+     * This also forms a json object.
+     * @return formed parameters as json
+     */
     private String getGeneratedPOSTPropertiesToString() {
         if (mListener == null)
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
@@ -140,6 +145,10 @@ public class AdService extends ObservableService2 implements ErrorListener {
         return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }
 
+    /**
+     * Generates required parameters that have to be passed with the request in GET form.
+     * @return required parameters appended to url
+     */
     private String getGeneratedUrlPropertiesToString() {
         if (mListener == null)
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
