@@ -14,6 +14,7 @@ then
     adb -s $current_device install AdformDemo-release.apk
 else
     echo "*** Installing debug version ***"
+    adb logcat -c
     adb -s $current_device install AdformDemo-debug-unaligned.apk
 fi
 echo "*** Starting activity ***"

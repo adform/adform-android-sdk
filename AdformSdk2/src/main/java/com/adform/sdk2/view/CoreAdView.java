@@ -12,9 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
-import com.adform.sdk2.Constants;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
-import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.mraid.AdService;
@@ -32,7 +30,7 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends RelativeLayout implements Observer,
-        SlidingManager.SliderableWidget, BannerView.BannerViewListener,
+        SlidingManager.SliderableWidget, BaseAdContainer.BaseAdViewListener,
         ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder,
         VisibilityPositionManager.VisibilityManagerListener {
 
@@ -290,16 +288,16 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 mAdService.getAdServingEntity().getAdEntity().getTagDataEntity() != null &&
                 mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl() != null) {
             Utils.p("Sending impression...");
-            RawNetworkTask getTask =
+            RawNetworkTask impressionTask =
                     new RawNetworkTask(NetworkRequest.Method.GET,
                             mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl());
-            getTask.setSuccessListener(new SuccessListener<RawResponse>() {
+            impressionTask.setSuccessListener(new SuccessListener<RawResponse>() {
                 @Override
                 public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
                     Utils.p("Impression sent");
                 }
             });
-            getTask.execute();
+            impressionTask.execute();
         }
 
     }
