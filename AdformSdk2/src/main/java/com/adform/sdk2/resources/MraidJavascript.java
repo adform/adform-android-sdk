@@ -328,7 +328,7 @@ public class MraidJavascript {
                     "      state = val;\n" +
                     "      broadcastEvent(EVENTS.INFO, 'Set state to ' + stringify(val));\n" +
                     "      broadcastEvent(EVENTS.STATECHANGE, state);\n" +
-                    "       "+ JsLoadBridge.injectConfigurationPreset("state")+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'state'")+
                     "    },\n" +
                     "\n" +
                     "    viewable: function(val) {\n" +
@@ -347,12 +347,13 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) screenSize[key] = val[key];\n" +
                     "      }\n" +
+                    "       "+ JsLoadBridge.injectNativePrint("'screenSize'+stringify(val)")+
                     "\n" +
                     "      if (!hasSetCustomSize) {\n" +
                     "        expandProperties['width'] = screenSize['width'];\n" +
                     "        expandProperties['height'] = screenSize['height'];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.injectConfigurationPreset("screenSize")+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'screenSize'")+
                     "    },\n" +
                     "\n" +
                     "    expandProperties: function(val) {\n" +
@@ -372,7 +373,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.injectConfigurationPreset("defaultPosition")+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'defaultPosition'")+
                     "    },\n" +
                     "\n" +
                     "    currentPosition: function(val) {\n" +
@@ -380,7 +381,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.injectConfigurationPreset("currentPosition")+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'currentPosition'")+
                     "    },\n" +
                     "\n" +
                     "    maxSize: function(val) {\n" +
@@ -388,7 +389,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) maxSize[key] = val[key];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.injectConfigurationPreset("maxSize")+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'maxSize'")+
                     "    },\n" +
                     "  };\n" +
                     "  var validate = function(obj, validators, action, merge) {\n" +
@@ -638,7 +639,7 @@ public class MraidJavascript {
                     "  };\n" +
                     "\n" +
                     "  mraid.getScreenSize = function() {\n" +
-                    "    bridge.executeNativeCall('getScreenSize');\n" +
+                    "       return screenSize;"+
                     "  };\n" +
                     "\n" +
                     "  var CalendarEventParser = {\n" +

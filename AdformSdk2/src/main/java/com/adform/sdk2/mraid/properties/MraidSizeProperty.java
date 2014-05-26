@@ -47,6 +47,6 @@ public class MraidSizeProperty extends MraidBaseProperty {
     @Override
     public String toJson() {
         return SizeType.printType(mSizeType)+": {width:"+Utils.pxToDp(mWidth)+
-                ",height:"+ Utils.pxToDp(mHeight) + "}";
+                ", height:"+ Utils.pxToDp(mHeight) + "}";
     }
 }

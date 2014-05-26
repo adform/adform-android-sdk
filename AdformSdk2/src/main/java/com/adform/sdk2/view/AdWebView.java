@@ -82,6 +82,7 @@ public class AdWebView extends WebView {
     }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
+        Utils.p("Changing: "+json);
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
 

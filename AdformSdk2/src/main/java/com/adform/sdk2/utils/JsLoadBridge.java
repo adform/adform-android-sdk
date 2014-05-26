@@ -79,7 +79,7 @@ public class JsLoadBridge {
      * @return javascript function call to native
      */
     public static String injectConfigurationPreset(String configurationParam) {
-        return JS_CB_CONFIGURATION_PRESET+"('"+configurationParam+"');\n";
+        return JS_CB_CONFIGURATION_PRESET+"("+configurationParam+");\n";
     }
 
     /**
@@ -98,7 +98,7 @@ public class JsLoadBridge {
      * @return javascript function call to native
      */
     public static String injectNativePrint(String message) {
-        return JS_CB_PRINT+"('"+message+"');\n";
+        return JS_CB_PRINT+"("+message+");\n";
     }
 
     /**
