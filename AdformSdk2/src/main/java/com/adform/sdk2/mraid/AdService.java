@@ -31,7 +31,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
         /** @return ad dimensions */
         public AdDimension getAdDimension();
         /** @return ad unique */
-        public String getMasterId();
+        public int getMasterId();
         /** @return view context */
         public Context getContext();
         /** @return defined api version */
@@ -44,7 +44,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
         public String getUserAgent();
         /** @return device locale */
         public String getLocale();
-        public String getPublisherId();
+        public int getPublisherId();
     }
 
     private AdServingEntity mAdServingEntity;
@@ -138,7 +138,8 @@ public class AdService extends ObservableService2 implements ErrorListener {
         properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
         properties.add(MraidStringProperty.createWithKeyAndValue("version", mListener.getVersion()));
         properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mListener.getUserAgent()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("accepted_languages", mListener.getLocale()));
+        properties.add(MraidStringProperty.createWithKeyAndValue(
+                "accepted_languages", mListener.getLocale().replaceAll("_", "-")));
         properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mListener.getPublisherId()));
         properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         properties.add(mListener.getDeviceId());

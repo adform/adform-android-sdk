@@ -167,6 +167,10 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
                 try {
                     HttpResponse response = performRequest(mRequest);
                     NetworkResponse<ResponseType> networkResponse = handleResponse(response);
+                    if (networkResponse == null)
+                        networkResponse = createResponseWithError(
+                                NetworkError.Type.SERVER, 0, "Unable to parse entity"
+                        );
                     Log.v(TAG, "networkResponse: " + (networkResponse.getEntity() != null ? networkResponse.getEntity().getClass().getSimpleName() : "null") + ", it took " + (System.currentTimeMillis() - time) + "ms to complete");
                     return networkResponse;
                 } catch (UnknownHostException host) {

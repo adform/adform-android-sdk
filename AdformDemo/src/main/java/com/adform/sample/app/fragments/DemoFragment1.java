@@ -28,11 +28,10 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         View view = inflater.inflate(R.layout.activity_main, null);
         CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
-        mAdView.addCustomParam("customTestId", "1234567890");
-        mAdView.addCustomParam("customTestId2", "1234567890");
-        mAdView.addCustomParam("customTestId3", "1234567890");
-        mAdView.addCustomParam("customTestId4", "1234567890");
-        mAdView.clearCustomParams();
+        mAdView.addCustomParam("gender", "female");
+        mAdView.addCustomParam("age", "23");
+        mAdView.setMasterId(66296);
+        mAdView.setPublisherId(654321);
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);
         return view;
