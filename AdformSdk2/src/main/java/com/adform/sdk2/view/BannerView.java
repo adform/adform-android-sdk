@@ -35,7 +35,7 @@ import java.util.HashMap;
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
  * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BannerView.BannerViewListener}
  */
-public class BannerView extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
+public class BannerView extends BaseAdContainer implements MraidBridge.MraidBridgeHandler,
         JsLoadBridge.LoadBridgeHandler, VisibilityPositionManager.PositionManagerListener {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 0;
@@ -60,6 +60,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     }
 
     private Context mContext = null;
+
     private String mLoadedContent;
     private boolean mIsLoadedContentMraid = false;
     /** Global variable, indicating that content is being restored. */
@@ -69,11 +70,8 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private ViewAnimator mViewAnimator;
     private ArrayList<AdWebView> mWebViews;
     private int mTimesLoaded = 0;
-    private WebViewClient mSimpleWebViewClient;
-    private WebViewClient mMraidWebViewClient;
     private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
-    private String mUserAgent;
     private boolean mIsMraidReady = false;
     private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
     private HashMap<String, Boolean> mConfigurationPreset;
@@ -144,38 +142,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         super.draw(canvas);
     }
 
-    /**
-     * Creates web view and returns its instance. Inside all needed clients and variables are binded.
-     *
-     * @param context provided context
-     * @return initialized web view
-     */
-    private AdWebView createWebView(final Context context) {
-        final AdWebView webView = new AdWebView(context);
-
-        if (mSimpleWebViewClient == null)
-            mSimpleWebViewClient = new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(final WebView view,
-                                                        final String url) {
-                    return true;
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                }
-            };
-
-        webView.setWebViewClient(mSimpleWebViewClient);
-        webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setVerticalScrollBarEnabled(false);
-        webView.setHorizontalScrollBarEnabled(false);
-        if (mUserAgent == null)
-            mUserAgent = webView.getSettings().getUserAgentString();
-        return webView;
-    }
 
     private void initView(int viewCount) {
         final float scale = mContext.getResources().getDisplayMetrics().density;
@@ -276,10 +242,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
         resetConfigurationPreset();
         mIsMraidReady = false;
-        // Lazy instantiation for mraid type of client
-        if (isMraid && mMraidWebViewClient == null) {
-            mMraidWebViewClient = new MraidWebViewClient();
-        }
         // Wrapping js in js tags
         content = "<script type=\"text/javascript\">" + content + "</script>";
 
@@ -298,7 +260,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         else
             webView = (AdWebView) getNextView(mWebViews, mViewAnimator.getCurrentView());
         if (webView != null) {
-            webView.setWebViewClient((mIsLoadedContentMraid) ? mMraidWebViewClient : mSimpleWebViewClient);
+            webView.setWebViewClient((mIsLoadedContentMraid) ? getMraidWebViewClient() : getSimpleWebViewClient());
             if (mMraidBridge == null)
                 mMraidBridge = new MraidBridge(this);
             mMraidBridge.setWebView(webView);
@@ -308,7 +270,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
         }
     }
-
 
     @Override
     public void onDefaultPositionUpdate(ViewCoords viewCoords) {
@@ -437,6 +398,11 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         }
     }
 
+    @Override
+    public void onNativePrint(String nativeCall) {
+        Utils.p("JS Console: "+nativeCall);
+    }
+
     /**
      * Returns if all configurations are set for the loaded javascript.
      *
@@ -465,10 +431,6 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         mConfigurationPreset.put("currentPosition", false);
     }
 
-    @Override
-    public void onNativePrint(String nativeCall) {
-        Utils.p("JS Console: "+nativeCall);
-    }
 
     /**
      * Get next view in the list (the one that will be shown on view flipper list).
@@ -588,7 +550,4 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         this.mTimesLoaded = timesLoaded;
     }
 
-    public String getUserAgent() {
-        return mUserAgent;
-    }
 }
