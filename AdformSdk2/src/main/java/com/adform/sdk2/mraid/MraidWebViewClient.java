@@ -68,7 +68,7 @@ public class MraidWebViewClient extends WebViewClient {
         MraidBaseCommand command = MraidCommandFactory.create(commandType, params, mWebView);
         if (command != null) {
             command.execute();
-//            fireNativeCommandCompleteEvent(commandType);
+            mWebView.fireNativeCommandCompleteEvent(commandType);
             return true;
         }
         return false;

@@ -69,7 +69,7 @@ public class AdWebView extends WebView {
 
     public void fireReady() {
         Utils.p("Ready event...");
-        injectJavascript("mraidbridge.fireReadyEvent();");
+        injectJavascript("window.mraidbridge.fireReadyEvent();");
     }
 
     public void fireViewportUpdate() {
@@ -78,7 +78,7 @@ public class AdWebView extends WebView {
     }
 
     public void fireState(MraidBridge.State state) {
-        injectJavascript("mraidbridge.fireChangeEvent('" + MraidBridge.State.getStateString(state) + "');");
+        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + MraidBridge.State.getStateString(state) + "'});");
     }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
@@ -93,4 +93,8 @@ public class AdWebView extends WebView {
         String json = "{" + props.substring(1, props.length() - 1) + "}";
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
+    public void fireNativeCommandCompleteEvent(String command) {
+        injectJavascript("window.mraidbridge.nativeCallComplete('" + command + "');");
+    }
+
 }

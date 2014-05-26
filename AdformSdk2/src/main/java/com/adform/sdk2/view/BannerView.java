@@ -12,9 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.*;
 import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.mraid.properties.MraidPositionProperty;
@@ -172,6 +170,38 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
+        webView.setWebChromeClient(new WebChromeClient() {
+            public void onConsoleMessage(String message, int lineNumber, String sourceID) {
+                Utils.p(message + " -- From line "
+                        + lineNumber + " of "
+                        + sourceID);
+            }
+
+            @Override
+            public boolean onJsBeforeUnload(WebView view, String url, String message, JsResult result) {
+                Utils.p("Js message: "+message);
+                return super.onJsBeforeUnload(view, url, message, result);
+            }
+
+            @Override
+            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+                Utils.p("Js message: "+message);
+                return super.onJsPrompt(view, url, message, defaultValue, result);
+            }
+
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                Utils.p("Js message: "+message);
+                return super.onJsConfirm(view, url, message, result);
+            }
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                Utils.p("Js message: "+message);
+                return super.onJsAlert(view, url, message, result);
+            }
+
+        });
         if (mUserAgent == null)
             mUserAgent = webView.getSettings().getUserAgentString();
         return webView;
@@ -378,6 +408,15 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         });
     }
 
+    public void onStateChange() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+            }
+        });
+    }
+
     public void changeVisibility(final boolean visible) {
         post(new Runnable() {
             @Override
@@ -391,6 +430,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
     private Runnable forcePositionSettingRunnable = new Runnable() {
         @Override
         public void run() {
+            onStateChange();
             onScreenSizeUpdate(mScreenSize);
             onMaxSizeUpdate(mMaxSize);
             if (mDefaultPosition != null)
@@ -416,20 +456,19 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
             postDelayed(mClearCacheRunnable, 200);
             mIsRestoring = false;
         }
-        setTimesLoaded(mTimesLoaded+1);
+        setTimesLoaded(mTimesLoaded + 1);
     }
 
     @Override
     public void onConfigurationPreset(String configuredParam) {
         if (!mIsMraidReady) {
+            Utils.p("Changing event: "+configuredParam);
             mConfigurationPreset.put(configuredParam, true);
             if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
                 mIsMraidReady = true;
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        Utils.p("Sending ready!");
-                        mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
                         mMraidBridge.getWebView().fireReady();
                     }
                 });
@@ -463,6 +502,7 @@ public class BannerView extends RelativeLayout implements MraidBridge.MraidBridg
         mConfigurationPreset.put("maxSize", false);
         mConfigurationPreset.put("defaultPosition", false);
         mConfigurationPreset.put("currentPosition", false);
+        mConfigurationPreset.put("state", false);
     }
 
     @Override

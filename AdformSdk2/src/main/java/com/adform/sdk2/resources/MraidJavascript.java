@@ -328,6 +328,7 @@ public class MraidJavascript {
                     "      state = val;\n" +
                     "      broadcastEvent(EVENTS.INFO, 'Set state to ' + stringify(val));\n" +
                     "      broadcastEvent(EVENTS.STATECHANGE, state);\n" +
+                    "       "+ JsLoadBridge.injectConfigurationPreset("state")+
                     "    },\n" +
                     "\n" +
                     "    viewable: function(val) {\n" +
@@ -351,7 +352,7 @@ public class MraidJavascript {
                     "        expandProperties['width'] = screenSize['width'];\n" +
                     "        expandProperties['height'] = screenSize['height'];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.JS_CB_CONFIGURATION_PRESET+"('screenSize');"+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("screenSize")+
                     "    },\n" +
                     "\n" +
                     "    expandProperties: function(val) {\n" +
@@ -371,7 +372,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];\n" +
                     "      }\n" +
-                    "       "+ JsLoadBridge.JS_CB_CONFIGURATION_PRESET+"('defaultPosition');"+
+                    "       "+ JsLoadBridge.injectConfigurationPreset("defaultPosition")+
                     "    },\n" +
                     "\n" +
                     "    currentPosition: function(val) {\n" +
@@ -379,7 +380,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
                     "      }\n" +
-                    "       " + JsLoadBridge.JS_CB_CONFIGURATION_PRESET + "('currentPosition');" +
+                    "       "+ JsLoadBridge.injectConfigurationPreset("currentPosition")+
                     "    },\n" +
                     "\n" +
                     "    maxSize: function(val) {\n" +
@@ -387,7 +388,7 @@ public class MraidJavascript {
                     "      for (var key in val) {\n" +
                     "        if (val.hasOwnProperty(key)) maxSize[key] = val[key];\n" +
                     "      }\n" +
-                    "       " + JsLoadBridge.JS_CB_CONFIGURATION_PRESET + "('maxSize');" +
+                    "       "+ JsLoadBridge.injectConfigurationPreset("maxSize")+
                     "    },\n" +
                     "  };\n" +
                     "  var validate = function(obj, validators, action, merge) {\n" +

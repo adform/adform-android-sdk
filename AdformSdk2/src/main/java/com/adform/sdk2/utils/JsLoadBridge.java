@@ -74,6 +74,15 @@ public class JsLoadBridge {
     }
 
     /**
+     * Injects function to mraid JavaScript
+     * @param configurationParam provided configuration preset
+     * @return javascript function call to native
+     */
+    public static String injectConfigurationPreset(String configurationParam) {
+        return JS_CB_CONFIGURATION_PRESET+"('"+configurationParam+"');\n";
+    }
+
+    /**
      * A callback when something is printed out in javascript console.
      * @param nativePrint provided message that is printed
      */
@@ -81,6 +90,15 @@ public class JsLoadBridge {
     public void nativePrint(String nativePrint){
         if (mHandler != null)
             mHandler.onNativePrint(nativePrint);
+    }
+
+    /**
+     * Injects function to mraid JavaScript
+     * @param message provided message
+     * @return javascript function call to native
+     */
+    public static String injectNativePrint(String message) {
+        return JS_CB_PRINT+"('"+message+"');\n";
     }
 
     /**
