@@ -43,6 +43,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
+        public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
 
     public enum VisibilityOnScreenState {
@@ -307,6 +308,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
             getTask.execute();
         }
 
+    }
+
+    @Override
+    public void onNetworkError(NetworkTask request, NetworkError networkError) {
+        if (mListener != null)
+            mListener.onNetworkError(request, networkError);
     }
 
     @Override
