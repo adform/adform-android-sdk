@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import com.adform.sdk2.Constants;
+import com.adform.sdk2.interfaces.AdformRequestParamsListener;
 import com.adform.sdk2.mraid.properties.*;
 import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
@@ -28,32 +29,21 @@ public class AdService extends ObservableService2 {
      * information, that is needed when forming the request.
      */
     public interface AdServiceBinder {
-        /** @return ad dimensions */
-        public AdDimension getAdDimension();
-        /** @return ad unique */
-        public int getMasterId();
         /** @return view context */
         public Context getContext();
-        /** @return defined api version */
-        public String getVersion();
-        /** @return unique device id */
-        public MraidDeviceIdProperty getDeviceId();
-        /** @return Custom set user parameters */
-        public HashMap<String, String> getCustomParameters();
-        /** @return user agent */
-        public String getUserAgent();
-        /** @return device locale */
-        public String getLocale();
-        public int getPublisherId();
         public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
+
+
 
     private AdServingEntity mAdServingEntity;
     private long mTimerStop;
     private AdServiceBinder mListener;
+    private AdformRequestParamsListener mParamsListener;
 
-    public AdService(AdServiceBinder l) {
-        mListener = l;
+    public AdService(AdServiceBinder mListener, AdformRequestParamsListener mParamsListener) {
+        this.mListener = mListener;
+        this.mParamsListener = mParamsListener;
     }
 
     /**
@@ -144,15 +134,15 @@ public class AdService extends ObservableService2 {
 //            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
             return null;
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
-        properties.add(MraidPlacementSizeProperty.createWithDimension(mListener.getAdDimension()));
-        properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("version", mListener.getVersion()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mListener.getUserAgent()));
+        properties.add(MraidPlacementSizeProperty.createWithDimension(mParamsListener.getAdDimension()));
+        properties.add(MraidMasterTagProperty.createWithMasterTag(mParamsListener.getMasterId()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("version", mParamsListener.getVersion()));
+        properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mParamsListener.getUserAgent()));
         properties.add(MraidStringProperty.createWithKeyAndValue(
-                "accepted_languages", mListener.getLocale().replaceAll("_", "-")));
-        properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mListener.getPublisherId()));
-        properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
-        properties.add(mListener.getDeviceId());
+                "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
+        properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
+        properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
+        properties.add(mParamsListener.getDeviceId());
         return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }
 
@@ -185,7 +175,7 @@ public class AdService extends ObservableService2 {
     @Override
     protected void onResumeService() {
         long executionTime = mTimerStop - System.currentTimeMillis();
-        scheduleRequest(getRequest(), (executionTime > 0)?executionTime:INSTANT_EXECUTION_DELAY);
+        scheduleRequest(getRequest(), (executionTime > 0) ? executionTime : INSTANT_EXECUTION_DELAY);
     }
 
     private void notifyError(NetworkError error){

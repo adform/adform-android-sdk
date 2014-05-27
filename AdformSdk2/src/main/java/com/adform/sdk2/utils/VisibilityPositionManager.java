@@ -29,7 +29,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         public View getView();
         public Context getContext();
         // Callback functions
-        public void onVisibilityUpdate(boolean visibility);
+        public void onVisibilityManagerUpdate(boolean visibility);
     }
 
     public interface PositionManagerListener {
@@ -105,7 +105,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
                     }
                 }
                 isVisible = isViewVisibleInPresetContainers();
-                mVisibilityManagerListener.onVisibilityUpdate(isVisible);
+                mVisibilityManagerListener.onVisibilityManagerUpdate(isVisible);
                 mVisibilityRunnable = null;
             }
         };
