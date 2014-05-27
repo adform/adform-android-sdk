@@ -199,7 +199,8 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
      */
     public Bundle getSaveInstanceBundle() {
         Bundle bundle = new Bundle();
-        bundle.putString(INSTANCE_LAST_RESPONSE, mLastResponse.getContent());
+        if (mLastResponse != null)
+            bundle.putString(INSTANCE_LAST_RESPONSE, mLastResponse.getContent());
         bundle.putBoolean(INSTANCE_LAST_MRAID_FLAG, isLastMraid);
         return bundle;
     }

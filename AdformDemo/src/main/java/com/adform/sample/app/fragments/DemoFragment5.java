@@ -54,7 +54,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.load_button: {
                 try {
-                    mAdformContentLoadManager.loadContent(Constants.SERVER_URL+Constants.SDK_INFO_PATH+"banner_5.js");
+                    mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
                 } catch (AdformContentLoadManager.ContentLoadException e) {
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();

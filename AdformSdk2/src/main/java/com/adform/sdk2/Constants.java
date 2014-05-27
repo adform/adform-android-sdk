@@ -10,6 +10,7 @@ public class Constants {
     //TODO mariusm 07/05/14 Fix this to the proper value
     public static final int REFRESH_SECONDS = 30;
     // Network
+    public static final String TEMP_INTERSTITIAL_LINK = "http://37.157.0.44/mobilesdk/ad/banners/3/banner.js";
 //    public static final String SERVER_URL = "http://37.157.0.44/";
     public static final String SERVER_URL = "http://192.168.2.119/";
 //    public static final String SERVER_URL = "http://192.168.4.55/";
