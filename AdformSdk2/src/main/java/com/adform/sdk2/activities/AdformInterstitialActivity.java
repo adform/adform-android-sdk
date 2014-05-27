@@ -10,7 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.utils.Utils;
-import com.adform.sdk2.view.inner.InnerInterstitialView;
+import com.adform.sdk2.view.CoreInterstitialView;
 
 /**
  * Created by mariusm on 21/05/14.
@@ -18,7 +18,7 @@ import com.adform.sdk2.view.inner.InnerInterstitialView;
 public class AdformInterstitialActivity extends Activity {
     public static final String HTML_DATA = "HTML_DATA";
 
-    private InnerInterstitialView mInnerInterstitialView;
+    private CoreInterstitialView mInterstitialView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class AdformInterstitialActivity extends Activity {
 
         // Showing content
         if (getIntent().getExtras() != null) {
-            mInnerInterstitialView.showContent(getIntent().getExtras().getString(HTML_DATA));
+            mInterstitialView.showContent(getIntent().getExtras().getString(HTML_DATA));
         }
     }
 
@@ -52,7 +52,7 @@ public class AdformInterstitialActivity extends Activity {
 
     //TODO mariusm 23/05/14 This probably should be put in core class as an abstract method
     protected View getAdView() {
-        mInnerInterstitialView = new InnerInterstitialView(getBaseContext());
-        return mInnerInterstitialView;
+        mInterstitialView = new CoreInterstitialView(getBaseContext());
+        return mInterstitialView;
     }
 }

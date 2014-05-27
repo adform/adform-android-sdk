@@ -46,8 +46,6 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
                 }
                 break;
             default:
-                //TODO mariusm 29/04/14 needs proper error message
-                networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Something is off (Raw: "+mRawStringResponse+")");
                 break;
         }
         if (networkResponse == null)

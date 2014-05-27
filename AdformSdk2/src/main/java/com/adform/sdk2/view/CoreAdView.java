@@ -234,11 +234,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         }
     }
 
-    @Override
-    public View getView() {
-        return this;
-    }
-
     /**
      * Stops service from being runned
      */

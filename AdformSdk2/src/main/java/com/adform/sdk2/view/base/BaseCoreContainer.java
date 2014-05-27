@@ -281,6 +281,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         return isContentMraid;
     }
 
+    @Override
+    public View getView() {
+        return this;
+    }
+
     // -------------------
     // Broadcast receivers
     // -------------------
