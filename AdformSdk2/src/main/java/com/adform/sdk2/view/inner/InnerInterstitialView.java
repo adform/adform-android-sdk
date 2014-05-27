@@ -2,6 +2,8 @@ package com.adform.sdk2.view.inner;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import com.adform.sdk2.view.base.BaseInnerContainer;
 
 /**
@@ -25,7 +27,10 @@ public class InnerInterstitialView extends BaseInnerContainer {
     @Override
     protected void initView() {
         mWebView = createWebView(mContext);
-        addView(mWebView);
+        final FrameLayout.LayoutParams webViewParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        addView(mWebView, webViewParams);
     }
 
     @Override

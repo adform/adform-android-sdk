@@ -51,6 +51,7 @@ public class AdWebView extends WebView {
         if (!url.startsWith("http://") && !url.startsWith("https://"))
             url = "http://" + url;
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(browserIntent);
     }
 

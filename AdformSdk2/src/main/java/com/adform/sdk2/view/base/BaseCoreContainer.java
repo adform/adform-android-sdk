@@ -54,7 +54,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private boolean isAnimating;
     protected AdDimension mPlacementDimen;
 
-
     public BaseCoreContainer(Context context) {
         this(context, null);
     }
@@ -77,7 +76,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         else
             mVisibilityPositionManager = new VisibilityPositionManager(mContext, this);
         addView(innerView);
-        setVisibility(INVISIBLE);
     }
 
     /**

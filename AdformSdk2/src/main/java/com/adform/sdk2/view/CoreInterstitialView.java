@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk2.resources.AdDimension;
+import com.adform.sdk2.utils.AdformEnum;
+import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.view.base.BaseCoreContainer;
 import com.adform.sdk2.view.inner.InnerInterstitialView;
 
@@ -25,11 +27,16 @@ public class CoreInterstitialView extends BaseCoreContainer {
 
     public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setAnimating(false);
         setVisibility(View.VISIBLE);
+
     }
 
     public void showContent(String content) {
-        mInterstitialView.showContent(content);
+        // Loaded content will always be loaded and mraid type
+        setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
+        setContentMraid(true);
+        mInterstitialView.showContent(content, true);
     }
 
     @Override

@@ -69,6 +69,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                 mPlacementDimen.getWidth(),
                 mPlacementDimen.getHeight());
         setLayoutParams(params);
+        setVisibility(INVISIBLE);
     }
 
     @Override
