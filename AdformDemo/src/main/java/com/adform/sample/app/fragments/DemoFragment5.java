@@ -5,31 +5,23 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 import com.adform.sample.app.R;
-import com.adform.sample.app.adapters.TestAdapter3;
 import com.adform.sdk2.Constants;
 import com.adform.sdk2.activities.AdformInterstitialActivity;
-import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.RawNetworkTask;
-import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
-import com.adform.sdk2.utils.Utils;
-import com.google.android.gms.ads.InterstitialAd;
-
-import java.util.ArrayList;
+import com.adform.sdk2.utils.AdformContentLoadManager;
 
 /**
  * Created by mariusm on 13/05/14.
  */
-public class DemoFragment5 extends Fragment implements View.OnClickListener, SuccessListener<RawResponse>,
-        ErrorListener, LoadingStateListener {
-    private RawResponse mRawResponse;
-    private boolean isLoading = false;
+public class DemoFragment5 extends Fragment implements View.OnClickListener,
+        AdformContentLoadManager.ContentLoaderListener {
+
     private boolean showAfterLoad = false;
+    private AdformContentLoadManager mAdformContentLoadManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +31,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener, Suc
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAdformContentLoadManager = new AdformContentLoadManager(this);
     }
 
     @Override
@@ -57,56 +50,57 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener, Suc
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.load_button: {
-                runInterstitialRequest();
+                try {
+                    mAdformContentLoadManager.loadContent(Constants.SERVER_URL+Constants.SDK_INFO_PATH+"banner_5.js");
+                } catch (AdformContentLoadManager.ContentLoadException e) {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
                 break;
             }
             case R.id.show_button: {
                 showAfterLoad = true;
-                if (!isLoading) {
-                    if (mRawResponse == null) {
-                        runInterstitialRequest();
-                    } else {
-                        showAfterLoad = false;
-                        AdformInterstitialActivity.startActivity(getActivity(), mRawResponse.getContent());
+                if (mAdformContentLoadManager.getResponse() == null)
+                    try {
+                        mAdformContentLoadManager.loadContent(Constants.SERVER_URL+Constants.SDK_INFO_PATH+"banner_5.js");
+                    } catch (AdformContentLoadManager.ContentLoadException e) {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
                     }
+                else {
+                    showAfterLoad = false;
+                    AdformInterstitialActivity.startActivity(getActivity(), mAdformContentLoadManager.getResponse());
                 }
                 break;
             }
         }
     }
 
-    private void runInterstitialRequest(){
-        RawNetworkTask impressionTask =
-                new RawNetworkTask(NetworkRequest.Method.GET,
-                        Constants.SERVER_URL+Constants.SDK_INFO_PATH+"banner_5.js");
-        impressionTask.setSuccessListener(this);
-        impressionTask.setErrorListener(this);
-        impressionTask.setLoadingStateListener(this);
-        impressionTask.execute();
-    }
-
     @Override
-    public void onError(NetworkTask request, NetworkError error) {
-        Toast.makeText(getActivity(), "Error loading interstitial ad", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
-        mRawResponse = response.getEntity();
-        Toast.makeText(getActivity(), "Ad loaded", Toast.LENGTH_SHORT).show();
+    public void onContentLoadSuccessful(String content) {
+        showToast("Loaded basic ad");
         if (showAfterLoad) {
             showAfterLoad = false;
-            AdformInterstitialActivity.startActivity(getActivity(), mRawResponse.getContent());
+            AdformInterstitialActivity.startActivity(getActivity(), mAdformContentLoadManager.getResponse());
         }
     }
 
     @Override
-    public void onStart(NetworkTask request) {
-        isLoading = true;
+    public void onContentMraidLoadSuccessful(String content) {
+        showToast("Loaded MRaid ad");
+        if (showAfterLoad) {
+            showAfterLoad = false;
+            AdformInterstitialActivity.startActivity(getActivity(), mAdformContentLoadManager.getResponse());
+        }
     }
 
     @Override
-    public void onFinnish(NetworkTask request) {
-        isLoading = false;
+    public void onContentLoadFailed() {
+        showToast("Error loading interstitial ad");
+    }
+
+    private void showToast(String message) {
+        if (getActivity() != null)
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 }

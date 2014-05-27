@@ -16,10 +16,8 @@ import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.*;
 import com.adform.sdk2.view.base.BaseCoreContainer;
-import com.adform.sdk2.view.base.BaseInnerContainer;
 import com.adform.sdk2.view.inner.InnerBannerView;
 
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,7 +26,7 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends BaseCoreContainer implements Observer,
-        SlidingManager.SliderableWidget, ContentLoadManager.ContentLoaderListener,
+        SlidingManager.SliderableWidget, AdformContentLoadManager.ContentLoaderListener,
         AdService.AdServiceBinder {
 
 
@@ -44,7 +42,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     private SlidingManager mSlidingManager;
     private InnerBannerView mBannerView;
     /** Manager that handles contract (json) loading */
-    private ContentLoadManager mContentLoadManager;
+    private AdformContentLoadManager mAdformContentLoadManager;
     /** An interface for calling back handler functions for outer control */
     private CoreAdViewListener mListener;
 
@@ -64,7 +62,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
-        mContentLoadManager = new ContentLoadManager(this);
+        mAdformContentLoadManager = new AdformContentLoadManager(this);
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
                 mPlacementDimen.getWidth(),
                 mPlacementDimen.getHeight());
@@ -116,7 +114,11 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                     && adServingEntity.getAdEntity().getTagDataEntity().getSrc() != null
                     ) {
                 String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
-                mContentLoadManager.loadContent(content);
+                try {
+                    mAdformContentLoadManager.loadContent(content, true);
+                } catch (AdformContentLoadManager.ContentLoadException e) {
+                    e.printStackTrace();
+                }
             } else {
                 mBannerView.showContent(null, false);
                 mSlidingManager.turnOff();

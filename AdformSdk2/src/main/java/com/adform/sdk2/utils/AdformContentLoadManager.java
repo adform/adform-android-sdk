@@ -21,7 +21,9 @@ import java.util.regex.Pattern;
  * Created by mariusm on 29/04/14.
  * Helps to load content that is parsed from json script source.
  */
-public class ContentLoadManager {
+public class AdformContentLoadManager implements SuccessListener<RawResponse>,
+        ErrorListener, LoadingStateListener {
+
     /**
      * An interface that returns events after loading from network task
      */
@@ -42,50 +44,88 @@ public class ContentLoadManager {
         public void onContentLoadFailed();
     }
 
+    public class ContentLoadException extends Exception {
+        public ContentLoadException(String detailMessage) {
+            super(detailMessage);
+        }
+    }
+
     private ContentLoaderListener mListener;
     private DocumentBuilderFactory mDocBuilderFactory;
+    private boolean isLoading = false;
+    private boolean isLastMraid = false;
+    private RawResponse mLastResponse;
 
-    public ContentLoadManager(ContentLoaderListener l) {
+    public AdformContentLoadManager(ContentLoaderListener l) {
         this.mListener = l;
     }
 
     /**
-     * Loads url that should be displayed in webview. When url is loaded,
-     * showContent(String) is initiated.
+     * Loads url.
+     * @param url   provided content to load
+     * @param isXml if content is wrapped in xml script tags, isXml flag should be true
+     *              for taking out content
+     */
+    public void loadContent(String url, boolean isXml) throws ContentLoadException {
+        if (isLoading())
+            throw new ContentLoadException("Content already being loaded");
+        if (url == null || (url != null && url.length() == 0))
+            throw new ContentLoadException("Url content is empty");
+        String pulledUrl = null;
+        if (isXml) {
+            pulledUrl = pullUrlFromXmlScript(url);
+            if (pulledUrl == null)
+                throw new ContentLoadException("Provided content is not in script tags, o can't be parsed");
+        }
+        RawNetworkTask getTask =
+                new RawNetworkTask(NetworkRequest.Method.GET, (isXml)?pulledUrl:url);
+        getTask.setSuccessListener(this);
+        getTask.setErrorListener(this);
+        getTask.execute();
+    }
+    /**
+     * Loads url. By default content is parsed out from script tags.
+     * @see #loadContent(String, boolean)
      * @param url provided url to load.
      */
-    public void loadContent(String url) {
-//        Utils.p("Loading content...");
-        String pulledUrl = pullUrlFromXmlScript(url);
-        if (pulledUrl != null) {
-            RawNetworkTask getTask =
-                    new RawNetworkTask(NetworkRequest.Method.GET, pulledUrl);
-            getTask.setSuccessListener(new SuccessListener<RawResponse>() {
-                @Override
-                public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
-                    if (response != null && response.getEntity() != null) {
-                        if (mListener != null) {
-                            String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
-                            if (mRaidImplementedContent != null) {
-                                Utils.p("Got mraid content");
-                                mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
-                            } else {
-                                mListener.onContentLoadSuccessful(response.getEntity().getContent());
-                            }
-                        }
-                    }
+    public void loadContent(String url) throws IllegalArgumentException, ContentLoadException {
+        loadContent(url, false);
+    }
+
+    @Override
+    public void onError(NetworkTask request, NetworkError error) {
+        if (mListener != null)
+            mListener.onContentLoadFailed();
+    }
+
+    @Override
+    public void onStart(NetworkTask request) {
+        isLoading = true;
+    }
+
+    @Override
+    public void onFinnish(NetworkTask request) {
+        isLoading = false;
+    }
+
+    @Override
+    public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
+        if (response != null && response.getEntity() != null) {
+            mLastResponse = response.getEntity();
+            if (mListener != null) {
+                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
+                if (mRaidImplementedContent != null) {
+                    Utils.p("Got mraid content");
+                    isLastMraid = true;
+                    mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
+                } else {
+                    isLastMraid = false;
+                    mListener.onContentLoadSuccessful(response.getEntity().getContent());
                 }
-            });
-            getTask.setErrorListener(new ErrorListener() {
-                @Override
-                public void onError(NetworkTask request, NetworkError error) {
-                    if (mListener != null)
-                        mListener.onContentLoadFailed();
-                }
-            });
-            getTask.execute();
+            }
         }
     }
+
 
     private static final String HTML_TAG_PATTERN = "(\\\\x3Cscript|<script).{1,50}(mraid\\.js).*?(\\/>|script>)";
     /**
@@ -137,4 +177,13 @@ public class ContentLoadManager {
         return null;
     }
 
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public String getResponse() {
+        if (mLastResponse != null && mLastResponse.getContent() != null)
+            return mLastResponse.getContent();
+        return null;
+    }
 }
