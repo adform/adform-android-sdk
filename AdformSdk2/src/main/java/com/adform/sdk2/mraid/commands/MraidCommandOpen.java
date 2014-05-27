@@ -1,7 +1,7 @@
 package com.adform.sdk2.mraid.commands;
 
 import com.adform.sdk2.mraid.MraidCommandFactory;
-import com.adform.sdk2.view.AdWebView;
+import com.adform.sdk2.view.inner.AdWebView;
 
 import java.util.Map;
 

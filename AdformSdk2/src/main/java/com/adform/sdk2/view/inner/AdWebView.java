@@ -1,4 +1,4 @@
-package com.adform.sdk2.view;
+package com.adform.sdk2.view.inner;
 
 import android.content.Context;
 import android.content.Intent;

@@ -3,10 +3,7 @@ package com.adform.sample.app;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
-import com.adform.sample.app.fragments.DemoFragment1;
-import com.adform.sample.app.fragments.DemoFragment2;
-import com.adform.sample.app.fragments.DemoFragment3;
-import com.adform.sample.app.fragments.DemoFragment4;
+import com.adform.sample.app.fragments.*;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -37,5 +34,8 @@ public class DemoActivity extends FragmentActivity {
         mTabHost.addTab(
                 mTabHost.newTabSpec("tab4").setIndicator("ListView only 5"),
                 DemoFragment4.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("tab5").setIndicator("Interstitial"),
+                DemoFragment5.class, null);
     }
 }

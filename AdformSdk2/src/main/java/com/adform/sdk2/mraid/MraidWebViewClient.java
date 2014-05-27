@@ -6,7 +6,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.adform.sdk2.mraid.commands.MraidBaseCommand;
 import com.adform.sdk2.utils.JsLoadBridge;
-import com.adform.sdk2.view.AdWebView;
+import com.adform.sdk2.view.inner.AdWebView;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 

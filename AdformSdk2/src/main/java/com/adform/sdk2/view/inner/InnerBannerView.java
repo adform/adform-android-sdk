@@ -1,4 +1,4 @@
-package com.adform.sdk2.view;
+package com.adform.sdk2.view.inner;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,15 +8,16 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.*;
 import com.adform.sdk2.utils.Utils;
+import com.adform.sdk2.view.base.BaseInnerContainer;
 
 import java.util.ArrayList;
 
 /**
  * Created by mariusm on 24/04/14.
  * View that loads various type of ads for a small banner. Ads that are loaded in a circle,
- * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.BaseAdContainer.BaseAdViewListener}
+ * are displayed with flip animation. View provides callbacks through {@link com.adform.sdk2.view.base.BaseInnerContainer.BaseAdViewListener}
  */
-public class BannerView extends BaseAdContainer {
+public class InnerBannerView extends BaseInnerContainer {
     public static final int FLIP_SPEED = 500;
     public static final int FLIP_OFFSET = 0;
     public static final int VIEW_COUNT = 2;
@@ -24,15 +25,15 @@ public class BannerView extends BaseAdContainer {
     private ViewAnimator mViewAnimator;
     private ArrayList<AdWebView> mWebViews;
 
-    public BannerView(Context context) {
+    public InnerBannerView(Context context) {
         this(context, null);
     }
 
-    public BannerView(Context context, AttributeSet attrs) {
+    public InnerBannerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BannerView(Context context, AttributeSet attrs, int defStyle) {
+    public InnerBannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

@@ -20,6 +20,8 @@ import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.utils.*;
+import com.adform.sdk2.view.base.BaseInnerContainer;
+import com.adform.sdk2.view.inner.InnerBannerView;
 
 import java.util.HashMap;
 import java.util.Observable;
@@ -30,7 +32,7 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends RelativeLayout implements Observer,
-        SlidingManager.SliderableWidget, BaseAdContainer.BaseAdViewListener,
+        SlidingManager.SliderableWidget, BaseInnerContainer.BaseAdViewListener,
         ContentLoadManager.ContentLoaderListener, AdService.AdServiceBinder,
         VisibilityPositionManager.VisibilityManagerListener {
 
@@ -114,7 +116,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
     private Bundle mServiceInstanceBundle;
     /** Manager that handles core container sliding animation */
     private SlidingManager mSlidingManager;
-    private BannerView mBannerView;
+    private InnerBannerView mBannerView;
     /** Manager that handles contract (json) loading */
     private ContentLoadManager mContentLoadManager;
     /** An interface for calling back handler functions for outer control */
@@ -181,7 +183,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
                 mPlacementDimen.getHeight());
         setLayoutParams(params);
 
-        mBannerView = new BannerView(mContext);
+        mBannerView = new InnerBannerView(mContext);
         mBannerView.setListener(this);
         // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);

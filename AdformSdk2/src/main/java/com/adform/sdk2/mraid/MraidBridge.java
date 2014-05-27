@@ -1,8 +1,6 @@
 package com.adform.sdk2.mraid;
 
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
-import com.adform.sdk2.view.AdWebView;
+import com.adform.sdk2.view.inner.AdWebView;
 
 /**
  * Created by mariusm on 30/04/14.

@@ -1,4 +1,4 @@
-package com.adform.sdk2.view;
+package com.adform.sdk2.view.base;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,6 +22,8 @@ import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityPositionManager;
 import com.adform.sdk2.utils.entities.ViewCoords;
+import com.adform.sdk2.view.inner.AdWebView;
+import com.adform.sdk2.view.CoreAdView;
 
 import java.util.HashMap;
 
@@ -30,7 +32,7 @@ import java.util.HashMap;
  * Base view that is showing content in webview.
  * It handles content loading, saving, restoring, mraid functions.
  */
-public abstract class BaseAdContainer extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
+public abstract class BaseInnerContainer extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
         JsLoadBridge.LoadBridgeHandler, VisibilityPositionManager.PositionManagerListener {
 
     /**
@@ -70,15 +72,15 @@ public abstract class BaseAdContainer extends RelativeLayout implements MraidBri
     private HashMap<String, Boolean> mConfigurationPreset;
     private boolean mIsLoadedContentMraid = false;
 
-    public BaseAdContainer(Context context) {
+    public BaseInnerContainer(Context context) {
         this(context, null);
     }
 
-    public BaseAdContainer(Context context, AttributeSet attrs) {
+    public BaseInnerContainer(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BaseAdContainer(Context context, AttributeSet attrs, int defStyle) {
+    public BaseInnerContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
 
