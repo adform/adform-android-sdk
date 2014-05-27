@@ -226,6 +226,7 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         if(mRunningHttpUriRequest !=null && !mRunningHttpUriRequest.isAborted()){
             mHttpClient.getConnectionManager().shutdown();
             mHttpClient = null;
+            sHttpClient = null;
             Log.d(TAG, "running http request abort received");
         }
         mListeners.notifyCancel(this);
