@@ -20,6 +20,7 @@ import com.adform.sdk2.utils.AdformContentLoadManager;
 public class DemoFragment5 extends Fragment implements View.OnClickListener,
         AdformContentLoadManager.ContentLoaderListener {
 
+    public static final String CONTENT_LOADER_INFO = "CONTENT_LOADER_INFO";
     private boolean showAfterLoad = false;
     private AdformContentLoadManager mAdformContentLoadManager;
 
@@ -32,6 +33,8 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAdformContentLoadManager = new AdformContentLoadManager(this);
+        if (savedInstanceState != null)
+            mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
     }
 
     @Override
@@ -102,5 +105,11 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     private void showToast(String message) {
         if (getActivity() != null)
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
     }
 }

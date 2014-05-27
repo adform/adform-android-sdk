@@ -1,8 +1,10 @@
 package com.adform.sdk2.utils;
 
+import android.os.Bundle;
 import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
+import com.adform.sdk2.network.base.ito.observable.ObservableService2;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -23,6 +25,9 @@ import java.util.regex.Pattern;
  */
 public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         ErrorListener, LoadingStateListener {
+
+    public static final String INSTANCE_LAST_RESPONSE = "INSTANCE_LAST_RESPONSE";
+    public static final String INSTANCE_LAST_MRAID_FLAG = "INSTANCE_LAST_MRAID_FLAG";
 
     /**
      * An interface that returns events after loading from network task
@@ -185,5 +190,26 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         if (mLastResponse != null && mLastResponse.getContent() != null)
             return mLastResponse.getContent();
         return null;
+    }
+    // -------------------------
+    // Instance saving/restoring
+    // -------------------------
+    /**
+     * @return a bundle of variables that should be saved into instance
+     */
+    public Bundle getSaveInstanceBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putString(INSTANCE_LAST_RESPONSE, mLastResponse.getContent());
+        bundle.putBoolean(INSTANCE_LAST_MRAID_FLAG, isLastMraid);
+        return bundle;
+    }
+
+    /**
+     * Restores service state from the instance provided bundle
+     * @param restoreBundle variable bundle with stored information
+     */
+    public void restoreInstanceWithBundle(Bundle restoreBundle) {
+        mLastResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
+        isLastMraid = restoreBundle.getBoolean(INSTANCE_LAST_MRAID_FLAG);
     }
 }
