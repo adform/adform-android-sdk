@@ -41,6 +41,10 @@ public class RawNetworkTask extends NetworkTask<RawResponse> {
             default:
                 break;
         }
+        if (networkResponse == null)
+            networkResponse = createResponseWithError(
+                    NetworkError.Type.SERVER, 0, "Something is way off (Raw: "+mRawStringResponse+")"
+            );
         return networkResponse;
     }
 
