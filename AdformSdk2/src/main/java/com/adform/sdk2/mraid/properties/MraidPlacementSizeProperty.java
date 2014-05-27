@@ -1,6 +1,7 @@
 package com.adform.sdk2.mraid.properties;
 
 import com.adform.sdk2.resources.AdDimension;
+import com.adform.sdk2.utils.Utils;
 
 /**
  * Created by mariusm on 08/05/14.
@@ -35,6 +36,7 @@ public class MraidPlacementSizeProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return "\"width\":\""+mPlacementWidth+"\", "+"\"height\":\""+mPlacementHeight+"\"";
+        return "\"width\":"+ Utils.pxToDp(mPlacementWidth)+", "+
+                "\"height\":"+Utils.pxToDp(mPlacementHeight);
     }
 }

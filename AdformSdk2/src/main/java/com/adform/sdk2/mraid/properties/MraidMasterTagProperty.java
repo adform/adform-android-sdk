@@ -5,13 +5,13 @@ package com.adform.sdk2.mraid.properties;
  * A property that holds master id that identifies which ad should be loaded.
  */
 public class MraidMasterTagProperty extends MraidBaseProperty {
-    private final String mMasterId;
+    private final int mMasterId;
 
-    MraidMasterTagProperty(String masterTag) {
+    MraidMasterTagProperty(int masterTag) {
         mMasterId = masterTag;
     }
 
-    public static MraidMasterTagProperty createWithMasterTag(String masterTag) {
+    public static MraidMasterTagProperty createWithMasterTag(int masterTag) {
         return new MraidMasterTagProperty(masterTag);
     }
 
@@ -21,6 +21,6 @@ public class MraidMasterTagProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return "\"master_tag_id\":\""+mMasterId+"\"";
+        return "\"master_tag_id\":"+mMasterId;
     }
 }

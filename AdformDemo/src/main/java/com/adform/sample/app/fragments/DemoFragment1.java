@@ -7,8 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.adform.sample.app.R;
+import com.adform.sdk2.network.base.ito.network.NetworkError;
+import com.adform.sdk2.network.base.ito.network.NetworkTask;
 import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.view.CoreAdView;
+import com.joshdholtz.sentry.Sentry;
+import org.apache.http.NameValuePair;
+
+import java.util.HashMap;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -28,11 +34,10 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         View view = inflater.inflate(R.layout.activity_main, null);
         CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
-        mAdView.addCustomParam("customTestId", "1234567890");
-        mAdView.addCustomParam("customTestId2", "1234567890");
-        mAdView.addCustomParam("customTestId3", "1234567890");
-        mAdView.addCustomParam("customTestId4", "1234567890");
-        mAdView.clearCustomParams();
+        mAdView.addCustomParam("gender", "female");
+        mAdView.addCustomParam("age", "23");
+        mAdView.setMasterId(66296);
+        mAdView.setPublisherId(654321);
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);
         return view;
@@ -48,4 +53,23 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         });
     }
 
+    @Override
+    public void onNetworkError(NetworkTask request, NetworkError networkError) {
+//        HashMap<String, String> networkMap = new HashMap<String, String>();
+//        networkMap.put("url", request.getRequest().getUrl());
+//        for (String s : request.getRequest().getHeaders().keySet()) {
+//            networkMap.put("header_"+s, request.getRequest().getHeaders().get(s));
+//        }
+//        for (NameValuePair nameValuePair : request.getRequest().getParams()) {
+//            networkMap.put("param_"+nameValuePair.getName(), nameValuePair.getValue());
+//        }
+//        Sentry.captureEvent(new Sentry.SentryEventBuilder()
+//                        .setMessage("NetworkError(" + networkError.getType().name() + ":" + networkError.getErrorCode() + "):" + networkError.getMessage())
+//                        .setExtra(networkMap)
+//                        .setCulprit("AdformDemoApp")
+//                        .setLevel(Sentry.SentryEventBuilder.SentryEventLevel.WARNING)
+//                        .setTimestamp(System.currentTimeMillis())
+//        );
+//        Utils.p("Sent error event from url: "+request.getRequest().getUrl());
+    }
 }

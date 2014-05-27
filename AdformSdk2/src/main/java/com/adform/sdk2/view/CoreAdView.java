@@ -43,6 +43,7 @@ public class CoreAdView extends RelativeLayout implements Observer,
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
+        public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
 
     public enum VisibilityOnScreenState {
@@ -131,8 +132,8 @@ public class CoreAdView extends RelativeLayout implements Observer,
     /* Basic values that store persistent information */
     private AdDimension mPlacementDimen;
     // Should be taken from some kind of configuration
-    private String mMasterId = "1234";
-    private String mPublisherId = "654321"; // Some hardcoded number, probably will be used later on
+    private int mMasterId = 0;
+    private int mPublisherId = 0; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
     private String mApiVersion = "1.0";
     private MraidDeviceIdProperty mDeviceId;
@@ -199,7 +200,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
             for (int i = 0; i < count; i++) {
                 String name = attributes.getAttributeName(i);
                 if (name.equals(MASTER_ID)) {
-                    mMasterId = attributes.getAttributeValue(i);
+                    String masterAttr = attributes.getAttributeValue(i);
+                    try {
+                        mMasterId = Integer.parseInt(masterAttr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 } else if (name.equals(API_VERSION)) {
                     mApiVersion = attributes.getAttributeValue(i);
                 } else if (name.equals(HIDDEN_STATE)) {
@@ -302,6 +308,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
             impressionTask.execute();
         }
 
+    }
+
+    @Override
+    public void onNetworkError(NetworkTask request, NetworkError networkError) {
+        if (mListener != null)
+            mListener.onNetworkError(request, networkError);
     }
 
     @Override
@@ -413,8 +425,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    public String getMasterId() {
+    public int getMasterId() {
         return mMasterId;
+    }
+
+    public void setMasterId(int masterId) {
+        this.mMasterId = masterId;
     }
 
     @Override
@@ -443,8 +459,12 @@ public class CoreAdView extends RelativeLayout implements Observer,
     }
 
     @Override
-    public String getPublisherId() {
+    public int getPublisherId() {
         return mPublisherId;
+    }
+
+    public void setPublisherId(int publisherId) {
+        this.mPublisherId = publisherId;
     }
 
     /**

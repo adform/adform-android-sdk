@@ -38,17 +38,22 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
                 //check if not empty response
                 if(mRawStringResponse != null && mRawStringResponse.length() > 0) {
                     networkResponse = parseJsonResponseBody();
-                    if (networkResponse == null)
-                        networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Network response failed to parse");
+                    if (networkResponse == null) {
+                        networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Failed to parse (Raw: "+mRawStringResponse+")");
+                    }
                 } else {
                     networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
                 }
                 break;
             default:
                 //TODO mariusm 29/04/14 needs proper error message
-                networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Something is off");
+                networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Something is off (Raw: "+mRawStringResponse+")");
                 break;
         }
+        if (networkResponse == null)
+            networkResponse = createResponseWithError(
+                    NetworkError.Type.SERVER, 0, "Something is way off (Raw: "+mRawStringResponse+")"
+            );
         return networkResponse;
     }
 

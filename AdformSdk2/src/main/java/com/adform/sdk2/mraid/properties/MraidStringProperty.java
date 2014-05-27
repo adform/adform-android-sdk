@@ -7,14 +7,20 @@ package com.adform.sdk2.mraid.properties;
 public class MraidStringProperty extends MraidBaseProperty {
     private final String mKey;
     private final String mValue;
+    private final boolean isInteger; // Define variable type
 
-    MraidStringProperty(String key, String value) {
+    MraidStringProperty(String key, String value, boolean isInteger) {
         mKey = key;
         mValue = value;
+        this.isInteger = isInteger;
     }
 
     public static MraidStringProperty createWithKeyAndValue(String key, String value) {
-        return new MraidStringProperty(key, value);
+        return new MraidStringProperty(key, value, false);
+    }
+
+    public static MraidStringProperty createWithKeyAndValue(String key, int value) {
+        return new MraidStringProperty(key, String.valueOf(value), true);
     }
 
     @Override
@@ -23,6 +29,9 @@ public class MraidStringProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return "\""+mKey+"\":\""+ mValue +"\"";
+        return "\""+mKey+"\":" +
+                ((!isInteger)?"\"":"") +
+                mValue +
+                ((!isInteger)?"\"":"");
     }
 }

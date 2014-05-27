@@ -18,7 +18,7 @@ import java.util.HashMap;
  * Created by mariusm on 23/04/14.
  * A service that controls when the ad should be loaded from the network.
  */
-public class AdService extends ObservableService2 implements ErrorListener {
+public class AdService extends ObservableService2 {
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
@@ -31,7 +31,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
         /** @return ad dimensions */
         public AdDimension getAdDimension();
         /** @return ad unique */
-        public String getMasterId();
+        public int getMasterId();
         /** @return view context */
         public Context getContext();
         /** @return defined api version */
@@ -44,7 +44,8 @@ public class AdService extends ObservableService2 implements ErrorListener {
         public String getUserAgent();
         /** @return device locale */
         public String getLocale();
-        public String getPublisherId();
+        public int getPublisherId();
+        public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
 
     private AdServingEntity mAdServingEntity;
@@ -95,6 +96,15 @@ public class AdService extends ObservableService2 implements ErrorListener {
         }
     };
 
+    private ErrorListener mGetErrorListener = new ErrorListener() {
+        @Override
+        public void onError(NetworkTask request, NetworkError error) {
+            notifyError(error);
+            scheduleNextGetInfo(Constants.REFRESH_SECONDS);
+            mListener.onNetworkError(request, error);
+        }
+    };
+
     /**
      * Schedules when the next request should occur.
      * @param delay provided delay, when will the next request will occur. Time is in seconds.
@@ -120,7 +130,7 @@ public class AdService extends ObservableService2 implements ErrorListener {
                         AdServingEntity.class, AdServingEntity.responseParser);
         getTask.setJsonEntity(additionalPOSTProperties);
         getTask.setSuccessListener(mGetSuccessListener);
-        getTask.setErrorListener(AdService.this);
+        getTask.setErrorListener(mGetErrorListener);
         return getTask;
     }
 
@@ -138,7 +148,8 @@ public class AdService extends ObservableService2 implements ErrorListener {
         properties.add(MraidMasterTagProperty.createWithMasterTag(mListener.getMasterId()));
         properties.add(MraidStringProperty.createWithKeyAndValue("version", mListener.getVersion()));
         properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mListener.getUserAgent()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("accepted_languages", mListener.getLocale()));
+        properties.add(MraidStringProperty.createWithKeyAndValue(
+                "accepted_languages", mListener.getLocale().replaceAll("_", "-")));
         properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mListener.getPublisherId()));
         properties.add(MraidCustomProperty.createWithCustomParams(mListener.getCustomParameters()));
         properties.add(mListener.getDeviceId());
@@ -175,14 +186,6 @@ public class AdService extends ObservableService2 implements ErrorListener {
     protected void onResumeService() {
         long executionTime = mTimerStop - System.currentTimeMillis();
         scheduleRequest(getRequest(), (executionTime > 0)?executionTime:INSTANT_EXECUTION_DELAY);
-    }
-
-    @Override
-    public void onError(NetworkTask request, NetworkError error) {
-        Log.d(TAG, "error:" + error.getType());
-        //notify UI on error
-        notifyError(error);
-        scheduleNextGetInfo(Constants.REFRESH_SECONDS);
     }
 
     private void notifyError(NetworkError error){
