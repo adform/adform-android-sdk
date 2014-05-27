@@ -13,6 +13,7 @@ import com.adform.sdk2.network.app.RawNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.RawResponse;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.utils.AdformContentLoadManager;
+import com.adform.sdk2.utils.Utils;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -65,7 +66,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                 showAfterLoad = true;
                 if (mAdformContentLoadManager.getResponse() == null)
                     try {
-                        mAdformContentLoadManager.loadContent(Constants.SERVER_URL+Constants.SDK_INFO_PATH+"banner_5.js");
+                        mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
                     } catch (AdformContentLoadManager.ContentLoadException e) {
                         Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
@@ -110,6 +111,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
+        if (mAdformContentLoadManager != null)
+            outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
     }
 }

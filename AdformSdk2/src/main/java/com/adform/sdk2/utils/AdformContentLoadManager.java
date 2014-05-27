@@ -210,6 +210,8 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
      * @param restoreBundle variable bundle with stored information
      */
     public void restoreInstanceWithBundle(Bundle restoreBundle) {
+        if (restoreBundle == null)
+            return;
         mLastResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
         isLastMraid = restoreBundle.getBoolean(INSTANCE_LAST_MRAID_FLAG);
     }
