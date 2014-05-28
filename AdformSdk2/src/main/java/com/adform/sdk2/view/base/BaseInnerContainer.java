@@ -1,9 +1,11 @@
 package com.adform.sdk2.view.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,12 +14,12 @@ import android.view.View;
 import android.webkit.*;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.mraid.properties.MraidPositionProperty;
 import com.adform.sdk2.mraid.properties.MraidSizeProperty;
 import com.adform.sdk2.mraid.properties.MraidViewableProperty;
 import com.adform.sdk2.resources.MraidJavascript;
+import com.adform.sdk2.utils.AdformEnum;
 import com.adform.sdk2.utils.JsLoadBridge;
 import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.utils.VisibilityPositionManager;
@@ -32,8 +34,9 @@ import java.util.HashMap;
  * Base view that is showing content in webview.
  * It handles content loading, saving, restoring, mraid functions.
  */
-public abstract class BaseInnerContainer extends RelativeLayout implements MraidBridge.MraidBridgeHandler,
-        JsLoadBridge.LoadBridgeHandler, VisibilityPositionManager.PositionManagerListener {
+public abstract class BaseInnerContainer extends RelativeLayout implements JsLoadBridge.LoadBridgeHandler,
+        VisibilityPositionManager.PositionManagerListener, AdWebView.NativeWebviewListener {
+    public static final String MRAID_JS_INTERFACE = "mraid";
 
     /**
      * A callback interface for main container
@@ -54,7 +57,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
         public void setAnimating(boolean isAnimating);
     }
     /** Global variable, indicating that content is being restored. */
-    private BaseAdViewListener mListener;
+    private BaseAdViewListener mBaseListener;
     protected Context mContext = null;
     private String mLoadedContent;
     private WebViewClient mSimpleWebViewClient;
@@ -62,7 +65,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
     private String mUserAgent;
     private boolean mIsRestoring = false;
     private int mTimesLoaded = 0;
-    private MraidBridge mMraidBridge;
     private JsLoadBridge mLoadBridge;
     private ImageView mViewCache;
     private Canvas mCanvas;
@@ -244,9 +246,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
         AdWebView webView = getWebViewToLoadContentTo();
         if (webView != null) {
             webView.setWebViewClient((mIsLoadedContentMraid) ? getMraidWebViewClient() : getSimpleWebViewClient());
-            if (mMraidBridge == null)
-                mMraidBridge = new MraidBridge(this);
-            mMraidBridge.setWebView(webView);
+            webView.setListener(this);
+            webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
             if (mLoadBridge == null)
                 mLoadBridge = new JsLoadBridge(this);
             mLoadBridge.setWebView(webView);
@@ -260,8 +261,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
         }
 
         if (!mIsRestoring) {
-            if (mListener != null)
-                mListener.onContentRender();
+            if (mBaseListener != null)
+                mBaseListener.onContentRender();
             animateAdShowing();
         } else {
             postDelayed(mClearCacheRunnable, 200);
@@ -279,7 +280,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        mMraidBridge.getWebView().fireReady();
+                        getCurrentWebView().fireReady();
                     }
                 });
             }
@@ -390,7 +391,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
         post(new Runnable() {
             @Override
             public void run() {
-                mMraidBridge.getWebView().fireState(MraidBridge.State.DEFAULT);
+                getCurrentWebView().fireState(AdformEnum.State.DEFAULT);
             }
         });
     }
@@ -435,12 +436,12 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
         mLoadedContent = savedState.loadedContent;
         mIsLoadedContentMraid = savedState.isLoadedContentMraid;
         if (mLoadedContent != null && mLoadedContent.length() > 0) {
-            if (mListener != null)
-                mListener.onContentRestore(true);
+            if (mBaseListener != null)
+                mBaseListener.onContentRestore(true);
             showContent(mLoadedContent, mIsLoadedContentMraid, true);
         } else {
-            if (mListener != null)
-                mListener.onContentRestore(false);
+            if (mBaseListener != null)
+                mBaseListener.onContentRestore(false);
         }
     }
 
@@ -494,12 +495,12 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
     // -----------------
     // Getters / Setters
     // -----------------
-    public void setListener(BaseAdViewListener listener) {
-        this.mListener = listener;
+    public void setBaseListener(BaseAdViewListener listener) {
+        this.mBaseListener = listener;
     }
 
-    public BaseAdViewListener getListener() {
-        return mListener;
+    public BaseAdViewListener getBaseListener() {
+        return mBaseListener;
     }
 
     public void setTimesLoaded(int timesLoaded) {
@@ -564,5 +565,20 @@ public abstract class BaseInnerContainer extends RelativeLayout implements Mraid
                 onCurrentPositionUpdate(mCurrentPosition);
         }
     };
+    // -----------------------------
+    // Callbacks for mraid functions
+    // -----------------------------
+    @Override
+    public void onMraidOpen(String url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(browserIntent);
+    }
 
+    @Override
+    public void onMraidClose() {
+        // This should be overriden individually
+    }
 }

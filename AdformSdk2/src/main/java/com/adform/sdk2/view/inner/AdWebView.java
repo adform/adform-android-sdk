@@ -5,24 +5,28 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import com.adform.sdk2.mraid.MraidBridge;
 import com.adform.sdk2.mraid.MraidCommandFactory;
 import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.mraid.properties.MraidBaseProperty;
+import com.adform.sdk2.utils.AdformEnum;
 import com.adform.sdk2.utils.Utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
  * Created by mariusm on 29/04/14.
  */
 public class AdWebView extends WebView {
+
+    public interface NativeWebviewListener {
+        public void onMraidOpen(String url);
+        public void onMraidClose();
+    }
+
     private Context mContext;
+    private NativeWebviewListener mListener;
 
     public AdWebView(Context context) {
         this(context, null);
@@ -48,11 +52,13 @@ public class AdWebView extends WebView {
     }
 
     public void open(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://"))
-            url = "http://" + url;
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(browserIntent);
+        if (mListener != null)
+            mListener.onMraidOpen(url);
+    }
+
+    public void close(){
+        if (mListener != null)
+            mListener.onMraidClose();
     }
 
     @Override
@@ -62,6 +68,9 @@ public class AdWebView extends WebView {
             ((MraidWebViewClient) client).setWebView(this);
     }
 
+    // ----------------------------------
+    // Event firing to WebView javascript
+    // ----------------------------------
     public void fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand mraidJavascriptCommand,
                                   String message) {
         String action = mraidJavascriptCommand.getCommand();
@@ -78,8 +87,8 @@ public class AdWebView extends WebView {
 //        injectJavascript("document.querySelector('meta[name=viewport]')" + String.format(".setAttribute('content', 'width=%d;', false);", getWidth()));
     }
 
-    public void fireState(MraidBridge.State state) {
-        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + MraidBridge.State.getStateString(state) + "'});");
+    public void fireState(AdformEnum.State state) {
+        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + AdformEnum.State.getStateString(state) + "'});");
     }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
@@ -97,4 +106,7 @@ public class AdWebView extends WebView {
         injectJavascript("window.mraidbridge.nativeCallComplete('" + command + "');");
     }
 
+    public void setListener(NativeWebviewListener listener) {
+        this.mListener = listener;
+    }
 }

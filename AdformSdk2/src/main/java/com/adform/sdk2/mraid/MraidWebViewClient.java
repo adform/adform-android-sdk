@@ -6,6 +6,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.adform.sdk2.mraid.commands.MraidBaseCommand;
 import com.adform.sdk2.utils.JsLoadBridge;
+import com.adform.sdk2.view.base.BaseInnerContainer;
 import com.adform.sdk2.view.inner.AdWebView;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -49,7 +50,7 @@ public class MraidWebViewClient extends WebViewClient {
             return true;
         }
 
-        if (MraidBridge.MRAID_JS_INTERFACE.equals(scheme)) {
+        if (BaseInnerContainer.MRAID_JS_INTERFACE.equals(scheme)) {
             tryCommand(URI.create(url));
             return true;
         }

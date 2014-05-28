@@ -79,7 +79,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     @Override
     protected View initInnerView() {
         mBannerView = new InnerBannerView(mContext);
-        mBannerView.setListener(this);
+        mBannerView.setBaseListener(this);
         // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         return mBannerView;

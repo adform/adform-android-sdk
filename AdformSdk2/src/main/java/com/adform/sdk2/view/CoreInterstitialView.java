@@ -4,12 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk2.mraid.properties.MraidDeviceIdProperty;
-import com.adform.sdk2.network.base.ito.network.NetworkError;
-import com.adform.sdk2.network.base.ito.network.NetworkTask;
 import com.adform.sdk2.resources.AdDimension;
 import com.adform.sdk2.resources.CloseImageView;
 import com.adform.sdk2.utils.AdformEnum;
@@ -20,7 +16,8 @@ import com.adform.sdk2.view.inner.InnerInterstitialView;
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener {
+public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener,
+        InnerInterstitialView.InnerInterstitialListener {
 
     public interface CoreInterstitialListener {
         public void onAdClose();
@@ -64,6 +61,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     @Override
     protected View initInnerView() {
         mInterstitialView = new InnerInterstitialView(mContext);
+        mInterstitialView.setListener(this);
         return mInterstitialView;
     }
 
@@ -115,5 +113,11 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     public void setListener(CoreInterstitialListener listener) {
         this.mListener = listener;
+    }
+
+    @Override
+    public void onAdClose() {
+        if (mListener != null)
+            mListener.onAdClose();
     }
 }

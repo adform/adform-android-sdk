@@ -82,12 +82,12 @@ public class InnerBannerView extends BaseInnerContainer {
         fadeInAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                getListener().setAnimating(true);
+                getBaseListener().setAnimating(true);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                getListener().setAnimating(false);
+                getBaseListener().setAnimating(false);
             }
 
             @Override

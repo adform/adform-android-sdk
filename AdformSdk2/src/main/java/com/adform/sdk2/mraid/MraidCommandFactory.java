@@ -33,6 +33,7 @@
 package com.adform.sdk2.mraid;
 
 import com.adform.sdk2.mraid.commands.MraidBaseCommand;
+import com.adform.sdk2.mraid.commands.MraidCommandClose;
 import com.adform.sdk2.mraid.commands.MraidCommandOpen;
 import com.adform.sdk2.view.inner.AdWebView;
 
@@ -79,6 +80,8 @@ public class MraidCommandFactory {
         switch (mraidJavascriptCommand) {
             case OPEN:
                 return new MraidCommandOpen(params, view);
+            case CLOSE:
+                return new MraidCommandClose(params, view);
             case UNSPECIFIED:
                 return null;
             default:
