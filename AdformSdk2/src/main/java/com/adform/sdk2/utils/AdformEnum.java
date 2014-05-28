@@ -110,4 +110,37 @@ public class AdformEnum {
 
     }
 
+    public enum PlacementType {
+        UNKNOWN(-1),
+        INLINE(0),
+        INTERSTITIAL(1);
+        private int value;
+
+        private PlacementType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static PlacementType parseType(int status) {
+            switch (status) {
+                case 0: return INLINE;
+                case 1: return INTERSTITIAL;
+                default: return UNKNOWN;
+            }
+        }
+
+        public static String getPlacementString(PlacementType placementType) {
+            switch (placementType) {
+                case INLINE: return "inline";
+                case INTERSTITIAL: return "interstitial";
+                case UNKNOWN: return "unknown";
+            }
+            return null;
+        }
+
+    }
+
 }

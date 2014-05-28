@@ -2,7 +2,6 @@ package com.adform.sdk2.mraid;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import com.adform.sdk2.Constants;
 import com.adform.sdk2.interfaces.AdformRequestParamsListener;
 import com.adform.sdk2.mraid.properties.*;
@@ -10,10 +9,8 @@ import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService2;
-import com.adform.sdk2.resources.AdDimension;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by mariusm on 23/04/14.
@@ -136,11 +133,11 @@ public class AdService extends ObservableService2 {
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
         properties.add(MraidPlacementSizeProperty.createWithDimension(mParamsListener.getAdDimension()));
         properties.add(MraidMasterTagProperty.createWithMasterTag(mParamsListener.getMasterId()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("version", mParamsListener.getVersion()));
-        properties.add(MraidStringProperty.createWithKeyAndValue("user_agent", mParamsListener.getUserAgent()));
-        properties.add(MraidStringProperty.createWithKeyAndValue(
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("version", mParamsListener.getVersion()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("user_agent", mParamsListener.getUserAgent()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue(
                 "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
-        properties.add(MraidStringProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
         properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
         properties.add(mParamsListener.getDeviceId());
         return MraidBaseProperty.generateJSONPropertiesToString(properties);

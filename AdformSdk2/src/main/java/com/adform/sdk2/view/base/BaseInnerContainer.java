@@ -18,6 +18,7 @@ import com.adform.sdk2.mraid.MraidWebViewClient;
 import com.adform.sdk2.mraid.properties.MraidPositionProperty;
 import com.adform.sdk2.mraid.properties.MraidSizeProperty;
 import com.adform.sdk2.mraid.properties.MraidViewableProperty;
+import com.adform.sdk2.mraid.properties.SimpleMraidProperty;
 import com.adform.sdk2.resources.MraidJavascript;
 import com.adform.sdk2.utils.AdformEnum;
 import com.adform.sdk2.utils.JsLoadBridge;
@@ -274,6 +275,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     @Override
     public void onConfigurationPreset(String configuredParam) {
         if (!mIsMraidReady) {
+            Utils.p("Changed param: "+configuredParam);
             mConfigurationPreset.put(configuredParam, true);
             if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
                 mIsMraidReady = true;
@@ -318,6 +320,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         mConfigurationPreset.put("defaultPosition", false);
         mConfigurationPreset.put("currentPosition", false);
         mConfigurationPreset.put("state", false);
+        mConfigurationPreset.put("placementType", false);
     }
 
     // ----------------------
@@ -391,10 +394,14 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         post(new Runnable() {
             @Override
             public void run() {
-                getCurrentWebView().fireState(AdformEnum.State.DEFAULT);
+                getCurrentWebView().fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
+                        AdformEnum.State.getStateString(AdformEnum.State.DEFAULT)));
             }
         });
     }
+    // This defines orientation for the ad view
+    public abstract void onPlacementTypeChange();
+
     public void changeVisibility(final boolean visible) {
         post(new Runnable() {
             @Override
@@ -556,6 +563,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     private Runnable forcePositionSettingRunnable = new Runnable() {
         @Override
         public void run() {
+            onPlacementTypeChange();
             onStateChange();
             onScreenSizeUpdate(mScreenSize);
             onMaxSizeUpdate(mMaxSize);

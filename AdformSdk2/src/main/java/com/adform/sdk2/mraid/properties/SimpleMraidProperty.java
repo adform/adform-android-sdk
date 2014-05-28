@@ -2,25 +2,25 @@ package com.adform.sdk2.mraid.properties;
 
 /**
  * Created by mariusm on 08/05/14.
- * A property that holds API version
+ * A property that holds simple version of the parameter
  */
-public class MraidStringProperty extends MraidBaseProperty {
+public class SimpleMraidProperty extends MraidBaseProperty {
     private final String mKey;
     private final String mValue;
     private final boolean isInteger; // Define variable type
 
-    MraidStringProperty(String key, String value, boolean isInteger) {
+    SimpleMraidProperty(String key, String value, boolean isInteger) {
         mKey = key;
         mValue = value;
         this.isInteger = isInteger;
     }
 
-    public static MraidStringProperty createWithKeyAndValue(String key, String value) {
-        return new MraidStringProperty(key, value, false);
+    public static SimpleMraidProperty createWithKeyAndValue(String key, String value) {
+        return new SimpleMraidProperty(key, value, false);
     }
 
-    public static MraidStringProperty createWithKeyAndValue(String key, int value) {
-        return new MraidStringProperty(key, String.valueOf(value), true);
+    public static SimpleMraidProperty createWithKeyAndValue(String key, int value) {
+        return new SimpleMraidProperty(key, String.valueOf(value), true);
     }
 
     @Override

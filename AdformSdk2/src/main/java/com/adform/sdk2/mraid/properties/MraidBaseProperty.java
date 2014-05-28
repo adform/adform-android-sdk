@@ -8,10 +8,10 @@ import java.util.ArrayList;
 public abstract class MraidBaseProperty {
     @Override
     public String toString() {
-        if (toGet() != null)
-            return toGet();
         if (toJson() != null)
             return toJson();
+        if (toGet() != null)
+            return toGet();
         return null;
     }
 

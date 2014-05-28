@@ -87,11 +87,12 @@ public class AdWebView extends WebView {
 //        injectJavascript("document.querySelector('meta[name=viewport]')" + String.format(".setAttribute('content', 'width=%d;', false);", getWidth()));
     }
 
-    public void fireState(AdformEnum.State state) {
-        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + AdformEnum.State.getStateString(state) + "'});");
-    }
+//    public void fireState(AdformEnum.State state) {
+//        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + AdformEnum.State.getPlacementString(state) + "'});");
+//    }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
+        Utils.p("Sending: "+json);
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
 

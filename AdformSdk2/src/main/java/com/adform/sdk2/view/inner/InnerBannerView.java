@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.*;
+import com.adform.sdk2.mraid.properties.SimpleMraidProperty;
+import com.adform.sdk2.utils.AdformEnum;
 import com.adform.sdk2.utils.Utils;
 import com.adform.sdk2.view.base.BaseInnerContainer;
 
@@ -149,5 +151,18 @@ public class InnerBannerView extends BaseInnerContainer {
                 }
         }
         return null;
+    }
+
+    @Override
+    public void onPlacementTypeChange() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                getCurrentWebView().fireChangeEventForProperty(
+                        SimpleMraidProperty.createWithKeyAndValue("placementType",
+                                AdformEnum.PlacementType.getPlacementString(AdformEnum.PlacementType.INLINE)));
+            }
+        });
+
     }
 }

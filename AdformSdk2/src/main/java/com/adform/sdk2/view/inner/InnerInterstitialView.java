@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import com.adform.sdk2.mraid.properties.SimpleMraidProperty;
+import com.adform.sdk2.utils.AdformEnum;
 import com.adform.sdk2.view.base.BaseInnerContainer;
 
 /**
@@ -53,6 +55,20 @@ public class InnerInterstitialView extends BaseInnerContainer {
     protected void animateAdShowing() {
         // Interstitials does not do any animations inside this container. Yet.
     }
+
+    @Override
+    public void onPlacementTypeChange() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                getCurrentWebView().fireChangeEventForProperty(
+                        SimpleMraidProperty.createWithKeyAndValue("placementType",
+                                AdformEnum.PlacementType.getPlacementString(AdformEnum.PlacementType.INTERSTITIAL)));
+            }
+        });
+
+    }
+
 
     @Override
     public void onMraidClose() {

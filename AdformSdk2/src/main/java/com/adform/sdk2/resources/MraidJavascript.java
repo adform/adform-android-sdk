@@ -340,6 +340,7 @@ public class MraidJavascript {
                     "    placementType: function(val) {\n" +
                     "      broadcastEvent(EVENTS.INFO, 'Set placementType to ' + stringify(val));\n" +
                     "      placementType = val;\n" +
+                    "       "+ JsLoadBridge.injectConfigurationPreset("'placementType'")+
                     "    },\n" +
                     "\n" +
                     "    screenSize: function(val) {\n" +
