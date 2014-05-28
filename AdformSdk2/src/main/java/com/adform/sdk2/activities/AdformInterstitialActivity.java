@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,28 +16,30 @@ import com.adform.sdk2.view.CoreInterstitialView;
 /**
  * Created by mariusm on 21/05/14.
  */
-public class AdformInterstitialActivity extends Activity {
+public class AdformInterstitialActivity extends Activity implements CoreInterstitialView.CoreInterstitialListener {
     public static final String HTML_DATA = "HTML_DATA";
 
     private CoreInterstitialView mInterstitialView;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mHandler = new Handler();
 
-        RelativeLayout mainContainer = new RelativeLayout(this);
+        final RelativeLayout mainContainer = new RelativeLayout(this);
         final RelativeLayout.LayoutParams adViewLayout = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         adViewLayout.addRule(RelativeLayout.CENTER_IN_PARENT);
         mainContainer.addView(getAdView(), adViewLayout);
-        setContentView(mainContainer);
 
         // Showing content
         if (getIntent().getExtras() != null) {
             mInterstitialView.showContent(getIntent().getExtras().getString(HTML_DATA));
         }
+        setContentView(mainContainer);
     }
 
     public static void startActivity(Context context, String data) {
@@ -53,6 +56,12 @@ public class AdformInterstitialActivity extends Activity {
     //TODO mariusm 23/05/14 This probably should be put in core class as an abstract method
     protected View getAdView() {
         mInterstitialView = new CoreInterstitialView(getBaseContext());
+        mInterstitialView.setListener(this);
         return mInterstitialView;
+    }
+
+    @Override
+    public void onAdClose() {
+        finish();
     }
 }
