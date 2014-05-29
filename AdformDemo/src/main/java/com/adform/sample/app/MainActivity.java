@@ -4,14 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import com.adform.sdk2.network.base.ito.network.NetworkError;
-import com.adform.sdk2.network.base.ito.network.NetworkTask;
-import com.adform.sdk2.utils.Utils;
-import com.adform.sdk2.view.CoreAdView;
-import com.joshdholtz.sentry.Sentry;
-import org.apache.http.NameValuePair;
-
-import java.util.HashMap;
+import com.adform.sdk.network.base.ito.network.NetworkError;
+import com.adform.sdk.network.base.ito.network.NetworkTask;
+import com.adform.sdk.view.CoreAdView;
 
 public class MainActivity extends Activity implements CoreAdView.CoreAdViewListener {
 

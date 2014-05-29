@@ -7,13 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import com.adform.sample.app.R;
-import com.adform.sdk2.Constants;
-import com.adform.sdk2.activities.AdformInterstitialActivity;
-import com.adform.sdk2.network.app.RawNetworkTask;
-import com.adform.sdk2.network.app.entities.entities.RawResponse;
-import com.adform.sdk2.network.base.ito.network.*;
-import com.adform.sdk2.utils.AdformContentLoadManager;
-import com.adform.sdk2.utils.Utils;
+import com.adform.sdk.Constants;
+import com.adform.sdk.activities.AdformInterstitialActivity;
+import com.adform.sdk.utils.AdformContentLoadManager;
 
 /**
  * Created by mariusm on 13/05/14.

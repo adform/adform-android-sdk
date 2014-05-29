@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.adform.sample.app.R;
-import com.adform.sdk2.utils.Utils;
 
 import java.util.ArrayList;
 

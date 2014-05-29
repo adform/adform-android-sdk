@@ -57,7 +57,7 @@
 					android:gravity="center_horizontal"
 					android:layout_height="wrap_content">
 
-				<com.adform.sdk2.view.CoreAdView
+				<com.adform.sdk.view.CoreAdView
 						android:id="@+id/custom_ad_view"
 						android:background="@android:color/transparent"
 						hidden_state="gone"
