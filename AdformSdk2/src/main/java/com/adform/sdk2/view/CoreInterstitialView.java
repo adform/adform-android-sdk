@@ -51,11 +51,11 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
         imageView.bringToFront();
     }
 
-    public void showContent(String content) {
+    public void showContent(String content, boolean isMraid) {
         // Loaded content will always be loaded and mraid type
         setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
-        setContentMraid(true);
-        mInterstitialView.showContent(content, true);
+        setContentMraid(isMraid);
+        mInterstitialView.showContent(content, isMraid);
     }
 
     @Override

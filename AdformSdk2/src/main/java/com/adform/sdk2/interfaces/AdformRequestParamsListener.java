@@ -19,6 +19,8 @@ public interface AdformRequestParamsListener {
     public MraidDeviceIdProperty getDeviceId();
     /** @return Custom set user parameters */
     public HashMap<String, String> getCustomParameters();
+    /** @return true of custom parameter list is empty */
+    public boolean isCustomParamsEmpty();
     /** @return device locale */
     public int getPublisherId();
     /** @return defined api version */

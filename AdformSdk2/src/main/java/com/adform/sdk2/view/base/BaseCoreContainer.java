@@ -256,6 +256,13 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     @Override
+    public boolean isCustomParamsEmpty() {
+        if ((mCustomParams != null && mCustomParams.size() == 0) || mCustomParams == null)
+            return true;
+        return false;
+    }
+
+    @Override
     public String getLocale() {
         return mContext.getResources().getConfiguration().locale.toString();
     }

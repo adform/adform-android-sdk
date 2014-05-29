@@ -29,10 +29,11 @@ How to add AdformSDK to your project
 
 	    <meta-data android:name="com.google.android.gms.version"
 	               android:value="@integer/google_play_services_version" />
+		<activity android:name="com.adform.sdk2.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
 
 Thats it! If you had any problems, a more detailed implementation is described **below**.
 
-## Basic AdformSDK View implementation
+## Basic AdformSDK Banner View implementation
 To add an ad view, simply insert a view with a path `com.adform.sdk2.view.CoreAdView`. This can be done like this:
 
 	<com.adform.sdk2.view.CoreAdView
@@ -140,7 +141,129 @@ For more complicated implementation like ListView, its adapter should *always* r
         static class ViewAdHolder {}
     }
 
+### Interstitial implementation
 
+In the example below, interstitial ad implementation will be showed. This example contains a simple network loading manager and a bit of additional code, to represent how ad preloading should be implemented. 
+
+The interstitial ad has two types, preload info before showing and show info instantly, so there are two buttons (one loads info, another one displays it). 
+
+* If info is loaded from the network, show button uses it to display it. 
+* If info was not loaded, show button loads it automatically and shows it.
+
+		public class DemoFragment5 extends Fragment implements View.OnClickListener,
+                AdformContentLoadManager.ContentLoaderListener {
+    
+            // A variable that contains a key for persistent loaded ad saving
+            public static final String CONTENT_LOADER_INFO = "CONTENT_LOADER_INFO";
+            // A flag that handles when the ad should be shown
+            private boolean showAfterLoad = false;
+            // Manager that handles network loading tasks
+            private AdformContentLoadManager mAdformContentLoadManager;
+    
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+            }
+    
+            @Override
+            public void onActivityCreated(Bundle savedInstanceState) {
+                super.onActivityCreated(savedInstanceState);
+                // Initializing loading manager
+                mAdformContentLoadManager = new AdformContentLoadManager(this);
+                if (savedInstanceState != null) {
+                    // If there is info that should be restored (like loaded content that can be reused) to load manager,
+                    // restoreInstanceWithBundle exactly does that
+                    mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
+                }
+            }
+    
+            @Override
+            public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                View view = inflater.inflate(R.layout.activity_main4, null);
+                // Initializing buttons, that provide loading and showing functionality
+                View loadButton = view.findViewById(R.id.load_button);
+                if (loadButton != null)
+                    loadButton.setOnClickListener(this);
+                View showButton = view.findViewById(R.id.show_button);
+                if (showButton != null)
+                    showButton.setOnClickListener(this);
+                return view;
+            }
+    
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.load_button: {
+                        // Loading information from the network with the provided link
+                        try {
+                            mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
+                        } catch (AdformContentLoadManager.ContentLoadException e) {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case R.id.show_button: {
+                        // Showing information that was loaded
+                        showAfterLoad = true;
+                        if (mAdformContentLoadManager.getResponse() == null)
+                            try {
+                                mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
+                            } catch (AdformContentLoadManager.ContentLoadException e) {
+                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                        else {
+                            showAfterLoad = false;
+                            AdformInterstitialActivity.startActivity(getActivity(),
+                                    mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+                        }
+                        break;
+                    }
+                }
+            }
+    
+            // Response callback when loaded basic type of content
+            @Override
+            public void onContentLoadSuccessful(String content) {
+                showToast("Loaded basic ad");
+                if (showAfterLoad) {
+                    showAfterLoad = false;
+                    AdformInterstitialActivity.startActivity(getActivity(),
+                            mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+                }
+            }
+    
+            // Response callback when loaded mraid type of content
+            @Override
+            public void onContentMraidLoadSuccessful(String content) {
+                showToast("Loaded MRaid ad");
+                if (showAfterLoad) {
+                    showAfterLoad = false;
+                    AdformInterstitialActivity.startActivity(getActivity(),
+                            mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+                }
+            }
+    
+            // Callback when something went wrong, and couldn't load content
+            @Override
+            public void onContentLoadFailed() {
+                showToast("Error loading interstitial ad");
+            }
+    
+            private void showToast(String message) {
+                if (getActivity() != null)
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+    
+            @Override
+            public void onSaveInstanceState(Bundle outState) {
+                super.onSaveInstanceState(outState);
+                // Saving instance of the content loader
+                if (mAdformContentLoadManager != null)
+                    outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
+            }
+        }
 
 ## Project preparations for AdformSDK (Detailed)
 These instructions are given assuming this is a new project.
@@ -169,6 +292,7 @@ Furthermore, we need some additional data for the AdformSDK to work, that is ins
 
 	    <meta-data android:name="com.google.android.gms.version"
 	               android:value="@integer/google_play_services_version" />
+		<activity android:name="com.adform.sdk2.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
 	               
 And that is it! Your library is ready to be used.	               
 	

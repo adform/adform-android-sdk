@@ -215,4 +215,8 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         mLastResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
         isLastMraid = restoreBundle.getBoolean(INSTANCE_LAST_MRAID_FLAG);
     }
+
+    public boolean isMraid() {
+        return isLastMraid;
+    }
 }

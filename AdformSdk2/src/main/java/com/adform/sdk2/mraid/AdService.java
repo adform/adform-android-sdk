@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 public class AdService extends ObservableService2 {
     private static boolean IS_CUSTOMDATA_LOADED = false;
+    private static boolean IS_REQUEST_WITH_CUSTOMDATA = false;
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
@@ -75,7 +76,9 @@ public class AdService extends ObservableService2 {
     private SuccessListener<AdServingEntity> mGetSuccessListener = new SuccessListener<AdServingEntity>() {
         @Override
         public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
-            IS_CUSTOMDATA_LOADED = true;
+            if (IS_REQUEST_WITH_CUSTOMDATA && !IS_CUSTOMDATA_LOADED) {
+                IS_CUSTOMDATA_LOADED = true;
+            }
             mAdServingEntity = response.getEntity();
             triggerObservers(mAdServingEntity);
             if (mAdServingEntity != null
@@ -143,6 +146,8 @@ public class AdService extends ObservableService2 {
                 "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
         if (!IS_CUSTOMDATA_LOADED) {
+            if (!mParamsListener.isCustomParamsEmpty())
+                IS_REQUEST_WITH_CUSTOMDATA = true;
             properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
         }
         properties.add(mParamsListener.getDeviceId());
