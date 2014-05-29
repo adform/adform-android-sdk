@@ -1,1 +1,1 @@
-include ':AdformSdk2', 'AdformDemo'
+include ':AdformSdk', 'AdformDemo'

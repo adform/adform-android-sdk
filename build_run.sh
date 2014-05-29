@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "*** Cleaning old apk's ***"
-cd /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/
+cd /Users/mariusm/Projects/ads/AdformSdkProject/AdformDemo/build/apk/
 rm *;
-cd /Users/mariusm/Projects/ads/AdformSdk/
+cd /Users/mariusm/Projects/ads/AdformSdkProject/
 start_time=$(date +%s)
 echo "*** Starting build script ***"
 gradle --daemon assembleDebug

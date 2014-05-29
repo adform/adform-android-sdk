@@ -22,8 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 10
-        versionName "0.4"
+        versionCode 11
+        versionName "0.4.1"
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
@@ -73,7 +73,7 @@ tasks.whenTaskAdded { task ->
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.newrelic.agent.android:android-agent:3.361.0'
-    compile project(':AdformSdk2')
+    compile project(':AdformSdk')
 }
 android.applicationVariants.all { variant ->
     variant.assemble.doLast {

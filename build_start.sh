@@ -1,6 +1,6 @@
 #!/bin/bash
 #current_device='CB5A1VUBV2'
-cd /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/
+cd /Users/mariusm/Projects/ads/AdformSdkProject/AdformDemo/build/apk/
 current_device=$(adb devices | grep -w device | awk '{print $1}')
 echo 'Found device: '$current_device
 echo "*** Starting Android install ***"

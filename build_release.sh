@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "*** Cleaning old apk's ***"
-cd /Users/mariusm/Projects/ads/AdformSdk/AdformDemo/build/apk/
+cd /Users/mariusm/Projects/ads/AdformSdkProject/AdformDemo/build/apk/
 rm *;
-cd /Users/mariusm/Projects/ads/AdformSdk/
+cd /Users/mariusm/Projects/ads/AdformSdkProject/
 yes="y";
 start_time=$(date +%s);
 echo "*** Starting release script ***";
@@ -13,8 +13,8 @@ read -s isCopy;
 if [ "$isCopy" == "$yes" ]
 then
     echo "*** Starting copy release version to GDocs ***";
-    find /Users/mariusm/Projects/ads/AdformSdk/out -name "*unaligned*" -exec rm {} \;
-    cp /Users/mariusm/Projects/ads/AdformSdk/out/*.apk /Users/mariusm/Google\ Drive/Android\ Builds/;
+    find /Users/mariusm/Projects/ads/AdformSdkProject/out -name "*unaligned*" -exec rm {} \;
+    cp /Users/mariusm/Projects/ads/AdformSdkProject/out/*.apk /Users/mariusm/Google\ Drive/Android\ Builds/;
 else
     echo "*** Skipping copy ***";
 fi
