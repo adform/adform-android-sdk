@@ -9,6 +9,8 @@ import com.adform.sdk2.network.app.AdformNetworkTask;
 import com.adform.sdk2.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk2.network.base.ito.network.*;
 import com.adform.sdk2.network.base.ito.observable.ObservableService2;
+import com.adform.sdk2.utils.Utils;
+import com.adform.sdk2.view.base.BaseCoreContainer;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
  * A service that controls when the ad should be loaded from the network.
  */
 public class AdService extends ObservableService2 {
+    private static boolean IS_CUSTOMDATA_LOADED = false;
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
@@ -72,6 +75,7 @@ public class AdService extends ObservableService2 {
     private SuccessListener<AdServingEntity> mGetSuccessListener = new SuccessListener<AdServingEntity>() {
         @Override
         public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
+            IS_CUSTOMDATA_LOADED = true;
             mAdServingEntity = response.getEntity();
             triggerObservers(mAdServingEntity);
             if (mAdServingEntity != null
@@ -138,7 +142,9 @@ public class AdService extends ObservableService2 {
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
                 "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
-        properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
+        if (!IS_CUSTOMDATA_LOADED) {
+            properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
+        }
         properties.add(mParamsListener.getDeviceId());
         return MraidBaseProperty.generateJSONPropertiesToString(properties);
     }
