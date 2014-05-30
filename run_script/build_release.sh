@@ -1,14 +1,16 @@
 #!/bin/bash
-echo "*** Cleaning old apk's ***"
-cd /Users/mariusm/Projects/ads/AdformSdkProject/AdformDemo/build/apk/
-rm *;
+sh run_script/build_clean.sh;
 cd /Users/mariusm/Projects/ads/AdformSdkProject/
-yes="y";
-start_time=$(date +%s);
+
+
 echo "*** Starting release script ***";
 gradle --daemon clean assembleRelease;
+
 sh build_start.sh
+
+# Copy script to gdocs
 echo "Copy release version? ";
+yes="y";
 read -s isCopy;
 if [ "$isCopy" == "$yes" ]
 then
@@ -18,8 +20,4 @@ then
 else
     echo "*** Skipping copy ***";
 fi
-end_time=$(date +%s);
-DIFF=$(( $end_time - $start_time ))
-echo "Execution completed in $DIFF s."
-osascript -e "display notification \"Execution completed in $DIFF s.\" with title \"Execution complete\""
-afplay ~/Downloads/fall_3.m4r
+sh build_complete.sh
