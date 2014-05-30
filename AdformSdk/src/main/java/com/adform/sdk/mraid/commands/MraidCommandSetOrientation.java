@@ -8,8 +8,8 @@ import java.util.Map;
 /**
  * Created by mariusm on 08/05/14.
  */
-public class MraidCommandOpen extends MraidBaseCommand {
-    public MraidCommandOpen(Map<String, String> params, AdWebView view) {
+public class MraidCommandSetOrientation extends MraidBaseCommand {
+    public MraidCommandSetOrientation(Map<String, String> params, AdWebView view) {
         super(params, view);
     }
 
@@ -20,6 +20,6 @@ public class MraidCommandOpen extends MraidBaseCommand {
             mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.OPEN, "Url can not be null.");
             return;
         }
-        mWebView.getListener().onMraidOpen(url);
+        mWebView.open(url);
     }
 }

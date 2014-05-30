@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,7 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
 
     private CoreInterstitialView mInterstitialView;
     private Handler mHandler;
+    private Configuration mLastConfiguration = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,14 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
 
     @Override
     public void onAdClose() {
-        finish();
+//        finish();
+        if (mLastConfiguration == null)
+            mLastConfiguration = getResources().getConfiguration();
+        if (mLastConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 
     @Override
@@ -79,5 +88,6 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
             Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
         }
+        mLastConfiguration = newConfig;
     }
 }

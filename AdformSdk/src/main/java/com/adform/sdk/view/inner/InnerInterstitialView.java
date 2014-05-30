@@ -13,12 +13,7 @@ import com.adform.sdk.view.base.BaseInnerContainer;
  */
 public class InnerInterstitialView extends BaseInnerContainer {
 
-    public interface InnerInterstitialListener {
-        public void onAdClose();
-    }
-
     private AdWebView mWebView;
-    private InnerInterstitialListener mListener;
 
     public InnerInterstitialView(Context context) {
         this(context, null);
@@ -69,14 +64,4 @@ public class InnerInterstitialView extends BaseInnerContainer {
 
     }
 
-
-    @Override
-    public void onMraidClose() {
-        if (mListener != null)
-            mListener.onAdClose();
-    }
-
-    public void setListener(InnerInterstitialListener listener) {
-        this.mListener = listener;
-    }
 }

@@ -36,7 +36,7 @@ import java.util.HashMap;
  * It handles content loading, saving, restoring, mraid functions.
  */
 public abstract class BaseInnerContainer extends RelativeLayout implements JsLoadBridge.LoadBridgeHandler,
-        VisibilityPositionManager.PositionManagerListener, AdWebView.NativeWebviewListener {
+        VisibilityPositionManager.PositionManagerListener {
     public static final String MRAID_JS_INTERFACE = "mraid";
 
     /**
@@ -74,6 +74,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
     private HashMap<String, Boolean> mConfigurationPreset;
     private boolean mIsLoadedContentMraid = false;
+    private AdWebView.NativeWebviewListener mMraidListener = null;
 
     public BaseInnerContainer(Context context) {
         this(context, null);
@@ -247,7 +248,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         AdWebView webView = getWebViewToLoadContentTo();
         if (webView != null) {
             webView.setWebViewClient((mIsLoadedContentMraid) ? getMraidWebViewClient() : getSimpleWebViewClient());
-            webView.setListener(this);
+            webView.setListener(mMraidListener);
             webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
             if (mLoadBridge == null)
                 mLoadBridge = new JsLoadBridge(this);
@@ -545,6 +546,10 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         return mIsRestoring;
     }
 
+    public void setMraidListener(AdWebView.NativeWebviewListener mraidListener) {
+        this.mMraidListener = mraidListener;
+    }
+
     // ---------
     // Runnables
     // ---------
@@ -573,20 +578,5 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
                 onCurrentPositionUpdate(mCurrentPosition);
         }
     };
-    // -----------------------------
-    // Callbacks for mraid functions
-    // -----------------------------
-    @Override
-    public void onMraidOpen(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://"))
-            url = "http://" + url;
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(browserIntent);
-    }
 
-    @Override
-    public void onMraidClose() {
-        // This should be overriden individually
-    }
 }

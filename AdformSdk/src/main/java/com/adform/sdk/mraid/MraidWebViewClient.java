@@ -5,12 +5,16 @@ import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.adform.sdk.mraid.commands.MraidBaseCommand;
+import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.JsLoadBridge;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.AdWebView;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;

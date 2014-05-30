@@ -29,7 +29,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         SlidingManager.SliderableWidget, AdformContentLoadManager.ContentLoaderListener,
         AdService.AdServiceBinder {
 
-
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
         public void onNetworkError(NetworkTask request, NetworkError networkError);
@@ -80,6 +79,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected View initInnerView() {
         mBannerView = new InnerBannerView(mContext);
         mBannerView.setBaseListener(this);
+        mBannerView.setMraidListener(this);
         // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         return mBannerView;
@@ -376,5 +376,10 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     @Override
     public String getUserAgent() {
         return mBannerView.getUserAgent();
+    }
+
+    @Override
+    public void onMraidClose() {
+        // Nothing should be done in this case
     }
 }

@@ -10,6 +10,11 @@
       iframe = null;
     };
     console.debug = console.info = console.warn = console.error = console.log;
+  } else {
+    console.log = function(log) {
+        AdformNativeJs.nativePrint(log);
+    };
+    console.debug = console.info = console.warn = console.error = console.log;
   }
 }());
 
@@ -184,6 +189,14 @@
     inlineVideo: false
   };
 
+  var defaultPosition = {x: 0, y: 0, width: 0, height: 0};
+
+  var currentPosition = {x: 0, y: 0, width: 0, height: 0};
+
+  var maxSize = {width: 0, height: 0};
+
+  var orientationProperties = {allowOrientationChange: true, forceOrientation: 'none'};
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   var EventListeners = function(event) {
@@ -282,6 +295,7 @@
       state = val;
       broadcastEvent(EVENTS.INFO, 'Set state to ' + stringify(val));
       broadcastEvent(EVENTS.STATECHANGE, state);
+      AdformNativeJs.configurationPreset('state');
     },
 
     viewable: function(val) {
@@ -293,6 +307,7 @@
     placementType: function(val) {
       broadcastEvent(EVENTS.INFO, 'Set placementType to ' + stringify(val));
       placementType = val;
+      AdformNativeJs.configurationPreset('placementType');
     },
 
     screenSize: function(val) {
@@ -305,6 +320,7 @@
         expandProperties['width'] = screenSize['width'];
         expandProperties['height'] = screenSize['height'];
       }
+      AdformNativeJs.configurationPreset('screenSize');
     },
 
     expandProperties: function(val) {
@@ -317,6 +333,30 @@
     supports: function(val) {
       broadcastEvent(EVENTS.INFO, 'Set supports to ' + stringify(val));
         supports = val;
+    },
+
+    defaultPosition: function(val) {
+      broadcastEvent(EVENTS.INFO, 'Setting defaultPosition ' + stringify(val));
+      for (var key in val) {
+        if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];
+      }
+      AdformNativeJs.configurationPreset('defaultPosition')
+    },
+
+    currentPosition: function(val) {
+      broadcastEvent(EVENTS.INFO, 'Setting currentPosition ' + stringify(val));
+      for (var key in val) {
+        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];
+      }
+      AdformNativeJs.configurationPreset('currentPosition')
+    },
+
+    maxSize: function(val) {
+      broadcastEvent(EVENTS.INFO, 'Setting maxSize ' + stringify(val));
+      for (var key in val) {
+        if (val.hasOwnProperty(key)) maxSize[key] = val[key];
+      }
+      AdformNativeJs.configurationPreset('maxSize')
     },
   };
 
@@ -441,6 +481,14 @@
     return properties;
   };
 
+  mraid.getOrientationProperties = function() {
+  	var properties = {
+  		allowOrientationChange: orientationProperties.allowOrientationChange,
+  		forceOrientation: orientationProperties.forceOrientation
+  	};
+  	return orientationProperties;
+  };
+
   mraid.getPlacementType = function() {
     return placementType;
   };
@@ -495,10 +543,22 @@
     }
   };
 
+  mraid.setOrientationProperties = function(properties) {
+
+  	if (properties.hasOwnProperty('allowOrientationChange')) {
+  		orientationProperties['allowOrientationChange'] = properties['allowOrientationChange'];
+  	}
+  	if (properties.hasOwnProperty('forceOrientation')) {
+  		orientationProperties['forceOrientation'] = properties['forceOrientation'];
+  	}
+
+  	bridge.executeNativeCall.apply(this, ['orientationProperties', 'allowOrientationChange', orientationProperties.allowOrientationChange, 'forceOrientation', orientationProperties.forceOrientation]);
+  };
+
   mraid.useCustomClose = function(shouldUseCustomClose) {
     expandProperties.useCustomClose = shouldUseCustomClose;
     hasSetCustomClose = true;
-    bridge.executeNativeCall('usecustomclose', 'shouldUseCustomClose', shouldUseCustomClose);
+    bridge.executeNativeCall('useCustomClose', 'shouldUseCustomClose', shouldUseCustomClose);
   };
 
   // MRAID 2.0 APIs ////////////////////////////////////////////////////////////////////////////////
@@ -555,19 +615,23 @@
   };
 
   mraid.getCurrentPosition = function() {
-    bridge.executeNativeCall('getCurrentPosition');
+    // bridge.executeNativeCall('getCurrentPosition');
+    return currentPosition;
   };
 
   mraid.getDefaultPosition = function() {
-    bridge.executeNativeCall('getDefaultPosition');
+    // bridge.executeNativeCall('getDefaultPosition');
+    return defaultPosition;
   };
 
   mraid.getMaxSize = function() {
-    bridge.executeNativeCall('getMaxSize');
+    // bridge.executeNativeCall('getMaxSize');
+    return maxSize;
   };
 
   mraid.getScreenSize = function() {
-    bridge.executeNativeCall('getScreenSize');
+    // bridge.executeNativeCall('getScreenSize');
+    return screenSize;
   };
 
   var CalendarEventParser = {

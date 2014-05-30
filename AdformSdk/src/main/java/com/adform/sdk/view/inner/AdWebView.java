@@ -48,15 +48,15 @@ public class AdWebView extends WebView {
         super.loadUrl(url);
     }
 
-    public void open(String url) {
-        if (mListener != null)
-            mListener.onMraidOpen(url);
-    }
-
-    public void close(){
-        if (mListener != null)
-            mListener.onMraidClose();
-    }
+//    public void open(String url) {
+//        if (mListener != null)
+//            mListener.onMraidOpen(url);
+//    }
+//
+//    public void close(){
+//        if (mListener != null)
+//            mListener.onMraidClose();
+//    }
 
     @Override
     public void setWebViewClient(WebViewClient client) {
@@ -84,9 +84,6 @@ public class AdWebView extends WebView {
 //        injectJavascript("document.querySelector('meta[name=viewport]')" + String.format(".setAttribute('content', 'width=%d;', false);", getWidth()));
     }
 
-//    public void fireState(AdformEnum.State state) {
-//        injectJavascript("window.mraidbridge.fireChangeEvent({state:'" + AdformEnum.State.getPlacementString(state) + "'});");
-//    }
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
         Utils.p("Sending: "+json);
@@ -106,5 +103,9 @@ public class AdWebView extends WebView {
 
     public void setListener(NativeWebviewListener listener) {
         this.mListener = listener;
+    }
+
+    public NativeWebviewListener getListener() {
+        return mListener;
     }
 }

@@ -16,8 +16,7 @@ import com.adform.sdk.view.inner.InnerInterstitialView;
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener,
-        InnerInterstitialView.InnerInterstitialListener {
+public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener {
 
     public interface CoreInterstitialListener {
         public void onAdClose();
@@ -61,7 +60,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     @Override
     protected View initInnerView() {
         mInterstitialView = new InnerInterstitialView(mContext);
-        mInterstitialView.setListener(this);
+        mInterstitialView.setMraidListener(this);
         return mInterstitialView;
     }
 
@@ -116,8 +115,10 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    public void onAdClose() {
+    public void onMraidClose() {
+        // Closing functionality is passed to its listener
         if (mListener != null)
             mListener.onAdClose();
     }
+
 }

@@ -14,6 +14,6 @@ public class MraidCommandClose extends MraidBaseCommand {
 
     @Override
     public void execute() {
-        mWebView.close();
+        mWebView.getListener().onMraidClose();
     }
 }
