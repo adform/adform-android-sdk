@@ -24,15 +24,12 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     public static final String IS_CONTENT_MRAID = "IS_CONTENT_MRAID";
 
     private CoreInterstitialView mInterstitialView;
-    private Handler mHandler;
-    private Configuration mLastConfiguration = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        mHandler = new Handler();
 
         final RelativeLayout mainContainer = new RelativeLayout(this);
         final RelativeLayout.LayoutParams adViewLayout = new RelativeLayout.LayoutParams(
@@ -70,13 +67,6 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     @Override
     public void onAdClose() {
         finish();
-//        if (mLastConfiguration == null)
-//            mLastConfiguration = getResources().getConfiguration();
-//        if (mLastConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        } else {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        }
     }
 
     @Override

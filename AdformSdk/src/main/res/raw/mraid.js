@@ -162,7 +162,6 @@
     height: -1,
     useCustomClose: false,
     isModal: true,
-    lockOrientation: false
   };
 
   var hasSetCustomSize = false;
@@ -393,7 +392,6 @@
     width: function(v) { return !isNaN(v) && v >= 0; },
     height: function(v) { return !isNaN(v) && v >= 0; },
     useCustomClose: function(v) { return (typeof v === 'boolean'); },
-    lockOrientation: function(v) { return (typeof v === 'boolean'); }
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -449,10 +447,6 @@
         if (expandProperties.width >= 0 && expandProperties.height >= 0) {
           args = args.concat(['w', expandProperties.width, 'h', expandProperties.height]);
         }
-      }
-
-      if (typeof expandProperties.lockOrientation !== 'undefined') {
-        args = args.concat(['lockOrientation', expandProperties.lockOrientation]);
       }
 
       if (URL) {
@@ -534,7 +528,7 @@
 
       if (properties.hasOwnProperty('useCustomClose')) hasSetCustomClose = true;
 
-      var desiredProperties = ['width', 'height', 'useCustomClose', 'lockOrientation'];
+      var desiredProperties = ['width', 'height', 'useCustomClose'];
       var length = desiredProperties.length;
       for (var i = 0; i < length; i++) {
         var propname = desiredProperties[i];

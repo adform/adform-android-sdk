@@ -197,7 +197,6 @@ public class MraidJavascript {
         "    height: -1,\n" +
         "    useCustomClose: false,\n" +
         "    isModal: true,\n" +
-        "    lockOrientation: false\n" +
         "  };\n" +
         "\n" +
         "  var hasSetCustomSize = false;\n" +
@@ -428,7 +427,6 @@ public class MraidJavascript {
         "    width: function(v) { return !isNaN(v) && v >= 0; },\n" +
         "    height: function(v) { return !isNaN(v) && v >= 0; },\n" +
         "    useCustomClose: function(v) { return (typeof v === 'boolean'); },\n" +
-        "    lockOrientation: function(v) { return (typeof v === 'boolean'); }\n" +
         "  };\n" +
         "\n" +
         "  //////////////////////////////////////////////////////////////////////////////////////////////////\n" +
@@ -484,10 +482,6 @@ public class MraidJavascript {
         "        if (expandProperties.width >= 0 && expandProperties.height >= 0) {\n" +
         "          args = args.concat(['w', expandProperties.width, 'h', expandProperties.height]);\n" +
         "        }\n" +
-        "      }\n" +
-        "\n" +
-        "      if (typeof expandProperties.lockOrientation !== 'undefined') {\n" +
-        "        args = args.concat(['lockOrientation', expandProperties.lockOrientation]);\n" +
         "      }\n" +
         "\n" +
         "      if (URL) {\n" +
@@ -569,7 +563,7 @@ public class MraidJavascript {
         "\n" +
         "      if (properties.hasOwnProperty('useCustomClose')) hasSetCustomClose = true;\n" +
         "\n" +
-        "      var desiredProperties = ['width', 'height', 'useCustomClose', 'lockOrientation'];\n" +
+        "      var desiredProperties = ['width', 'height', 'useCustomClose'];\n" +
         "      var length = desiredProperties.length;\n" +
         "      for (var i = 0; i < length; i++) {\n" +
         "        var propname = desiredProperties[i];\n" +
