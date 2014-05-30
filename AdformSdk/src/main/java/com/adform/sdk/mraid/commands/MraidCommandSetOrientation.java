@@ -1,6 +1,7 @@
 package com.adform.sdk.mraid.commands;
 
 import com.adform.sdk.mraid.MraidCommandFactory;
+import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.Map;
@@ -15,11 +16,13 @@ public class MraidCommandSetOrientation extends MraidBaseCommand {
 
     @Override
     public void execute() {
-        String url = getStringFromParamsForKey("url");
-        if (url == null) {
-            mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.OPEN, "Url can not be null.");
+        boolean allowOrientationChange = getBooleanFromParamsForKey("allowOrientationChange");
+        AdformEnum.ForcedOrientation forcedOrientation =
+                AdformEnum.ForcedOrientation.parseType(getStringFromParamsForKey("forceOrientation"));
+        if (forcedOrientation == AdformEnum.ForcedOrientation.UNKNOWN) {
+            mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.SET_ORIENTATION, "Undefined orientation");
             return;
         }
-        mWebView.open(url);
+        mWebView.getListener().onMraidSetOrientation(allowOrientationChange, forcedOrientation);
     }
 }

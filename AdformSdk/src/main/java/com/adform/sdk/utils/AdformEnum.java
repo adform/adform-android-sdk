@@ -4,6 +4,10 @@ package com.adform.sdk.utils;
  * Created by mariusm on 27/05/14.
  */
 public class AdformEnum {
+    /**
+     * Helps to describe ad visibility depending on contract load state.
+     * @see com.adform.sdk.view.base.BaseCoreContainer
+     */
     public enum VisibilityGeneralState {
         LOAD_SUCCESSFUL(0),
         LOAD_FAIL(1);
@@ -35,6 +39,11 @@ public class AdformEnum {
 
     }
 
+    /**
+     * Helps to describe ad visibility depending on ad coordinates in the window.
+     * @see com.adform.sdk.utils.VisibilityPositionManager
+     * @see com.adform.sdk.view.base.BaseCoreContainer
+     */
     public enum VisibilityOnScreenState {
         ON_SCREEN(0),
         OFF_SCREEN(1);
@@ -70,6 +79,9 @@ public class AdformEnum {
         }
     }
 
+    /**
+     * Describes available states for the mraid
+     */
     public enum State {
         LOADING(0),
         DEFAULT(1),
@@ -110,6 +122,9 @@ public class AdformEnum {
 
     }
 
+    /**
+     * Describes mraid ad placement type
+     */
     public enum PlacementType {
         UNKNOWN(-1),
         INLINE(0),
@@ -141,6 +156,45 @@ public class AdformEnum {
             return null;
         }
 
+    }
+    /**
+     * Describes orientation that is being forced to display
+     */
+    public enum ForcedOrientation {
+        UNKNOWN(-1),
+        NONE(0),
+        LANDSCAPE(1),
+        PORTRAIT(2);
+        private int value;
+
+        private ForcedOrientation(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static ForcedOrientation parseType(int type) {
+            switch (type) {
+                case 0: return NONE;
+                case 1: return LANDSCAPE;
+                case 2: return PORTRAIT;
+                default: return UNKNOWN;
+            }
+        }
+        public static ForcedOrientation parseType(String type) {
+            if (type == null)
+                return UNKNOWN;
+            if (type.equals("portrait"))
+                return PORTRAIT;
+            else if (type.equals("landscape"))
+                return LANDSCAPE;
+            else if (type.equals("none"))
+                return NONE;
+            else
+                return UNKNOWN;
+        }
     }
 
 }

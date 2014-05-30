@@ -8,6 +8,7 @@ import android.webkit.WebViewClient;
 import com.adform.sdk.mraid.MraidCommandFactory;
 import com.adform.sdk.mraid.MraidWebViewClient;
 import com.adform.sdk.mraid.properties.MraidBaseProperty;
+import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.Utils;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class AdWebView extends WebView {
     public interface NativeWebviewListener {
         public void onMraidOpen(String url);
         public void onMraidClose();
+        public void onMraidSetOrientation(boolean allowOrientationChange,
+                                          AdformEnum.ForcedOrientation forcedOrientation);
     }
 
     private Context mContext;
@@ -47,16 +50,6 @@ public class AdWebView extends WebView {
         final String url = "javascript:" + script;
         super.loadUrl(url);
     }
-
-//    public void open(String url) {
-//        if (mListener != null)
-//            mListener.onMraidOpen(url);
-//    }
-//
-//    public void close(){
-//        if (mListener != null)
-//            mListener.onMraidClose();
-//    }
 
     @Override
     public void setWebViewClient(WebViewClient client) {

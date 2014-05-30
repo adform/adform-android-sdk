@@ -15,7 +15,7 @@ public class Constants {
     public static final String SDK_INFO_PATH_ERROR = "mobilesdk/error.php";
     public static final String SDK_INFO_PATH_EMPTY = "mobilesdk/tricky.php";
     public static final String TEMP_INTERSTITIAL_LINK = SERVER_URL+SDK_INFO_PATH+
-            "banner_5.js";
+            "banner_interstitial.js";
 //    public static final String TEMP_INTERSTITIAL_LINK = "http://track.adform.net/mobile/script/?bn=3851394";
     // View parameters
     public static final int PHONE_WIDTH = 320;

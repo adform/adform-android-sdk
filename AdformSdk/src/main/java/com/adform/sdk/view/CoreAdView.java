@@ -382,4 +382,9 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public void onMraidClose() {
         // Nothing should be done in this case
     }
+
+    @Override
+    public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
+        // Nothing should be done
+    }
 }

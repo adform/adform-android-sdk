@@ -1,6 +1,8 @@
 package com.adform.sdk.view;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     public interface CoreInterstitialListener {
         public void onAdClose();
+        public void onAdOrientationChange(int orientation);
     }
 
     private InnerInterstitialView mInterstitialView;
@@ -121,4 +124,26 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
             mListener.onAdClose();
     }
 
+    @Override
+    public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
+        switch (forcedOrientation) {
+            case NONE:{
+                if (allowOrientationChange)
+                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                else
+                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+                break;
+            }
+            case LANDSCAPE:{
+                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                break;
+            }
+            case PORTRAIT:{
+                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                break;
+            }
+            default:
+                mListener.onAdOrientationChange(Configuration.ORIENTATION_UNDEFINED);
+        }
+    }
 }
