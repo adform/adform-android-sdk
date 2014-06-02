@@ -16,6 +16,7 @@ import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.*;
 import com.adform.sdk.view.base.BaseCoreContainer;
+import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerBannerView;
 
 import java.util.Observable;
@@ -76,10 +77,10 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    protected View initInnerView() {
+    protected BaseInnerContainer initInnerView() {
         mBannerView = new InnerBannerView(mContext);
         mBannerView.setBaseListener(this);
-        mBannerView.setMraidListener(this);
+        mBannerView.getMraidBridge().setMraidListener(this);
         // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
         mBannerView.setId(156554);
         return mBannerView;
@@ -351,7 +352,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected void onVisibilityCallback(boolean isVisible) {
         if (mListener != null)
             mListener.onAdVisibilityChange(isVisible);
-        mBannerView.changeVisibility(isVisible);
+        mBannerView.getMraidBridge().changeVisibility(isVisible);
     }
 
     private void resetTimesLoaded() {

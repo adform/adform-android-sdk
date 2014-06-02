@@ -80,11 +80,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mPlacementDimen = initAdDimen();
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
-        View innerView = initInnerView();
-        if (innerView instanceof VisibilityPositionManager.PositionManagerListener)
-            mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, ((VisibilityPositionManager.PositionManagerListener) innerView));
-        else
-            mVisibilityPositionManager = new VisibilityPositionManager(mContext, this);
+        BaseInnerContainer innerView = initInnerView();
+        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, innerView.getMraidBridge());
         addView(innerView);
     }
 
@@ -92,7 +89,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * Initializes inner used view that display an ad
      * @return initialized inner view
      */
-    protected abstract View initInnerView();
+    protected abstract BaseInnerContainer initInnerView();
 
     /**
      * Initializes created ad used dimensions.

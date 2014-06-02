@@ -52,16 +52,7 @@ public class InnerInterstitialView extends BaseInnerContainer {
     }
 
     @Override
-    public void onPlacementTypeChange() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView().fireChangeEventForProperty(
-                        SimpleMraidProperty.createWithKeyAndValue("placementType",
-                                AdformEnum.PlacementType.getPlacementString(AdformEnum.PlacementType.INTERSTITIAL)));
-            }
-        });
-
+    public AdformEnum.PlacementType getPlacementType() {
+        return AdformEnum.PlacementType.INTERSTITIAL;
     }
-
 }

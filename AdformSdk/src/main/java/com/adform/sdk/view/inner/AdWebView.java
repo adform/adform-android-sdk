@@ -94,7 +94,7 @@ public class AdWebView extends WebView {
         injectJavascript("window.mraidbridge.nativeCallComplete('" + command + "');");
     }
 
-    public void setListener(NativeWebviewListener listener) {
+    public void setMraidCallbackListener(NativeWebviewListener listener) {
         this.mListener = listener;
     }
 

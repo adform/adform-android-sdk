@@ -134,6 +134,11 @@ public class InnerBannerView extends BaseInnerContainer {
         return webView;
     }
 
+    @Override
+    public AdformEnum.PlacementType getPlacementType() {
+        return AdformEnum.PlacementType.INLINE;
+    }
+
     /**
      * Get next view in the list (the one that will be shown on view flipper list).
      *
@@ -153,16 +158,4 @@ public class InnerBannerView extends BaseInnerContainer {
         return null;
     }
 
-    @Override
-    public void onPlacementTypeChange() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView().fireChangeEventForProperty(
-                        SimpleMraidProperty.createWithKeyAndValue("placementType",
-                                AdformEnum.PlacementType.getPlacementString(AdformEnum.PlacementType.INLINE)));
-            }
-        });
-
-    }
 }

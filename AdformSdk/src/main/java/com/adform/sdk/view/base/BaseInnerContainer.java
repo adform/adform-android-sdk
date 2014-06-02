@@ -1,11 +1,9 @@
 package com.adform.sdk.view.base;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,16 +13,8 @@ import android.webkit.*;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.MraidWebViewClient;
-import com.adform.sdk.mraid.properties.MraidPositionProperty;
-import com.adform.sdk.mraid.properties.MraidSizeProperty;
-import com.adform.sdk.mraid.properties.MraidViewableProperty;
-import com.adform.sdk.mraid.properties.SimpleMraidProperty;
 import com.adform.sdk.resources.MraidJavascript;
-import com.adform.sdk.utils.AdformEnum;
-import com.adform.sdk.utils.JsLoadBridge;
-import com.adform.sdk.utils.Utils;
-import com.adform.sdk.utils.VisibilityPositionManager;
-import com.adform.sdk.utils.entities.ViewCoords;
+import com.adform.sdk.utils.*;
 import com.adform.sdk.view.inner.AdWebView;
 import com.adform.sdk.view.CoreAdView;
 
@@ -35,8 +25,7 @@ import java.util.HashMap;
  * Base view that is showing content in webview.
  * It handles content loading, saving, restoring, mraid functions.
  */
-public abstract class BaseInnerContainer extends RelativeLayout implements JsLoadBridge.LoadBridgeHandler,
-        VisibilityPositionManager.PositionManagerListener {
+public abstract class BaseInnerContainer extends RelativeLayout implements JsLoadBridge.LoadBridgeHandler {
     public static final String MRAID_JS_INTERFACE = "mraid";
 
     /**
@@ -71,10 +60,9 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     private Canvas mCanvas;
     private Bitmap mBitmap;
     private boolean mIsMraidReady = false;
-    private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
     private HashMap<String, Boolean> mConfigurationPreset;
     private boolean mIsLoadedContentMraid = false;
-    private AdWebView.NativeWebviewListener mMraidListener = null;
+    private MraidBridge mMraidBridge;
 
     public BaseInnerContainer(Context context) {
         this(context, null);
@@ -103,6 +91,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
 
         // Base parameters
         setBackgroundColor(Color.TRANSPARENT);
+        mMraidBridge = new MraidBridge();
         initView();
     }
 
@@ -248,18 +237,23 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         AdWebView webView = getWebViewToLoadContentTo();
         if (webView != null) {
             webView.setWebViewClient((mIsLoadedContentMraid) ? getMraidWebViewClient() : getSimpleWebViewClient());
-            webView.setListener(mMraidListener);
+            webView.setMraidCallbackListener(mMraidBridge);
             webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
             if (mLoadBridge == null)
                 mLoadBridge = new JsLoadBridge(this);
             mLoadBridge.setWebView(webView);
+            mMraidBridge.setWebView(webView);
+            mMraidBridge.onPlacementTypeChange(getPlacementType());
+            mMraidBridge.onStateChange(AdformEnum.State.LOADING);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
         }
     }
+
     @Override
     public void onContentLoadedFromJsBridge() {
+        mMraidBridge.onStateChange(AdformEnum.State.DEFAULT);
         if (mIsLoadedContentMraid) {
-            postDelayed(forcePositionSettingRunnable, 200);
+            mMraidBridge.forceSettingUpdate();
         }
 
         if (!mIsRestoring) {
@@ -276,7 +270,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     @Override
     public void onConfigurationPreset(String configuredParam) {
         if (!mIsMraidReady) {
-            Utils.p("Changed param: "+configuredParam);
             mConfigurationPreset.put(configuredParam, true);
             if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
                 mIsMraidReady = true;
@@ -289,6 +282,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
             }
         }
     }
+
     @Override
     public void onNativePrint(String nativeCall) {
         Utils.p("JS Console: " + nativeCall);
@@ -324,94 +318,13 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         mConfigurationPreset.put("placementType", false);
     }
 
-    // ----------------------
-    // Mraid variable setting
-    // ----------------------
-    @Override
-    public void onDefaultPositionUpdate(ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        mDefaultPosition = viewCoords;
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView()
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.DEFAULT_POSITION, mDefaultPosition)
-                        );
-            }
-        });
-    }
-    @Override
-    public void onCurrentPositionUpdate(ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        mCurrentPosition = viewCoords;
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView()
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.CURRENT_POSITION, mCurrentPosition)
-                        );
-            }
-        });
-    }
-    @Override
-    public void onMaxSizeUpdate(ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        mMaxSize = viewCoords;
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView()
-                        .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithSize(
-                                        MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
-                        );
-            }
-        });
-    }
-    @Override
-    public void onScreenSizeUpdate(ViewCoords viewCoords) {
-        if (viewCoords == null)
-            return;
-        mScreenSize = viewCoords;
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView()
-                        .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithSize(
-                                        MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
-                        );
-            }
-        });
-    }
-    public void onStateChange() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView().fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
-                        AdformEnum.State.getStateString(AdformEnum.State.DEFAULT)));
-            }
-        });
-    }
     // This defines orientation for the ad view
-    public abstract void onPlacementTypeChange();
 
-    public void changeVisibility(final boolean visible) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentWebView()
-                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
-            }
-        });
-    }
+    /**
+     * @return ad placeent type
+     */
+    public abstract AdformEnum.PlacementType getPlacementType();
+
 
     // -------------------------
     // Instance saving/restoring
@@ -546,8 +459,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         return mIsRestoring;
     }
 
-    public void setMraidListener(AdWebView.NativeWebviewListener mraidListener) {
-        this.mMraidListener = mraidListener;
+    public MraidBridge getMraidBridge() {
+        return mMraidBridge;
     }
 
     // ---------
@@ -563,19 +476,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
 //                mBitmap.recycle();
             mBitmap = null;
             mCanvas = null;
-        }
-    };
-    private Runnable forcePositionSettingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            onPlacementTypeChange();
-            onStateChange();
-            onScreenSizeUpdate(mScreenSize);
-            onMaxSizeUpdate(mMaxSize);
-            if (mDefaultPosition != null)
-                onDefaultPositionUpdate(mDefaultPosition);
-            if (mCurrentPosition != null)
-                onCurrentPositionUpdate(mCurrentPosition);
         }
     };
 

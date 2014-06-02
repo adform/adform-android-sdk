@@ -13,6 +13,7 @@ import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.Utils;
 import com.adform.sdk.view.base.BaseCoreContainer;
+import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerInterstitialView;
 
 /**
@@ -61,9 +62,9 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    protected View initInnerView() {
+    protected BaseInnerContainer initInnerView() {
         mInterstitialView = new InnerInterstitialView(mContext);
-        mInterstitialView.setMraidListener(this);
+        mInterstitialView.getMraidBridge().setMraidListener(this);
         return mInterstitialView;
     }
 
@@ -83,7 +84,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     @Override
     protected void onVisibilityCallback(boolean isVisible) {
-        mInterstitialView.changeVisibility(isVisible);
+        mInterstitialView.getMraidBridge().changeVisibility(isVisible);
     }
 
     @Override

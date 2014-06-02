@@ -39,6 +39,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         public void onScreenSizeUpdate(ViewCoords viewCoords);
     }
 
+    private Context mContext;
     private Runnable mVisibilityRunnable;
     private Runnable parentGetterRunnable;
     private ViewParent mViewParent;
@@ -53,20 +54,25 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
      * */
     private double mVisibilityKoef = 0.5;
 
-    public VisibilityPositionManager(Context context, VisibilityManagerListener visibilityManagerListener) {
-        this(context, visibilityManagerListener, null);
-    }
+//    public VisibilityPositionManager(Context context, VisibilityManagerListener visibilityManagerListener) {
+//        this(context, visibilityManagerListener, null);
+//    }
 
     public VisibilityPositionManager(Context context,
                                      VisibilityManagerListener visibilityManager,
                                      PositionManagerListener positionManager) {
         if (visibilityManager == null)
             throw new IllegalArgumentException("When creating VisibilityManagerListener must be implemented");
-
+        mContext = context;
         mVisibilityManagerListener = visibilityManager;
         mPositionManagerListener = positionManager;
+        initScreenSize();
+        mParentCoords = new ArrayList<ViewCoords>();
+    }
+
+    private void initScreenSize() {
         // Getting screen dimensions
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         ViewCoords screenCoords = ViewCoords.createViewCoord(0, 0);
         if (android.os.Build.VERSION.SDK_INT >= 13) {
@@ -81,7 +87,6 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         // Need to modify screen height, as status bar is always included in the counting
         screenCoords.setHeight(screenCoords.getHeight() + getNavigationBarHeight());
         setScreenSize(screenCoords);
-        mParentCoords = new ArrayList<ViewCoords>();
     }
 
     /**
@@ -239,26 +244,31 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
      * @param currentPosition provided new position
      */
     private void setCurrentPosition(ViewCoords currentPosition) {
-        if (currentPosition == null)
+        if (currentPosition == null || mPositionManagerListener == null)
             return;
         this.mCurrentPosition = currentPosition;
         mPositionManagerListener.onCurrentPositionUpdate(mCurrentPosition);
     }
 
     private void setDefaultPosition(ViewCoords defaultPosition) {
+        if (mPositionManagerListener == null)
+            return;
         this.mDefaultPosition = defaultPosition;
         mPositionManagerListener.onDefaultPositionUpdate(mDefaultPosition);
     }
 
     private void setMaxSize(ViewCoords maxSize) {
+        if (mPositionManagerListener == null)
+            return;
         this.mMaxSize = maxSize;
         mPositionManagerListener.onMaxSizeUpdate(mMaxSize);
     }
 
     private void setScreenSize(ViewCoords screenSize) {
+        if (mPositionManagerListener == null)
+            return;
         this.mScreenSize = screenSize;
-        if (mPositionManagerListener != null)
-            mPositionManagerListener.onScreenSizeUpdate(mScreenSize);
+        mPositionManagerListener.onScreenSizeUpdate(mScreenSize);
     }
 
     public void setPositionManagerListener(PositionManagerListener positionManagerListener) {
