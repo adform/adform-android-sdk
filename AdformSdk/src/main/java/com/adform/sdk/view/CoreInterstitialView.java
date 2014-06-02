@@ -62,9 +62,11 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    protected BaseInnerContainer initInnerView() {
-        mInterstitialView = new InnerInterstitialView(mContext);
-        mInterstitialView.getMraidBridge().setMraidListener(this);
+    protected BaseInnerContainer getInnerView() {
+        if (mInterstitialView == null) {
+            mInterstitialView = new InnerInterstitialView(mContext);
+            mInterstitialView.getMraidBridge().setMraidListener(this);
+        }
         return mInterstitialView;
     }
 
@@ -84,7 +86,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     @Override
     protected void onVisibilityCallback(boolean isVisible) {
-        mInterstitialView.getMraidBridge().changeVisibility(isVisible);
+        mInterstitialView.getMraidBridge().changeVisibility(isVisible, false);
     }
 
     @Override
@@ -98,9 +100,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    public void onContentRestore(boolean state) {
-
-    }
+    public void onContentRestore(boolean state) {}
 
     @Override
     public void onContentRender() {

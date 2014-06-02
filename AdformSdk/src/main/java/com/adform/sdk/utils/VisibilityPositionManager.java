@@ -33,10 +33,10 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     }
 
     public interface PositionManagerListener {
-        public void onDefaultPositionUpdate(ViewCoords viewCoords);
-        public void onCurrentPositionUpdate(ViewCoords viewCoords);
-        public void onMaxSizeUpdate(ViewCoords viewCoords);
-        public void onScreenSizeUpdate(ViewCoords viewCoords);
+        public void onDefaultPositionUpdate(ViewCoords viewCoords, boolean forceUpdate);
+        public void onCurrentPositionUpdate(ViewCoords viewCoords, boolean forceUpdate);
+        public void onMaxSizeUpdate(ViewCoords viewCoords, boolean forceUpdate);
+        public void onScreenSizeUpdate(ViewCoords viewCoords, boolean forceUpdate);
     }
 
     private Context mContext;
@@ -247,28 +247,28 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         if (currentPosition == null || mPositionManagerListener == null)
             return;
         this.mCurrentPosition = currentPosition;
-        mPositionManagerListener.onCurrentPositionUpdate(mCurrentPosition);
+        mPositionManagerListener.onCurrentPositionUpdate(mCurrentPosition, false);
     }
 
     private void setDefaultPosition(ViewCoords defaultPosition) {
         if (mPositionManagerListener == null)
             return;
         this.mDefaultPosition = defaultPosition;
-        mPositionManagerListener.onDefaultPositionUpdate(mDefaultPosition);
+        mPositionManagerListener.onDefaultPositionUpdate(mDefaultPosition, false);
     }
 
     private void setMaxSize(ViewCoords maxSize) {
         if (mPositionManagerListener == null)
             return;
         this.mMaxSize = maxSize;
-        mPositionManagerListener.onMaxSizeUpdate(mMaxSize);
+        mPositionManagerListener.onMaxSizeUpdate(mMaxSize, false);
     }
 
     private void setScreenSize(ViewCoords screenSize) {
         if (mPositionManagerListener == null)
             return;
         this.mScreenSize = screenSize;
-        mPositionManagerListener.onScreenSizeUpdate(mScreenSize);
+        mPositionManagerListener.onScreenSizeUpdate(mScreenSize, false);
     }
 
     public void setPositionManagerListener(PositionManagerListener positionManagerListener) {

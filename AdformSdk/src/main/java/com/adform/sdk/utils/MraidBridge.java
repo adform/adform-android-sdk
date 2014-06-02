@@ -26,8 +26,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     // Native -> Mraid js var update
     // -----------------------------
     @Override
-    public void onDefaultPositionUpdate(ViewCoords viewCoords) {
+    public void onDefaultPositionUpdate(ViewCoords viewCoords, boolean forceUpdate) {
         if (viewCoords == null)
+            return;
+        if (viewCoords.equals(mDefaultPosition) && !forceUpdate)
             return;
         mDefaultPosition = viewCoords;
         if (mWebView == null)
@@ -44,8 +46,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         });
     }
 
-    public void onCurrentPositionUpdate(ViewCoords viewCoords) {
+    public void onCurrentPositionUpdate(ViewCoords viewCoords, boolean forceUpdate) {
         if (viewCoords == null)
+            return;
+        if (viewCoords.equals(mCurrentPosition) && !forceUpdate)
             return;
         mCurrentPosition = viewCoords;
         if (mWebView == null)
@@ -63,8 +67,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     @Override
-    public void onMaxSizeUpdate(ViewCoords viewCoords) {
+    public void onMaxSizeUpdate(ViewCoords viewCoords, boolean forceUpdate) {
         if (viewCoords == null)
+            return;
+        if (viewCoords.equals(mMaxSize) && !forceUpdate)
             return;
         mMaxSize = viewCoords;
         if (mWebView == null)
@@ -82,8 +88,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     @Override
-    public void onScreenSizeUpdate(ViewCoords viewCoords) {
+    public void onScreenSizeUpdate(ViewCoords viewCoords, boolean forceUpdate) {
         if (viewCoords == null)
+            return;
+        if (viewCoords.equals(mScreenSize) && !forceUpdate)
             return;
         mScreenSize = viewCoords;
         if (mWebView == null)
@@ -100,7 +108,9 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         });
     }
 
-    public void onStateChange(AdformEnum.State state) {
+    public void onStateChange(AdformEnum.State state, boolean forceUpdate) {
+        if (mState == state && !forceUpdate)
+            return;
         mState = state;
         if (mWebView == null)
             return;
@@ -108,12 +118,14 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
             @Override
             public void run() {
                 mWebView.fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
-                        AdformEnum.State.getStateString(AdformEnum.State.DEFAULT)));
+                        AdformEnum.State.getStateString(mState)));
             }
         });
     }
 
-    public void onPlacementTypeChange(final AdformEnum.PlacementType placementType) {
+    public void onPlacementTypeChange(final AdformEnum.PlacementType placementType, boolean forceUpdate) {
+        if (mPlacementType == placementType && !forceUpdate)
+            return;
         mPlacementType = placementType;
         if (mWebView == null)
             return;
@@ -128,7 +140,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
 
     }
 
-    public void changeVisibility(final boolean visible) {
+    public void changeVisibility(boolean visible, boolean forceUpdate) {
+        if (mState != null && mState == AdformEnum.State.LOADING ||
+                mState != null && mState == AdformEnum.State.HIDDEN)
+            visible = false;
+        if (mVisible == visible && !forceUpdate)
+            return;
         mVisible = visible;
         if (mWebView == null)
             return;
@@ -136,7 +153,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
             @Override
             public void run() {
                 mWebView
-                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(visible));
+                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(mVisible));
             }
         });
     }
@@ -162,14 +179,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private Runnable forcePositionSettingRunnable = new Runnable() {
         @Override
         public void run() {
-            onPlacementTypeChange(mPlacementType);
-            onStateChange(mState);
-            onScreenSizeUpdate(mScreenSize);
-            onMaxSizeUpdate(mMaxSize);
-            if (mDefaultPosition != null)
-                onDefaultPositionUpdate(mDefaultPosition);
-            if (mCurrentPosition != null)
-                onCurrentPositionUpdate(mCurrentPosition);
+            onPlacementTypeChange(mPlacementType, true);
+            onStateChange(mState, true);
+            onScreenSizeUpdate(mScreenSize, true);
+            onMaxSizeUpdate(mMaxSize, true);
+            onDefaultPositionUpdate(mDefaultPosition, true);
+            onCurrentPositionUpdate(mCurrentPosition, true);
         }
     };
 

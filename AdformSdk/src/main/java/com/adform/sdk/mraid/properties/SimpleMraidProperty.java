@@ -29,7 +29,7 @@ public class SimpleMraidProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
-        return "\""+mKey+"\":" +
+        return mKey+":" +
                 ((!isInteger)?"\"":"") +
                 mValue +
                 ((!isInteger)?"\"":"");

@@ -233,6 +233,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
                 + "<body"+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
                 + content
                 + "</body></html>";
+        // Setting values to the current webview, that is about to change
+        mMraidBridge.onStateChange(AdformEnum.State.HIDDEN, false);
 
         AdWebView webView = getWebViewToLoadContentTo();
         if (webView != null) {
@@ -243,15 +245,14 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
                 mLoadBridge = new JsLoadBridge(this);
             mLoadBridge.setWebView(webView);
             mMraidBridge.setWebView(webView);
-            mMraidBridge.onPlacementTypeChange(getPlacementType());
-            mMraidBridge.onStateChange(AdformEnum.State.LOADING);
+            mMraidBridge.onPlacementTypeChange(getPlacementType(), false);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
         }
     }
 
     @Override
     public void onContentLoadedFromJsBridge() {
-        mMraidBridge.onStateChange(AdformEnum.State.DEFAULT);
+        mMraidBridge.onStateChange(AdformEnum.State.DEFAULT, false);
         if (mIsLoadedContentMraid) {
             mMraidBridge.forceSettingUpdate();
         }

@@ -72,10 +72,10 @@ public class AdWebView extends WebView {
         injectJavascript("window.mraidbridge.fireReadyEvent();");
     }
 
-    public void fireViewportUpdate() {
+//    public void fireViewportUpdate() {
 //        Utils.p("Updating viewport with "+getWidth());
 //        injectJavascript("document.querySelector('meta[name=viewport]')" + String.format(".setAttribute('content', 'width=%d;', false);", getWidth()));
-    }
+//    }
 
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";

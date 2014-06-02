@@ -80,6 +80,8 @@ public class ViewCoords implements Cloneable {
     }
 
     public boolean equals(ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return false;
         if (viewCoords.getX() == getX() &&
                 viewCoords.getY() == getY() &&
                 viewCoords.getWidth() == getWidth() &&

@@ -77,12 +77,14 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    protected BaseInnerContainer initInnerView() {
-        mBannerView = new InnerBannerView(mContext);
-        mBannerView.setBaseListener(this);
-        mBannerView.getMraidBridge().setMraidListener(this);
-        // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
-        mBannerView.setId(156554);
+    protected BaseInnerContainer getInnerView() {
+        if (mBannerView == null) {
+            mBannerView = new InnerBannerView(mContext);
+            mBannerView.setBaseListener(this);
+            mBannerView.getMraidBridge().setMraidListener(this);
+            // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
+            mBannerView.setId(156554);
+        }
         return mBannerView;
     }
 
@@ -352,7 +354,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected void onVisibilityCallback(boolean isVisible) {
         if (mListener != null)
             mListener.onAdVisibilityChange(isVisible);
-        mBannerView.getMraidBridge().changeVisibility(isVisible);
+        mBannerView.getMraidBridge().changeVisibility(isVisible, false);
     }
 
     private void resetTimesLoaded() {

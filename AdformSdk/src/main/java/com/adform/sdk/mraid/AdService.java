@@ -114,7 +114,6 @@ public class AdService extends ObservableService2 {
 
         String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
         String additionalURLProperties = getGeneratedUrlPropertiesToString();
-//        Utils.p("Generated post properties: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
                         Constants.SDK_INFO_PATH+
@@ -142,6 +141,8 @@ public class AdService extends ObservableService2 {
         properties.add(SimpleMraidProperty.createWithKeyAndValue("user_agent", mParamsListener.getUserAgent()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
                 "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue(
+                "type", mParamsListener.getBannerType()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
         if (!IS_CUSTOMDATA_LOADED) {
             if (!mParamsListener.isCustomParamsEmpty())

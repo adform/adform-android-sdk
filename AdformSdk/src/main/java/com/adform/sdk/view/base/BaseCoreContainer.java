@@ -4,15 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
 import com.adform.sdk.network.app.RawNetworkTask;
@@ -22,15 +18,11 @@ import com.adform.sdk.network.base.ito.network.NetworkResponse;
 import com.adform.sdk.network.base.ito.network.NetworkTask;
 import com.adform.sdk.network.base.ito.network.SuccessListener;
 import com.adform.sdk.resources.AdDimension;
-import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 
 /**
@@ -80,7 +72,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mPlacementDimen = initAdDimen();
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
-        BaseInnerContainer innerView = initInnerView();
+        BaseInnerContainer innerView = getInnerView();
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, innerView.getMraidBridge());
         addView(innerView);
     }
@@ -89,7 +81,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * Initializes inner used view that display an ad
      * @return initialized inner view
      */
-    protected abstract BaseInnerContainer initInnerView();
+    protected abstract BaseInnerContainer getInnerView();
 
     /**
      * Initializes created ad used dimensions.
@@ -140,6 +132,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             }
         });
         impressionTask.execute();
+    }
+
+    @Override
+    public String getBannerType() {
+        return AdformEnum.PlacementType.getPlacementString(getInnerView().getPlacementType());
     }
 
     @Override

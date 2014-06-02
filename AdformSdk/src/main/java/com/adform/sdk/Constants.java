@@ -10,7 +10,7 @@ public class Constants {
     // Network
 //    public static final String SERVER_URL = "http://37.157.0.44/";
 //    public static final String SERVER_URL = "http://192.168.2.122/";
-    public static final String SERVER_URL = "http://192.168.4.62/";
+    public static final String SERVER_URL = "http://192.168.4.53/";
     public static final String SDK_INFO_PATH = "mobilesdk/ad/";
     public static final String SDK_INFO_PATH_ERROR = "mobilesdk/error.php";
     public static final String SDK_INFO_PATH_EMPTY = "mobilesdk/tricky.php";

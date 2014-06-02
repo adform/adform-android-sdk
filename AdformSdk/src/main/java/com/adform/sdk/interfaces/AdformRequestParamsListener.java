@@ -29,4 +29,9 @@ public interface AdformRequestParamsListener {
     public String getUserAgent();
     /** @return device locale */
     public String getLocale();
+    /**
+     * Returns current banner type. This can be interstitial, or inline
+     * @return banner type
+     */
+    public String getBannerType();
 }
