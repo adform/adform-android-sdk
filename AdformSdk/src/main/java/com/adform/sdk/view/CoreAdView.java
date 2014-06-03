@@ -244,6 +244,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
      * Stops service from being runned
      */
     protected void stopService() {
+        super.stopService();
+        mBannerView.getMraidBridge().changeVisibility(false, true);
         if (mAdService != null) {
             mAdService.deleteObserver(this);
             mAdService.stopService();
@@ -254,6 +256,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
      * Resume service to run from the last time
      */
     protected void resumeService() {
+        super.resumeService();
         if (mAdService == null)
             mAdService = new AdService(this, this);
         mAdService.addObserver(this);
@@ -265,6 +268,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
      * Starts to run service anew
      */
     protected void startService() {
+        super.startService();
         if (mAdService == null)
             mAdService = new AdService(this, this);
         mAdService.addObserver(this);

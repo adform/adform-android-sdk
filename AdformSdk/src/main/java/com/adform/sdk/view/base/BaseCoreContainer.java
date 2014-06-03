@@ -88,9 +88,16 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * @return return ad dimensions
      */
     protected abstract AdDimension initAdDimen();
-    protected abstract void startService();
-    protected abstract void stopService();
-    protected abstract void resumeService();
+    protected void startService() {
+        mVisibilityPositionManager.checkVisibilityService();
+    }
+    protected void stopService() {
+        if (getInnerView() != null)
+            getInnerView().getMraidBridge().changeVisibility(false, true);
+    }
+    protected void resumeService() {
+        mVisibilityPositionManager.checkVisibilityService();
+    }
 
     protected void initializeCustomParameters(AttributeSet attributes) {
         if (attributes != null) {

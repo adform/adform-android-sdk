@@ -19,6 +19,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private AdformEnum.State mState = AdformEnum.State.LOADING;
     private AdWebView.NativeWebviewListener mMraidListener;
     private boolean mVisible;
+    private boolean mAllowOrientationChange = true;
+    private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
 
     public MraidBridge() {}
 
@@ -205,6 +207,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
 
     @Override
     public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
+        mAllowOrientationChange = allowOrientationChange;
+        mForcedOrientation = forcedOrientation;
         if (mMraidListener != null)
             mMraidListener.onMraidSetOrientation(allowOrientationChange, forcedOrientation);
     }

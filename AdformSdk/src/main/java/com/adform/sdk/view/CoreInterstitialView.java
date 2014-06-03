@@ -76,15 +76,6 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    protected void startService() {}
-
-    @Override
-    protected void stopService() {}
-
-    @Override
-    protected void resumeService() {}
-
-    @Override
     protected void onVisibilityCallback(boolean isVisible) {
         mInterstitialView.getMraidBridge().changeVisibility(isVisible, false);
     }
