@@ -312,71 +312,71 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // ---------------
     // Instance saving
     // ---------------
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState savedState = new SavedState(superState);
-        savedState.visibilityGeneralState = getGeneralState().getValue();
-        savedState.visibilityOnScreenState = getOnScreenState().getValue();
-        savedState.isContentMraid = isContentMraid;
-        savedState.customParams = mCustomParams;
-        return savedState;
-    }
+//    @Override
+//    protected Parcelable onSaveInstanceState() {
+//        Parcelable superState = super.onSaveInstanceState();
+//        SavedState savedState = new SavedState(superState);
+//        savedState.visibilityGeneralState = getGeneralState().getValue();
+//        savedState.visibilityOnScreenState = getOnScreenState().getValue();
+//        savedState.isContentMraid = isContentMraid;
+//        savedState.customParams = mCustomParams;
+//        return savedState;
+//    }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-        SavedState savedState = (SavedState)state;
-        super.onRestoreInstanceState(savedState.getSuperState());
-        setContentMraid(savedState.isContentMraid);
-        mCustomParams = savedState.customParams;
-        setViewState(AdformEnum.VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
-                AdformEnum.VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
-        setAnimating(false);
-    }
+//    @Override
+//    protected void onRestoreInstanceState(Parcelable state) {
+//        if(!(state instanceof SavedState)) {
+//            super.onRestoreInstanceState(state);
+//            return;
+//        }
+//        SavedState savedState = (SavedState)state;
+//        super.onRestoreInstanceState(savedState.getSuperState());
+//        setContentMraid(savedState.isContentMraid);
+//        mCustomParams = savedState.customParams;
+//        setViewState(AdformEnum.VisibilityGeneralState.parseType(savedState.visibilityGeneralState),
+//                AdformEnum.VisibilityOnScreenState.parseType(savedState.visibilityOnScreenState));
+//        setAnimating(false);
+//    }
 
-    private static class SavedState extends BaseSavedState {
-        public int visibilityGeneralState;
-        public int visibilityOnScreenState;
-        public HashMap customParams;
-        public boolean isContentMraid;
+//    private static class SavedState extends BaseSavedState {
+//        public int visibilityGeneralState;
+//        public int visibilityOnScreenState;
+//        public HashMap customParams;
+//        public boolean isContentMraid;
+//
+//        public SavedState(Parcel source) {
+//            super(source);
+//            visibilityGeneralState = source.readInt();
+//            visibilityOnScreenState = source.readInt();
+//            isContentMraid = (source.readInt() == 1);
+//            customParams = source.readHashMap(String.class.getClassLoader());
+//        }
+//        public SavedState(Parcelable superState) {
+//            super(superState);
+//        }
 
-        public SavedState(Parcel source) {
-            super(source);
-            visibilityGeneralState = source.readInt();
-            visibilityOnScreenState = source.readInt();
-            isContentMraid = (source.readInt() == 1);
-            customParams = source.readHashMap(String.class.getClassLoader());
-        }
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(visibilityGeneralState);
-            dest.writeInt(visibilityOnScreenState);
-            dest.writeInt((isContentMraid)?1:0);
-            dest.writeMap(customParams);
-        }
-
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-            @Override
-            public SavedState createFromParcel(Parcel source) {
-                return new SavedState(source);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
+//        @Override
+//        public void writeToParcel(Parcel dest, int flags) {
+//            super.writeToParcel(dest, flags);
+//            dest.writeInt(visibilityGeneralState);
+//            dest.writeInt(visibilityOnScreenState);
+//            dest.writeInt((isContentMraid)?1:0);
+//            dest.writeMap(customParams);
+//        }
+//
+//        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+//
+//            @Override
+//            public SavedState createFromParcel(Parcel source) {
+//                return new SavedState(source);
+//            }
+//
+//            @Override
+//            public SavedState[] newArray(int size) {
+//                return new SavedState[size];
+//            }
+//        };
+//    }
 
     // -----------------------------
     // Callbacks for mraid functions

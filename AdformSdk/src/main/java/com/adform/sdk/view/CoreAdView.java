@@ -290,69 +290,69 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         }
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState savedState = new SavedState(superState);
-        if (mAdService != null)
-            savedState.saveBundle = mAdService.getSaveInstanceBundle();
-        savedState.deviceIdProperty = mDeviceId;
-        return savedState;
-    }
+//    @Override
+//    protected Parcelable onSaveInstanceState() {
+//        Parcelable superState = super.onSaveInstanceState();
+//        SavedState savedState = new SavedState(superState);
+//        if (mAdService != null)
+//            savedState.saveBundle = mAdService.getSaveInstanceBundle();
+//        savedState.deviceIdProperty = mDeviceId;
+//        return savedState;
+//    }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-        SavedState savedState = (SavedState)state;
-        super.onRestoreInstanceState(savedState.getSuperState());
-        mServiceInstanceBundle = savedState.saveBundle;
-        resetTimesLoaded();
-        mDeviceId = savedState.deviceIdProperty;
-        if (mStartServiceRunnable != null) {
-            removeCallbacks(mStartServiceRunnable);
-            post(mStartServiceRunnable);
-        }
-    }
+//    @Override
+//    protected void onRestoreInstanceState(Parcelable state) {
+//        if(!(state instanceof SavedState)) {
+//            super.onRestoreInstanceState(state);
+//            return;
+//        }
+//        SavedState savedState = (SavedState)state;
+//        super.onRestoreInstanceState(savedState.getSuperState());
+//        mServiceInstanceBundle = savedState.saveBundle;
+//        resetTimesLoaded();
+//        mDeviceId = savedState.deviceIdProperty;
+//        if (mStartServiceRunnable != null) {
+//            removeCallbacks(mStartServiceRunnable);
+//            post(mStartServiceRunnable);
+//        }
+//    }
 
-    private static class SavedState extends BaseSavedState {
-        public Bundle saveBundle;
-        public MraidDeviceIdProperty deviceIdProperty;
-
-        public SavedState(Parcel source) {
-            super(source);
-            saveBundle = source.readBundle();
-            if (source.readInt() == 1)
-            deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
-        }
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeBundle(saveBundle);
-            dest.writeInt((deviceIdProperty != null)?1:0);
-            if (deviceIdProperty != null)
-                dest.writeParcelable(deviceIdProperty, 0);
-        }
-
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-            @Override
-            public SavedState createFromParcel(Parcel source) {
-                return new SavedState(source);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
+//    private static class SavedState extends BaseSavedState {
+//        public Bundle saveBundle;
+//        public MraidDeviceIdProperty deviceIdProperty;
+//
+//        public SavedState(Parcel source) {
+//            super(source);
+//            saveBundle = source.readBundle();
+//            if (source.readInt() == 1)
+//            deviceIdProperty = source.readParcelable(MraidDeviceIdProperty.class.getClassLoader());
+//        }
+//        public SavedState(Parcelable superState) {
+//            super(superState);
+//        }
+//
+//        @Override
+//        public void writeToParcel(Parcel dest, int flags) {
+//            super.writeToParcel(dest, flags);
+//            dest.writeBundle(saveBundle);
+//            dest.writeInt((deviceIdProperty != null)?1:0);
+//            if (deviceIdProperty != null)
+//                dest.writeParcelable(deviceIdProperty, 0);
+//        }
+//
+//        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+//
+//            @Override
+//            public SavedState createFromParcel(Parcel source) {
+//                return new SavedState(source);
+//            }
+//
+//            @Override
+//            public SavedState[] newArray(int size) {
+//                return new SavedState[size];
+//            }
+//        };
+//    }
 
     @Override
     protected void onVisibilityCallback(boolean isVisible) {

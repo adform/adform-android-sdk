@@ -330,89 +330,89 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     // -------------------------
     // Instance saving/restoring
     // -------------------------
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState savedState = new SavedState(superState);
-        removeCallbacks(mClearCacheRunnable);
-        savedState.loadedContent = mLoadedContent;
-        savedState.isLoadedContentMraid = mIsLoadedContentMraid;
-        savedState.screenShot = mBitmap;
-        savedState.timesLoaded = mTimesLoaded;
-        return savedState;
-    }
+//    @Override
+//    protected Parcelable onSaveInstanceState() {
+//        Parcelable superState = super.onSaveInstanceState();
+//        SavedState savedState = new SavedState(superState);
+//        removeCallbacks(mClearCacheRunnable);
+//        savedState.loadedContent = mLoadedContent;
+//        savedState.isLoadedContentMraid = mIsLoadedContentMraid;
+//        savedState.screenShot = mBitmap;
+//        savedState.timesLoaded = mTimesLoaded;
+//        return savedState;
+//    }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-        SavedState savedState = (SavedState) state;
-        super.onRestoreInstanceState(savedState.getSuperState());
-        setTimesLoaded(savedState.timesLoaded);
-        mBitmap = savedState.screenShot;
-        mViewCache.setImageBitmap(mBitmap);
-        mViewCache.setVisibility(VISIBLE);
-        mIsRestoring = true;
-        mLoadedContent = savedState.loadedContent;
-        mIsLoadedContentMraid = savedState.isLoadedContentMraid;
-        if (mLoadedContent != null && mLoadedContent.length() > 0) {
-            if (mBaseListener != null)
-                mBaseListener.onContentRestore(true);
-            showContent(mLoadedContent, mIsLoadedContentMraid, true);
-        } else {
-            if (mBaseListener != null)
-                mBaseListener.onContentRestore(false);
-        }
-    }
+//    @Override
+//    protected void onRestoreInstanceState(Parcelable state) {
+//        if (!(state instanceof SavedState)) {
+//            super.onRestoreInstanceState(state);
+//            return;
+//        }
+//        SavedState savedState = (SavedState) state;
+//        super.onRestoreInstanceState(savedState.getSuperState());
+//        setTimesLoaded(savedState.timesLoaded);
+//        mBitmap = savedState.screenShot;
+//        mViewCache.setImageBitmap(mBitmap);
+//        mViewCache.setVisibility(VISIBLE);
+//        mIsRestoring = true;
+//        mLoadedContent = savedState.loadedContent;
+//        mIsLoadedContentMraid = savedState.isLoadedContentMraid;
+//        if (mLoadedContent != null && mLoadedContent.length() > 0) {
+//            if (mBaseListener != null)
+//                mBaseListener.onContentRestore(true);
+//            showContent(mLoadedContent, mIsLoadedContentMraid, true);
+//        } else {
+//            if (mBaseListener != null)
+//                mBaseListener.onContentRestore(false);
+//        }
+//    }
 
-    private static class SavedState extends BaseSavedState {
-        String loadedContent;
-        boolean isLoadedContentMraid;
-        Bitmap screenShot;
-        int timesLoaded;
-
-        public SavedState(Parcel source) {
-            super(source);
-            if (source.readInt() == 1)
-                loadedContent = source.readString();
-            if (source.readInt() == 1)
-                screenShot = source.readParcelable(Bitmap.class.getClassLoader());
-            isLoadedContentMraid = (source.readInt() == 1);
-            timesLoaded = source.readInt();
-        }
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt((loadedContent != null) ? 1 : 0);
-            if (loadedContent != null)
-                dest.writeString(loadedContent);
-            dest.writeInt((screenShot != null) ? 1 : 0);
-            if (screenShot != null)
-                dest.writeParcelable(screenShot, 0);
-            dest.writeInt((isLoadedContentMraid) ? 1 : 0);
-            dest.writeInt(timesLoaded);
-        }
-
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-            @Override
-            public SavedState createFromParcel(Parcel source) {
-                return new SavedState(source);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
+//    private static class SavedState extends BaseSavedState {
+//        String loadedContent;
+//        boolean isLoadedContentMraid;
+//        Bitmap screenShot;
+//        int timesLoaded;
+//
+//        public SavedState(Parcel source) {
+//            super(source);
+//            if (source.readInt() == 1)
+//                loadedContent = source.readString();
+//            if (source.readInt() == 1)
+//                screenShot = source.readParcelable(Bitmap.class.getClassLoader());
+//            isLoadedContentMraid = (source.readInt() == 1);
+//            timesLoaded = source.readInt();
+//        }
+//
+//        public SavedState(Parcelable superState) {
+//            super(superState);
+//        }
+//
+//        @Override
+//        public void writeToParcel(Parcel dest, int flags) {
+//            super.writeToParcel(dest, flags);
+//            dest.writeInt((loadedContent != null) ? 1 : 0);
+//            if (loadedContent != null)
+//                dest.writeString(loadedContent);
+//            dest.writeInt((screenShot != null) ? 1 : 0);
+//            if (screenShot != null)
+//                dest.writeParcelable(screenShot, 0);
+//            dest.writeInt((isLoadedContentMraid) ? 1 : 0);
+//            dest.writeInt(timesLoaded);
+//        }
+//
+//        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+//
+//            @Override
+//            public SavedState createFromParcel(Parcel source) {
+//                return new SavedState(source);
+//            }
+//
+//            @Override
+//            public SavedState[] newArray(int size) {
+//                return new SavedState[size];
+//            }
+//        };
+//    }
 
     // -----------------
     // Getters / Setters
