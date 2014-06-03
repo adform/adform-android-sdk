@@ -25,14 +25,13 @@ public class JsLoadBridge {
     /** A header that should be used for callback to occur */
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
             "function finishedLoading() {\n" +
-            "   "+JS_CB_CONTENT_LOADED+"();\n" +
+            "   "+JS_CB_CONTENT_LOADED+"(document.documentElement.innerHTML);\n" +
             "};\n" +
             "function nativePrint(call) {\n" +
             "   "+JS_CB_PRINT+"(call);\n" +
             "};\n" +
             "window.onload = function(){finishedLoading();};"+
             "</script>\n";
-    public static final String NATIVE_JS_CALLBACK_BODY_ONLOAD =  "";
 
     public AdWebView mWebView;
     public LoadBridgeHandler mHandler;
@@ -56,9 +55,9 @@ public class JsLoadBridge {
      * Function is called from javascript when document is loaded.
      */
     @JavascriptInterface
-    public void contentLoaded(){
+    public void contentLoaded(String content){
         if (mHandler != null)
-            mHandler.onContentLoadedFromJsBridge();
+            mHandler.onContentLoadedFromJsBridge(content);
     }
 
     /**
@@ -107,7 +106,7 @@ public class JsLoadBridge {
         /**
          * Callback when document is loaded
          */
-        public void onContentLoadedFromJsBridge();
+        public void onContentLoadedFromJsBridge(String content);
 
         /**
          * Callback the message that is printed in console in javascript

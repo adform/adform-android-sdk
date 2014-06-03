@@ -56,12 +56,12 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     private boolean mIsRestoring = false;
     private int mTimesLoaded = 0;
     private JsLoadBridge mLoadBridge;
-    private ImageView mViewCache;
-    private Canvas mCanvas;
-    private Bitmap mBitmap;
+//    private ImageView mViewCache;
+//    private Canvas mCanvas;
+//    private Bitmap mBitmap;
     private boolean mIsMraidReady = false;
     private HashMap<String, Boolean> mConfigurationPreset;
-    private boolean mIsLoadedContentMraid = false;
+//    private boolean mIsLoadedContentMraid = false;
     private MraidBridge mMraidBridge;
 
     public BaseInnerContainer(Context context) {
@@ -79,15 +79,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         // Compability issues
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-        // Initializing fake ImageView to remove flicker when restoring content
-        mViewCache = new ImageView(context);
-        mViewCache.setLayoutParams(new RelativeLayout.LayoutParams(
-                (int) (Utils.getWidthDeviceType(mContext) * CoreAdView.sDeviceDensity + 0.5f),
-                (int) (Utils.getHeightDeviceType(mContext) * CoreAdView.sDeviceDensity + 0.5f)));
-        addView(mViewCache);
-        mViewCache.setVisibility(GONE);
-        mViewCache.bringToFront();
 
         // Base parameters
         setBackgroundColor(Color.TRANSPARENT);
@@ -180,57 +171,40 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     }
 
 
-    /**
-     * Renders content in next in list webview
-     * If content is null it resets loading content.
-     * @see #showContent(String, boolean, boolean)
-     */
     public void showContent(String content) {
-        showContent(content, mIsLoadedContentMraid);
-    }    /**
-     * Renders content in next in list webview
-     * If content is null it resets loading content.
-     * @see #showContent(String, boolean, boolean)
-     */
-    public void showContent(String content, boolean isMraid) {
-        showContent(content, isMraid, false);
+        showContent(content, false);
     }
-
     /**
      * Renders content in next in list webview
      * If content is null it resets loading content.
      * This sets an additional setting for if content is being restored.
      *
      * @param content provided content to load
-     * @param isMraid true if content is mraid
      * @param isRestoring This flag only can be set from inside.
      *                    By default, from outside this flag will always be false
      */
-    protected void showContent(String content, boolean isMraid, boolean isRestoring) {
+    protected void showContent(String content, boolean isRestoring) {
         if (!isRestoring) {
             mIsRestoring = false;
-            post(mClearCacheRunnable);
         }
         if (content == null) {
             mLoadedContent = null;
-            mIsLoadedContentMraid = false;
             return;
         } else {
             mLoadedContent = content;
-            mIsLoadedContentMraid = isMraid;
         }
         resetConfigurationPreset();
         mIsMraidReady = false;
         // Wrapping js in js tags
         content = "<script type=\"text/javascript\">" + content + "</script>";
 
-        // Injecting mraid script if needed
-        String jsInjectionWrapper = ((isMraid) ? "<script>"+ MraidJavascript.JAVASCRIPT_SOURCE+"</script>" : "");
+        // Injecting mraid script
+        String jsInjectionWrapper = "<script>"+ MraidJavascript.JAVASCRIPT_SOURCE+"</script>";
         content = "<html><head>"
                 + JsLoadBridge.NATIVE_JS_CALLBACK_HEADER
                 + jsInjectionWrapper
                 + "</head>"
-                + "<body"+JsLoadBridge.NATIVE_JS_CALLBACK_BODY_ONLOAD+">"
+                + "<body>"
                 + content
                 + "</body></html>";
         // Setting values to the current webview, that is about to change
@@ -238,23 +212,28 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
 
         AdWebView webView = getWebViewToLoadContentTo();
         if (webView != null) {
-            webView.setWebViewClient((mIsLoadedContentMraid) ? getMraidWebViewClient() : getSimpleWebViewClient());
+            webView.setWebViewClient(getMraidWebViewClient());
             webView.setMraidCallbackListener(mMraidBridge);
             webView.addJavascriptInterface(this, MRAID_JS_INTERFACE);
             if (mLoadBridge == null)
                 mLoadBridge = new JsLoadBridge(this);
             mLoadBridge.setWebView(webView);
             mMraidBridge.setWebView(webView);
-            mMraidBridge.onPlacementTypeChange(getPlacementType(), false);
+            mMraidBridge.setContentMraid(false);
             webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null);
         }
     }
 
     @Override
-    public void onContentLoadedFromJsBridge() {
-        mMraidBridge.onStateChange(AdformEnum.State.DEFAULT, false);
-        if (mIsLoadedContentMraid) {
+    public void onContentLoadedFromJsBridge(String content) {
+        String mraidContent = AdformContentLoadManager.isMraidImpelemnetation(content);
+        if (mraidContent != null) {
+            mMraidBridge.setContentMraid(true);
+            mMraidBridge.setPlacementType(getPlacementType());
+            mMraidBridge.setState(AdformEnum.State.DEFAULT);
             mMraidBridge.forceSettingUpdate();
+        } else {
+            mMraidBridge.setContentMraid(false);
         }
 
         if (!mIsRestoring) {
@@ -262,7 +241,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
                 mBaseListener.onContentRender();
             animateAdShowing();
         } else {
-            postDelayed(mClearCacheRunnable, 200);
             mIsRestoring = false;
         }
         setTimesLoaded(mTimesLoaded + 1);
@@ -272,7 +250,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     public void onConfigurationPreset(String configuredParam) {
         if (!mIsMraidReady) {
             mConfigurationPreset.put(configuredParam, true);
-            if (mIsLoadedContentMraid && isConfigurationPresetReady()) {
+            if (isConfigurationPresetReady()) {
                 mIsMraidReady = true;
                 post(new Runnable() {
                     @Override
@@ -463,21 +441,5 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     public MraidBridge getMraidBridge() {
         return mMraidBridge;
     }
-
-    // ---------
-    // Runnables
-    // ---------
-    private Runnable mClearCacheRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mViewCache.setImageBitmap(null);
-            mViewCache.setVisibility(GONE);
-            //TODO mariusm 14/05/14 Bitmaps should be recycled, but it causes trouble at the moment when quickly switching view instances
-//            if (mBitmap != null && !mBitmap.isRecycled())
-//                mBitmap.recycle();
-            mBitmap = null;
-            mCanvas = null;
-        }
-    };
 
 }

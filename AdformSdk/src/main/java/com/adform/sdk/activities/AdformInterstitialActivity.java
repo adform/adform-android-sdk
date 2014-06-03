@@ -40,7 +40,7 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
         // Showing content
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            mInterstitialView.showContent(extras.getString(HTML_DATA), extras.getBoolean(IS_CONTENT_MRAID));
+            mInterstitialView.showContent(extras.getString(HTML_DATA));
         }
         setContentView(mainContainer);
     }

@@ -9,6 +9,7 @@ import com.adform.sdk.network.app.AdformNetworkTask;
 import com.adform.sdk.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.network.base.ito.observable.ObservableService2;
+import com.adform.sdk.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -114,6 +115,7 @@ public class AdService extends ObservableService2 {
 
         String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
         String additionalURLProperties = getGeneratedUrlPropertiesToString();
+        Utils.p("Generated params: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
                         Constants.SDK_INFO_PATH+
@@ -137,13 +139,13 @@ public class AdService extends ObservableService2 {
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
         properties.add(MraidPlacementSizeProperty.createWithDimension(mParamsListener.getAdDimension()));
         properties.add(MraidMasterTagProperty.createWithMasterTag(mParamsListener.getMasterId()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("version", mParamsListener.getVersion()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("user_agent", mParamsListener.getUserAgent()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", mParamsListener.getVersion()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", mParamsListener.getUserAgent()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "accepted_languages", mParamsListener.getLocale().replaceAll("_", "-")));
+                "\"accepted_languages\"", mParamsListener.getLocale().replaceAll("_", "-")));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "type", mParamsListener.getBannerType()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("publisher_id", mParamsListener.getPublisherId()));
+                "\"type\"", mParamsListener.getBannerType()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"publisher_id\"", mParamsListener.getPublisherId()));
         if (!IS_CUSTOMDATA_LOADED) {
             if (!mParamsListener.isCustomParamsEmpty())
                 IS_REQUEST_WITH_CUSTOMDATA = true;

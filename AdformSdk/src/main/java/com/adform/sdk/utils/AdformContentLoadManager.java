@@ -116,16 +116,19 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
         if (response != null && response.getEntity() != null) {
             mLastResponse = response.getEntity();
-            Utils.p("Loaded content: "+mLastResponse.getContent());
             if (mListener != null) {
-                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
-                if (mRaidImplementedContent != null) {
-                    isLastMraid = true;
-                    mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
-                } else {
-                    isLastMraid = false;
-                    mListener.onContentLoadSuccessful(response.getEntity().getContent());
-                }
+//                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
+                isLastMraid = true;
+                mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+
+//                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
+//                if (mRaidImplementedContent != null) {
+//                    isLastMraid = true;
+//                    mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
+//                } else {
+//                    isLastMraid = false;
+//                    mListener.onContentLoadSuccessful(response.getEntity().getContent());
+//                }
             }
         }
     }
@@ -135,9 +138,9 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     /**
      * Retuns if content contains an mraid implementation
      * @param content provided content to look into
-     * @return injected mraid.js implementation, if no implementation is needed return null
+     * @return removed mraid.js implementation (between script tags), if no implementation is needed return null
      */
-    private String isMraidImpelemnetation(String content) {
+    public static String isMraidImpelemnetation(String content) {
         if (content.contains("mraid.js")) {
             Pattern pTag = Pattern.compile(HTML_TAG_PATTERN);
             Matcher mTag = pTag.matcher(content);

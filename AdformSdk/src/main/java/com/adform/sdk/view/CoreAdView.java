@@ -81,7 +81,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mBannerView == null) {
             mBannerView = new InnerBannerView(mContext);
             mBannerView.setBaseListener(this);
-            mBannerView.getMraidBridge().setMraidListener(this);
             // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
             mBannerView.setId(156554);
         }
@@ -94,7 +93,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
 //            mBannerView.flipLoadedContent();
-            mBannerView.showContent(null, false);
+            mBannerView.showContent(null);
             mSlidingManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
@@ -102,7 +101,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         }
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
-            mBannerView.showContent(null, false);
+            mBannerView.showContent(null);
             mSlidingManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
@@ -123,7 +122,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                     e.printStackTrace();
                 }
             } else {
-                mBannerView.showContent(null, false);
+                mBannerView.showContent(null);
                 mSlidingManager.turnOff();
                 setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
                 resetTimesLoaded();
@@ -133,14 +132,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-        setContentMraid(true);
-        mBannerView.showContent(content, true);
+        mBannerView.showContent(content);
     }
 
     @Override
     public void onContentLoadSuccessful(String content) {
-        setContentMraid(false);
-        mBannerView.showContent(content, false);
+        mBannerView.showContent(content);
     }
 
     @Override
@@ -175,7 +172,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentLoadFailed() {
-        mBannerView.showContent(null, false);
+        mBannerView.showContent(null);
     }
 
     @Override

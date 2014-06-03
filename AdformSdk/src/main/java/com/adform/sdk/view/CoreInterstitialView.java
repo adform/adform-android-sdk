@@ -54,18 +54,16 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
         imageView.bringToFront();
     }
 
-    public void showContent(String content, boolean isMraid) {
+    public void showContent(String content) {
         // Loaded content will always be loaded and mraid type
         setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
-        setContentMraid(isMraid);
-        mInterstitialView.showContent(content, isMraid);
+        mInterstitialView.showContent(content);
     }
 
     @Override
     protected BaseInnerContainer getInnerView() {
         if (mInterstitialView == null) {
             mInterstitialView = new InnerInterstitialView(mContext);
-            mInterstitialView.getMraidBridge().setMraidListener(this);
         }
         return mInterstitialView;
     }
@@ -94,9 +92,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     public void onContentRestore(boolean state) {}
 
     @Override
-    public void onContentRender() {
-        Utils.p("On content render");
-    }
+    public void onContentRender() {}
 
     @Override
     public void onClick(View v) {

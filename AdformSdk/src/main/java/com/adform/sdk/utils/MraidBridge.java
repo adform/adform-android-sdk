@@ -12,24 +12,40 @@ import com.adform.sdk.view.inner.AdWebView;
  */
 public class MraidBridge implements VisibilityPositionManager.PositionManagerListener,
         AdWebView.NativeWebviewListener {
+
+    public interface MraidBridgeListener {
+        public void onIsContentMraidChange(boolean isContentMraid);
+    }
+
     public static final String VAR_PLACEMENT_TYPE = "placementType";
+
+    private boolean isContentMraid = false;
     private AdWebView mWebView;
     private ViewCoords mCurrentPosition, mDefaultPosition, mMaxSize, mScreenSize;
     private AdformEnum.PlacementType mPlacementType = AdformEnum.PlacementType.UNKNOWN;
     private AdformEnum.State mState = AdformEnum.State.LOADING;
     private AdWebView.NativeWebviewListener mMraidListener;
+    private MraidBridgeListener mBridgeListener;
     private boolean mVisible;
     private boolean mAllowOrientationChange = true;
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
 
     public MraidBridge() {}
 
+    private boolean isPropertyNotValid(Object property) {
+        if (!isContentMraid)
+            return true;
+        if (property == null)
+            return true;
+        return false;
+    }
+
     // -----------------------------
     // Native -> Mraid js var update
     // -----------------------------
     @Override
     public void onDefaultPositionUpdate(ViewCoords viewCoords, boolean forceUpdate) {
-        if (viewCoords == null)
+        if (isPropertyNotValid(viewCoords))
             return;
         if (viewCoords.equals(mDefaultPosition) && !forceUpdate)
             return;
@@ -49,7 +65,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     public void onCurrentPositionUpdate(ViewCoords viewCoords, boolean forceUpdate) {
-        if (viewCoords == null)
+        if (isPropertyNotValid(viewCoords))
             return;
         if (viewCoords.equals(mCurrentPosition) && !forceUpdate)
             return;
@@ -111,6 +127,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     public void onStateChange(AdformEnum.State state, boolean forceUpdate) {
+        if (isPropertyNotValid(state))
+            return;
         if (mState == state && !forceUpdate)
             return;
         mState = state;
@@ -125,7 +143,13 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         });
     }
 
+    public void setState(AdformEnum.State state) {
+        this.mState = state;
+    }
+
     public void onPlacementTypeChange(final AdformEnum.PlacementType placementType, boolean forceUpdate) {
+        if (isPropertyNotValid(placementType))
+            return;
         if (mPlacementType == placementType && !forceUpdate)
             return;
         mPlacementType = placementType;
@@ -140,6 +164,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
             }
         });
 
+    }
+
+    public void setPlacementType(AdformEnum.PlacementType placementType) {
+        this.mPlacementType = placementType;
     }
 
     public void changeVisibility(boolean visible, boolean forceUpdate) {
@@ -173,6 +201,20 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
 
     public void setMraidListener(AdWebView.NativeWebviewListener mraidListener) {
         this.mMraidListener = mraidListener;
+    }
+
+    public void setContentMraid(boolean isContentMraid) {
+        this.isContentMraid = isContentMraid;
+        if (mBridgeListener != null)
+            mBridgeListener.onIsContentMraidChange(isContentMraid);
+    }
+
+    public boolean isContentMraid() {
+        return isContentMraid;
+    }
+
+    public void setBridgeListener(MraidBridgeListener bridgeListener) {
+        this.mBridgeListener = bridgeListener;
     }
 
     // ---------

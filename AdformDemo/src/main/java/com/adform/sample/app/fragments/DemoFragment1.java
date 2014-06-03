@@ -31,7 +31,7 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         mAdView.setListener(this);
         mAdView.addCustomParam("gender", "female");
         mAdView.addCustomParam("age", "23");
-        mAdView.setMasterId(66296);
+        mAdView.setMasterId(11111);
         mAdView.setPublisherId(654321);
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);

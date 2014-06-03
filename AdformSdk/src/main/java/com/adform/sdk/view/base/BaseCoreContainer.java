@@ -19,6 +19,7 @@ import com.adform.sdk.network.base.ito.network.NetworkTask;
 import com.adform.sdk.network.base.ito.network.SuccessListener;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
+import com.adform.sdk.utils.MraidBridge;
 import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
@@ -30,7 +31,7 @@ import java.util.HashMap;
  */
 public abstract class BaseCoreContainer extends RelativeLayout implements
         VisibilityPositionManager.VisibilityManagerListener, BaseInnerContainer.BaseAdViewListener,
-        AdformRequestParamsListener, AdWebView.NativeWebviewListener {
+        AdformRequestParamsListener, AdWebView.NativeWebviewListener, MraidBridge.MraidBridgeListener {
     // Special variables that can be set by the view
     public static final String MASTER_ID = "master_id";
     public static final String API_VERSION = "api_version";
@@ -51,7 +52,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private String mApiVersion = "1.0";
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     protected int mHiddenState = INVISIBLE;
-    private boolean isContentMraid = false;
     private boolean isAnimating;
     protected AdDimension mPlacementDimen;
 
@@ -72,9 +72,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mPlacementDimen = initAdDimen();
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
-        BaseInnerContainer innerView = getInnerView();
-        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, innerView.getMraidBridge());
-        addView(innerView);
+        getInnerView().getMraidBridge().setMraidListener(this);
+        getInnerView().getMraidBridge().setBridgeListener(this);
+        mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
+        addView(getInnerView());
     }
 
     /**
@@ -280,14 +281,15 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         this.mPublisherId = publisherId;
     }
 
-    public void setContentMraid(boolean isContentMraid) {
-        this.isContentMraid = isContentMraid;
-        mVisibilityPositionManager.checkVisibilityService();
+    @Override
+    public boolean isContentMraid() {
+        return getInnerView().getMraidBridge().isContentMraid();
     }
 
     @Override
-    public boolean isContentMraid() {
-        return isContentMraid;
+    public void onIsContentMraidChange(boolean isContentMraid) {
+        if (isContentMraid)
+            mVisibilityPositionManager.checkVisibilityService();
     }
 
     @Override
