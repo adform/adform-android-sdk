@@ -21,7 +21,6 @@ import com.adform.sdk.view.CoreInterstitialView;
  */
 public class AdformInterstitialActivity extends Activity implements CoreInterstitialView.CoreInterstitialListener {
     public static final String HTML_DATA = "HTML_DATA";
-    public static final String IS_CONTENT_MRAID = "IS_CONTENT_MRAID";
 
     private CoreInterstitialView mInterstitialView;
 
@@ -45,10 +44,9 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
         setContentView(mainContainer);
     }
 
-    public static void startActivity(Context context, String data, boolean isMraid) {
+    public static void startActivity(Context context, String data) {
         Intent intent = new Intent(context, AdformInterstitialActivity.class);
         intent.putExtra(HTML_DATA, data);
-        intent.putExtra(IS_CONTENT_MRAID, isMraid);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             context.startActivity(intent);

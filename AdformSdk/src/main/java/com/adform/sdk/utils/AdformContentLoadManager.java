@@ -1,6 +1,8 @@
 package com.adform.sdk.utils;
 
 import android.os.Bundle;
+import com.adform.sdk.interfaces.AdformRequestParamsListener;
+import com.adform.sdk.mraid.properties.*;
 import com.adform.sdk.network.app.RawNetworkTask;
 import com.adform.sdk.network.app.entities.entities.RawResponse;
 import com.adform.sdk.network.base.ito.network.*;
@@ -15,6 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,11 +35,6 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
      * An interface that returns events after loading from network task
      */
     public interface ContentLoaderListener {
-        /**
-         * Callback when loaded basic type of content
-         * @param content provided content
-         */
-        public void onContentLoadSuccessful(String content);
         /**
          * Callback when loaded mraid type of content
          * @param content provided content
@@ -57,43 +55,54 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     private ContentLoaderListener mListener;
     private DocumentBuilderFactory mDocBuilderFactory;
     private boolean isLoading = false;
-    private boolean isLastMraid = false;
     private RawResponse mLastResponse;
 
     public AdformContentLoadManager(ContentLoaderListener l) {
         this.mListener = l;
     }
 
-    /**
-     * Loads url.
-     * @param url   provided content to load
-     * @param isXml if content is wrapped in xml script tags, isXml flag should be true
-     *              for taking out content
-     */
-    public void loadContent(String url, boolean isXml) throws ContentLoadException {
+    public void loadContent(RawNetworkTask getTask) throws ContentLoadException {
         if (isLoading())
             throw new ContentLoadException("Content already being loaded");
+        getTask.execute();
+    }
+
+    /**
+     * Loads url.
+     * @param url   provided url to load
+     * @param isUrlInXml if content is wrapped in xml script tags, isXml flag should be true
+     *              for taking out content
+     */
+    public RawNetworkTask getRawGetTask(String url, boolean isUrlInXml) throws ContentLoadException {
         if (url == null || (url != null && url.length() == 0))
             throw new ContentLoadException("Url content is empty");
         String pulledUrl = null;
-        if (isXml) {
+        if (isUrlInXml) {
             pulledUrl = pullUrlFromXmlScript(url);
             if (pulledUrl == null)
                 throw new ContentLoadException("Provided content is not in script tags, o can't be parsed");
         }
-        RawNetworkTask getTask =
-                new RawNetworkTask(NetworkRequest.Method.GET, (isXml)?pulledUrl:url);
-        getTask.setSuccessListener(this);
-        getTask.setErrorListener(this);
-        getTask.execute();
+        RawNetworkTask rawTask =
+                new RawNetworkTask(NetworkRequest.Method.GET, (isUrlInXml)?pulledUrl:url);
+        rawTask.setSuccessListener(this);
+        rawTask.setErrorListener(this);
+        return rawTask;
     }
+
     /**
-     * Loads url. By default content is parsed out from script tags.
-     * @see #loadContent(String, boolean)
-     * @param url provided url to load.
+     * Loads url.
+     * @param url   provided url to load
      */
-    public void loadContent(String url) throws IllegalArgumentException, ContentLoadException {
-        loadContent(url, false);
+    public RawNetworkTask getRawPostTask(String url, String properties) throws ContentLoadException {
+        if (url == null || (url != null && url.length() == 0))
+            throw new ContentLoadException("Url content is empty");
+        RawNetworkTask rawTask =
+                new RawNetworkTask(NetworkRequest.Method.POST, url);
+        if (properties != null)
+            rawTask.setJsonEntity(properties);
+        rawTask.setSuccessListener(this);
+        rawTask.setErrorListener(this);
+        return rawTask;
     }
 
     @Override
@@ -117,22 +126,10 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         if (response != null && response.getEntity() != null) {
             mLastResponse = response.getEntity();
             if (mListener != null) {
-//                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
-                isLastMraid = true;
                 mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
-
-//                String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
-//                if (mRaidImplementedContent != null) {
-//                    isLastMraid = true;
-//                    mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
-//                } else {
-//                    isLastMraid = false;
-//                    mListener.onContentLoadSuccessful(response.getEntity().getContent());
-//                }
             }
         }
     }
-
 
     private static final String HTML_TAG_PATTERN = "(\\\\x3Cscript|<script).{1,50}(mraid\\.js).*?(\\/>|script>)";
     /**
@@ -203,7 +200,6 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         Bundle bundle = new Bundle();
         if (mLastResponse != null)
             bundle.putString(INSTANCE_LAST_RESPONSE, mLastResponse.getContent());
-        bundle.putBoolean(INSTANCE_LAST_MRAID_FLAG, isLastMraid);
         return bundle;
     }
 
@@ -215,10 +211,6 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         if (restoreBundle == null)
             return;
         mLastResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
-        isLastMraid = restoreBundle.getBoolean(INSTANCE_LAST_MRAID_FLAG);
     }
 
-    public boolean isMraid() {
-        return isLastMraid;
-    }
 }

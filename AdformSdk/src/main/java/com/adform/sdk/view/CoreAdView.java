@@ -117,7 +117,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                     ) {
                 String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
                 try {
-                    mAdformContentLoadManager.loadContent(content, true);
+                    mAdformContentLoadManager.loadContent(
+                            mAdformContentLoadManager.getRawGetTask(content,true));
                 } catch (AdformContentLoadManager.ContentLoadException e) {
                     e.printStackTrace();
                 }
@@ -132,11 +133,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-        mBannerView.showContent(content);
-    }
-
-    @Override
-    public void onContentLoadSuccessful(String content) {
         mBannerView.showContent(content);
     }
 
