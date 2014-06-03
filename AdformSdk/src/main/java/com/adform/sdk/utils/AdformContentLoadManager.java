@@ -116,10 +116,10 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
         if (response != null && response.getEntity() != null) {
             mLastResponse = response.getEntity();
+            Utils.p("Loaded content: "+mLastResponse.getContent());
             if (mListener != null) {
                 String mRaidImplementedContent = isMraidImpelemnetation(response.getEntity().getContent());
                 if (mRaidImplementedContent != null) {
-                    Utils.p("Got mraid content");
                     isLastMraid = true;
                     mListener.onContentMraidLoadSuccessful(mRaidImplementedContent);
                 } else {

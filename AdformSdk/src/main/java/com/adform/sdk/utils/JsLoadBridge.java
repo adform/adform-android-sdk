@@ -26,7 +26,6 @@ public class JsLoadBridge {
     public static final String NATIVE_JS_CALLBACK_HEADER = "<script type=\"text/javascript\">\n" +
             "function finishedLoading() {\n" +
             "   "+JS_CB_CONTENT_LOADED+"();\n" +
-            "   nativePrint('Content loaded');" +
             "};\n" +
             "function nativePrint(call) {\n" +
             "   "+JS_CB_PRINT+"(call);\n" +

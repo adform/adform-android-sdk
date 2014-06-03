@@ -6,7 +6,7 @@ cd /Users/mariusm/Projects/ads/AdformSdkProject/
 echo "*** Starting release script ***";
 gradle --daemon clean assembleRelease;
 
-sh build_start.sh
+sh run_script/build_start.sh
 
 # Copy script to gdocs
 echo "Copy release version? ";
@@ -20,4 +20,4 @@ then
 else
     echo "*** Skipping copy ***";
 fi
-sh build_complete.sh
+sh run_script/build_complete.sh

@@ -128,16 +128,9 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     protected void loadImpression(String impressionUrl) {
         // Loading impression
-        Utils.p("Sending impression...");
         RawNetworkTask impressionTask =
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);
-        impressionTask.setSuccessListener(new SuccessListener<RawResponse>() {
-            @Override
-            public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
-                Utils.p("Impression sent");
-            }
-        });
         impressionTask.execute();
     }
 
