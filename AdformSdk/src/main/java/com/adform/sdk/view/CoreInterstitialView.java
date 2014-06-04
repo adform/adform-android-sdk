@@ -24,6 +24,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     public interface CoreInterstitialListener {
         public void onAdClose();
         public void onAdOrientationChange(int orientation);
+        public void onAdShown();
     }
 
     private InnerInterstitialView mInterstitialView;
@@ -92,7 +93,10 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     public void onContentRestore(boolean state) {}
 
     @Override
-    public void onContentRender() {}
+    public void onContentRender() {
+        if (mListener != null)
+            mListener.onAdShown();
+    }
 
     @Override
     public void onClick(View v) {

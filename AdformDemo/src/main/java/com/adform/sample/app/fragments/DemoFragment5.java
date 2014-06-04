@@ -7,15 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import com.adform.sample.app.R;
-import com.adform.sdk.Constants;
 import com.adform.sdk.activities.AdformInterstitialActivity;
-import com.adform.sdk.interfaces.AdformRequestParamsListener;
-import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
-import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformContentLoadManager;
 import com.adform.sdk.view.DummyView;
-
-import java.util.HashMap;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -27,7 +21,6 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     public static final String CONTENT_LOADER_INFO = "CONTENT_LOADER_INFO";
     // A flag that handles when the ad should be shown
     private boolean showAfterLoad = false;
-    private boolean isJsLoaded = false;
     // Manager that handles network loading tasks
     private AdformContentLoadManager mAdformContentLoadManager;
     private DummyView mDummyView;
@@ -71,18 +64,22 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.load_button: {
                 // Loading information from the network with the provided link
-                loadContract();
+                if (!mAdformContentLoadManager.isLoading())
+                    loadContract();
                 break;
             }
             case R.id.show_button: {
                 // Showing information that was loaded
                 showAfterLoad = true;
-                if (!isJsLoaded)
+                if (mAdformContentLoadManager.getLastRawResponse() == null)
                     loadContract();
                 else {
                     showAfterLoad = false;
                     AdformInterstitialActivity.startActivity(getActivity(),
-                            mAdformContentLoadManager.getResponse());
+                            mAdformContentLoadManager.getLastRawResponse(),
+                            mAdformContentLoadManager.getLastAdServingResponse()
+                                    .getAdEntity().getTagDataEntity().getImpressionUrl()
+                    );
                 }
                 break;
             }
@@ -92,7 +89,6 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     private void loadContract() {
         if (!mAdformContentLoadManager.isLoading()) {
             try {
-                isJsLoaded = false;
                 mAdformContentLoadManager.loadContent(
                         mAdformContentLoadManager.getContractTask(
                                 mDummyView.getUrlProperties(),
@@ -124,12 +120,13 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     // Response callback when loaded mraid type of content
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-        isJsLoaded = true;
         showToast("Loaded MRaid ad");
         if (showAfterLoad) {
             showAfterLoad = false;
             AdformInterstitialActivity.startActivity(getActivity(),
-                    mAdformContentLoadManager.getResponse());
+                    mAdformContentLoadManager.getLastRawResponse(),
+                    mAdformContentLoadManager.getLastAdServingResponse()
+                            .getAdEntity().getTagDataEntity().getImpressionUrl());
         }
     }
 

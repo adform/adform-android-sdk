@@ -21,8 +21,11 @@ import com.adform.sdk.view.CoreInterstitialView;
  */
 public class AdformInterstitialActivity extends Activity implements CoreInterstitialView.CoreInterstitialListener {
     public static final String HTML_DATA = "HTML_DATA";
+    public static final String IMPRESSION_URL = "IMPRESSION_URL";
 
     private CoreInterstitialView mInterstitialView;
+    private String mImpressionUrl;
+    private boolean isImpressionLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +43,15 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             mInterstitialView.showContent(extras.getString(HTML_DATA));
+            mImpressionUrl = extras.getString(IMPRESSION_URL);
         }
         setContentView(mainContainer);
     }
 
-    public static void startActivity(Context context, String data) {
+    public static void startActivity(Context context, String data, String impressionUrl) {
         Intent intent = new Intent(context, AdformInterstitialActivity.class);
         intent.putExtra(HTML_DATA, data);
+        intent.putExtra(IMPRESSION_URL, impressionUrl);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             context.startActivity(intent);
@@ -70,6 +75,14 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     @Override
     public void onAdOrientationChange(int orientation) {
         setRequestedOrientation(orientation);
+    }
+
+    @Override
+    public void onAdShown() {
+        if (!isImpressionLoaded) {
+            mInterstitialView.loadImpression(mImpressionUrl);
+            isImpressionLoaded = true;
+        }
     }
 
     @Override

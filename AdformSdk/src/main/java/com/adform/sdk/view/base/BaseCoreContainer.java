@@ -15,6 +15,7 @@ import com.adform.sdk.network.base.ito.network.NetworkRequest;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
 
@@ -69,6 +70,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mPlacementDimen = initAdDimen();
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
+        getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setBridgeListener(this);
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
@@ -124,8 +126,9 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         }
     }
 
-    protected void loadImpression(String impressionUrl) {
+    public void loadImpression(String impressionUrl) {
         // Loading impression
+        Utils.p("Sending impression");
         RawNetworkTask impressionTask =
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);

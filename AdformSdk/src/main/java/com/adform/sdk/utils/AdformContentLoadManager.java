@@ -240,9 +240,15 @@ public class AdformContentLoadManager implements ErrorListener, LoadingStateList
         return isLoading;
     }
 
-    public String getResponse() {
+    public String getLastRawResponse() {
         if (mLastRawResponse != null && mLastRawResponse.getContent() != null)
             return mLastRawResponse.getContent();
+        return null;
+    }
+
+    public AdServingEntity getLastAdServingResponse() {
+        if (mLastAdServingResponse != null)
+            return mLastAdServingResponse;
         return null;
     }
 
