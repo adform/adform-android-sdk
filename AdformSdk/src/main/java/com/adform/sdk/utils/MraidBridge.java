@@ -27,6 +27,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private AdWebView.NativeWebviewListener mMraidListener;
     private MraidBridgeListener mBridgeListener;
     private boolean mVisible;
+    private boolean mUseCustomClose = false;
     private boolean mAllowOrientationChange = true;
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
 
@@ -253,5 +254,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mForcedOrientation = forcedOrientation;
         if (mMraidListener != null)
             mMraidListener.onMraidSetOrientation(allowOrientationChange, forcedOrientation);
+    }
+
+    @Override
+    public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
+        mUseCustomClose = shouldUseCustomClose;
+        if (mMraidListener != null)
+            mMraidListener.onMraidUseCustomClose(shouldUseCustomClose);
     }
 }

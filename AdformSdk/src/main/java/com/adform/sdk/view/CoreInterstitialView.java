@@ -21,6 +21,8 @@ import com.adform.sdk.view.inner.InnerInterstitialView;
  */
 public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener {
 
+    private CloseImageView mCloseImageView;
+
     public interface CoreInterstitialListener {
         public void onAdClose();
         public void onAdOrientationChange(int orientation);
@@ -43,16 +45,11 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
         if (mContext instanceof CoreInterstitialListener)
             mListener = (CoreInterstitialListener)mContext;
         setAnimating(false);
-        setVisibility(View.VISIBLE);
-        CloseImageView imageView = new CloseImageView(mContext);
-        final RelativeLayout.LayoutParams closeImageViewParams = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        closeImageViewParams.addRule(ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        closeImageViewParams.addRule(ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        imageView.setOnClickListener(this);
-        addView(imageView, closeImageViewParams);
-        imageView.bringToFront();
+        mCloseImageView = new CloseImageView(mContext);
+        mCloseImageView.setVisible(true);
+        mCloseImageView.setOnClickListener(this);
+        addView(mCloseImageView, mCloseImageView.getStandardLayoutParams());
+        mCloseImageView.bringToFront();
     }
 
     public void showContent(String content) {
@@ -137,5 +134,10 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
             default:
                 mListener.onAdOrientationChange(Configuration.ORIENTATION_UNDEFINED);
         }
+    }
+
+    @Override
+    public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
+        mCloseImageView.setVisible(shouldUseCustomClose);
     }
 }

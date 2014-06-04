@@ -23,6 +23,7 @@ public class AdWebView extends WebView {
         public void onMraidClose();
         public void onMraidSetOrientation(boolean allowOrientationChange,
                                           AdformEnum.ForcedOrientation forcedOrientation);
+        public void onMraidUseCustomClose(boolean shouldUseCustomClose);
     }
 
     private Context mContext;

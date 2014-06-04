@@ -109,4 +109,6 @@ public class DummyView extends BaseCoreContainer {
     @Override
     public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {}
 
+    @Override
+    public void onMraidUseCustomClose(boolean shouldUseCustomClose) {}
 }

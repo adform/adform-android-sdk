@@ -32,10 +32,7 @@
 
 package com.adform.sdk.mraid;
 
-import com.adform.sdk.mraid.commands.MraidBaseCommand;
-import com.adform.sdk.mraid.commands.MraidCommandClose;
-import com.adform.sdk.mraid.commands.MraidCommandOpen;
-import com.adform.sdk.mraid.commands.MraidCommandSetOrientation;
+import com.adform.sdk.mraid.commands.*;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.Map;
@@ -48,7 +45,8 @@ public class MraidCommandFactory {
         EXPAND("expand"),
         OPEN("open"),
         RESIZE("resize"),
-        SET_ORIENTATION("orientationProperties"),
+        ORIENTATION_PROPERTIES("orientationProperties"),
+        CUSTOM_CLOSE("useCustomClose"),
         UNSPECIFIED("");
 
         private String mCommand;
@@ -84,8 +82,10 @@ public class MraidCommandFactory {
                 return new MraidCommandOpen(params, view);
             case CLOSE:
                 return new MraidCommandClose(params, view);
-            case SET_ORIENTATION:
-                return new MraidCommandSetOrientation(params, view);
+            case ORIENTATION_PROPERTIES:
+                return new MraidCommandOrientationProperties(params, view);
+            case CUSTOM_CLOSE:
+                return new MraidCommandCustomClose(params, view);
             case UNSPECIFIED:
                 return null;
             default:

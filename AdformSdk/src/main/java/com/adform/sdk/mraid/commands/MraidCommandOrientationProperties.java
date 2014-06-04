@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * Created by mariusm on 08/05/14.
  */
-public class MraidCommandSetOrientation extends MraidBaseCommand {
-    public MraidCommandSetOrientation(Map<String, String> params, AdWebView view) {
+public class MraidCommandOrientationProperties extends MraidBaseCommand {
+    public MraidCommandOrientationProperties(Map<String, String> params, AdWebView view) {
         super(params, view);
     }
 
@@ -20,7 +20,7 @@ public class MraidCommandSetOrientation extends MraidBaseCommand {
         AdformEnum.ForcedOrientation forcedOrientation =
                 AdformEnum.ForcedOrientation.parseType(getStringFromParamsForKey("forceOrientation"));
         if (forcedOrientation == AdformEnum.ForcedOrientation.UNKNOWN) {
-            mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.SET_ORIENTATION, "Undefined orientation");
+            mWebView.fireErrorEvent(MraidCommandFactory.MraidJavascriptCommand.ORIENTATION_PROPERTIES, "Undefined orientation");
             return;
         }
         mWebView.getListener().onMraidSetOrientation(allowOrientationChange, forcedOrientation);
