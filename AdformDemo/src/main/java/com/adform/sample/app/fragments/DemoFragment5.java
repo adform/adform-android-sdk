@@ -39,11 +39,11 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
 
         // Initializing loading manager
         mAdformContentLoadManager = new AdformContentLoadManager();
-        if (savedInstanceState != null) {
+//        if (savedInstanceState != null) {
             // If there is info that should be restored (like loaded content that can be reused) to load manager,
             // restoreInstanceWithBundle exactly does that
-            mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
-        }
+//            mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
+//        }
     }
 
     @Override
@@ -145,7 +145,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Saving instance of the content loader
-        if (mAdformContentLoadManager != null)
-            outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
+//        if (mAdformContentLoadManager != null)
+//            outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
     }
 }
