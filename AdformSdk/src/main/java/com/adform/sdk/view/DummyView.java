@@ -109,29 +109,4 @@ public class DummyView extends BaseCoreContainer {
     @Override
     public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {}
 
-    /**
-     * Generates required parameters that are needed with the request for a contract.
-     * This also forms a json object.
-     * @return formed parameters as json
-     */
-    public String getDummyViewProperties() {
-        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
-        properties.add(MraidPlacementSizeProperty.createWithDimension(getAdDimension()));
-        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterId()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", getVersion()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", getUserAgent()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "\"accepted_languages\"", getLocale().replaceAll("_", "-")));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "\"type\"", getBannerType()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"publisher_id\"", getPublisherId()));
-//        if (!IS_CUSTOMDATA_LOADED) {
-//            if (!paramsListener.isCustomParamsEmpty())
-//                IS_REQUEST_WITH_CUSTOMDATA = true;
-//            properties.add(MraidCustomProperty.createWithCustomParams(paramsListener.getCustomParameters()));
-//        }
-        properties.add(getDeviceId());
-        return MraidBaseProperty.generateJSONPropertiesToString(properties);
-    }
-
 }

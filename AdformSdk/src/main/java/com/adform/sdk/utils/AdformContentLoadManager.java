@@ -1,9 +1,10 @@
 package com.adform.sdk.utils;
 
 import android.os.Bundle;
-import com.adform.sdk.interfaces.AdformRequestParamsListener;
-import com.adform.sdk.mraid.properties.*;
+import com.adform.sdk.Constants;
+import com.adform.sdk.network.app.AdformNetworkTask;
 import com.adform.sdk.network.app.RawNetworkTask;
+import com.adform.sdk.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk.network.app.entities.entities.RawResponse;
 import com.adform.sdk.network.base.ito.network.*;
 import org.w3c.dom.Document;
@@ -17,7 +18,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +25,7 @@ import java.util.regex.Pattern;
  * Created by mariusm on 29/04/14.
  * Helps to load content that is parsed from json script source.
  */
-public class AdformContentLoadManager implements SuccessListener<RawResponse>,
-        ErrorListener, LoadingStateListener {
+public class AdformContentLoadManager implements ErrorListener, LoadingStateListener {
 
     public static final String INSTANCE_LAST_RESPONSE = "INSTANCE_LAST_RESPONSE";
     public static final String INSTANCE_LAST_MRAID_FLAG = "INSTANCE_LAST_MRAID_FLAG";
@@ -55,15 +54,14 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     private ContentLoaderListener mListener;
     private DocumentBuilderFactory mDocBuilderFactory;
     private boolean isLoading = false;
-    private RawResponse mLastResponse;
+    private RawResponse mLastRawResponse;
+    private AdServingEntity mLastAdServingResponse;
 
-    public AdformContentLoadManager(ContentLoaderListener l) {
-        this.mListener = l;
-    }
+    public AdformContentLoadManager() {}
 
-    public void loadContent(RawNetworkTask getTask) throws ContentLoadException {
-        if (isLoading())
-            throw new ContentLoadException("Content already being loaded");
+    public void loadContent(NetworkTask<?> getTask) throws ContentLoadException {
+//        if (isLoading())
+//            throw new ContentLoadException("Content already being loaded");
         getTask.execute();
     }
 
@@ -84,7 +82,18 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         }
         RawNetworkTask rawTask =
                 new RawNetworkTask(NetworkRequest.Method.GET, (isUrlInXml)?pulledUrl:url);
-        rawTask.setSuccessListener(this);
+        rawTask.setSuccessListener(new SuccessListener<RawResponse>() {
+            @Override
+            public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
+                if (response != null && response.getEntity() != null) {
+                    mLastRawResponse = response.getEntity();
+                    if (mListener != null) {
+                        mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+                    }
+                }
+            }
+        });
+        rawTask.setLoadingStateListener(this);
         rawTask.setErrorListener(this);
         return rawTask;
     }
@@ -100,9 +109,55 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
                 new RawNetworkTask(NetworkRequest.Method.POST, url);
         if (properties != null)
             rawTask.setJsonEntity(properties);
-        rawTask.setSuccessListener(this);
+        rawTask.setSuccessListener(new SuccessListener<RawResponse>() {
+            @Override
+            public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
+                if (response != null && response.getEntity() != null) {
+                    mLastRawResponse = response.getEntity();
+                    if (mListener != null) {
+                        mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+                    }
+                }
+            }
+        });
+        rawTask.setLoadingStateListener(this);
         rawTask.setErrorListener(this);
         return rawTask;
+    }
+
+    /**
+     * Loads url.
+     * @param urlPostfix postfix, that is added to the standard url
+     * @param properties properties that are added with the request. This probably will be json properties
+     */
+    public AdformNetworkTask getContractTask(String urlPostfix, String properties) throws ContentLoadException {
+        Utils.p("Generated params: "+properties);
+        AdformNetworkTask<AdServingEntity> contractTask =
+                new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
+                        Constants.SDK_INFO_PATH+
+                                (urlPostfix != null?urlPostfix:""),
+                        AdServingEntity.class, AdServingEntity.responseParser);
+        if (properties != null)
+            contractTask.setJsonEntity(properties);
+        contractTask.setSuccessListener(new SuccessListener<AdServingEntity>() {
+            @Override
+            public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
+                if (response != null && response.getEntity() != null) {
+                    mLastAdServingResponse = response.getEntity();
+                    if (mListener != null) {
+                        if (mLastAdServingResponse != null
+                                && mLastAdServingResponse.getAdEntity() != null
+                                && mLastAdServingResponse.getAdEntity().getTagDataEntity() != null
+                                && mLastAdServingResponse.getAdEntity().getTagDataEntity().getSrc() != null)
+                            mListener.onContentMraidLoadSuccessful(
+                                    mLastAdServingResponse.getAdEntity().getTagDataEntity().getSrc());
+                    }
+                }
+            }
+        });
+        contractTask.setLoadingStateListener(this);
+        contractTask.setErrorListener(this);
+        return contractTask;
     }
 
     @Override
@@ -121,15 +176,15 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
         isLoading = false;
     }
 
-    @Override
-    public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
-        if (response != null && response.getEntity() != null) {
-            mLastResponse = response.getEntity();
-            if (mListener != null) {
-                mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
-            }
-        }
-    }
+//    @Override
+//    public void onSuccess(NetworkTask request, NetworkResponse<RawResponse> response) {
+//        if (response != null && response.getEntity() != null) {
+//            mLastRawResponse = response.getEntity();
+//            if (mListener != null) {
+//                mListener.onContentMraidLoadSuccessful(response.getEntity().getContent());
+//            }
+//        }
+//    }
 
     private static final String HTML_TAG_PATTERN = "(\\\\x3Cscript|<script).{1,50}(mraid\\.js).*?(\\/>|script>)";
     /**
@@ -186,10 +241,15 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     }
 
     public String getResponse() {
-        if (mLastResponse != null && mLastResponse.getContent() != null)
-            return mLastResponse.getContent();
+        if (mLastRawResponse != null && mLastRawResponse.getContent() != null)
+            return mLastRawResponse.getContent();
         return null;
     }
+
+    public void setListener(ContentLoaderListener listener) {
+        this.mListener = listener;
+    }
+
     // -------------------------
     // Instance saving/restoring
     // -------------------------
@@ -198,8 +258,8 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
      */
     public Bundle getSaveInstanceBundle() {
         Bundle bundle = new Bundle();
-        if (mLastResponse != null)
-            bundle.putString(INSTANCE_LAST_RESPONSE, mLastResponse.getContent());
+        if (mLastRawResponse != null)
+            bundle.putString(INSTANCE_LAST_RESPONSE, mLastRawResponse.getContent());
         return bundle;
     }
 
@@ -210,7 +270,7 @@ public class AdformContentLoadManager implements SuccessListener<RawResponse>,
     public void restoreInstanceWithBundle(Bundle restoreBundle) {
         if (restoreBundle == null)
             return;
-        mLastResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
+        mLastRawResponse = new RawResponse(restoreBundle.getString(INSTANCE_LAST_RESPONSE));
     }
 
 }

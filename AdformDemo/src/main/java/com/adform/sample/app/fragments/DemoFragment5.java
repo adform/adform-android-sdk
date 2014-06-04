@@ -27,6 +27,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     public static final String CONTENT_LOADER_INFO = "CONTENT_LOADER_INFO";
     // A flag that handles when the ad should be shown
     private boolean showAfterLoad = false;
+    private boolean isJsLoaded = false;
     // Manager that handles network loading tasks
     private AdformContentLoadManager mAdformContentLoadManager;
     private DummyView mDummyView;
@@ -44,7 +45,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         mDummyView.setPublisherId(666666);
 
         // Initializing loading manager
-        mAdformContentLoadManager = new AdformContentLoadManager(this);
+        mAdformContentLoadManager = new AdformContentLoadManager();
         if (savedInstanceState != null) {
             // If there is info that should be restored (like loaded content that can be reused) to load manager,
             // restoreInstanceWithBundle exactly does that
@@ -70,30 +71,14 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.load_button: {
                 // Loading information from the network with the provided link
-                try {
-                    mAdformContentLoadManager.loadContent(
-                            mAdformContentLoadManager.getRawPostTask(Constants.TEMP_INTERSTITIAL_LINK,
-                                    mDummyView.getDummyViewProperties())
-                    );
-                } catch (AdformContentLoadManager.ContentLoadException e) {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
+                loadContract();
                 break;
             }
             case R.id.show_button: {
                 // Showing information that was loaded
                 showAfterLoad = true;
-                if (mAdformContentLoadManager.getResponse() == null)
-                    try {
-                        mAdformContentLoadManager.loadContent(
-                                mAdformContentLoadManager.getRawPostTask(Constants.TEMP_INTERSTITIAL_LINK,
-                                        mDummyView.getDummyViewProperties())
-                        );
-                    } catch (AdformContentLoadManager.ContentLoadException e) {
-                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
+                if (!isJsLoaded)
+                    loadContract();
                 else {
                     showAfterLoad = false;
                     AdformInterstitialActivity.startActivity(getActivity(),
@@ -104,9 +89,42 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         }
     }
 
+    private void loadContract() {
+        if (!mAdformContentLoadManager.isLoading()) {
+            try {
+                isJsLoaded = false;
+                mAdformContentLoadManager.loadContent(
+                        mAdformContentLoadManager.getContractTask(
+                                mDummyView.getUrlProperties(),
+                                mDummyView.getRequestProperties())
+                );
+                mAdformContentLoadManager.setListener(new AdformContentLoadManager.ContentLoaderListener() {
+                    @Override
+                    public void onContentMraidLoadSuccessful(String content) {
+                        try {
+                            mAdformContentLoadManager.loadContent(mAdformContentLoadManager.getRawGetTask(
+                                    content, true
+                            ));
+                            mAdformContentLoadManager.setListener(DemoFragment5.this);
+                        } catch (AdformContentLoadManager.ContentLoadException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onContentLoadFailed() {}
+                });
+            } catch (AdformContentLoadManager.ContentLoadException e) {
+                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+    }
+
     // Response callback when loaded mraid type of content
     @Override
     public void onContentMraidLoadSuccessful(String content) {
+        isJsLoaded = true;
         showToast("Loaded MRaid ad");
         if (showAfterLoad) {
             showAfterLoad = false;

@@ -62,7 +62,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
-        mAdformContentLoadManager = new AdformContentLoadManager(this);
+        mAdformContentLoadManager = new AdformContentLoadManager();
+        mAdformContentLoadManager.setListener(this);
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
                 mPlacementDimen.getWidth(),
                 mPlacementDimen.getHeight());
@@ -251,7 +252,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected void resumeService() {
         super.resumeService();
         if (mAdService == null)
-            mAdService = new AdService(this, this);
+            mAdService = new AdService(this);
         mAdService.addObserver(this);
         mAdService.restoreInstanceWithBundle(mServiceInstanceBundle);
         mServiceInstanceBundle = null;
@@ -263,7 +264,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected void startService() {
         super.startService();
         if (mAdService == null)
-            mAdService = new AdService(this, this);
+            mAdService = new AdService(this);
         mAdService.addObserver(this);
         if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
             resumeService();

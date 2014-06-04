@@ -2,6 +2,7 @@ package com.adform.sdk.interfaces;
 
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
+import com.adform.sdk.utils.AdformEnum;
 
 import java.util.HashMap;
 
@@ -33,5 +34,5 @@ public interface AdformRequestParamsListener {
      * Returns current banner type. This can be interstitial, or inline
      * @return banner type
      */
-    public String getBannerType();
+    public AdformEnum.PlacementType getBannerType();
 }

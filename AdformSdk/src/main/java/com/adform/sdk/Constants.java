@@ -16,7 +16,7 @@ public class Constants {
     public static final String SDK_INFO_PATH_EMPTY = "mobilesdk/tricky.php";
 //    public static final String TEMP_INTERSTITIAL_LINK = SERVER_URL+SDK_INFO_PATH+
 //            "banner_interstitial.js";
-    public static final String TEMP_INTERSTITIAL_LINK = "http://track.adform.net/mobile/script/?bn=3919540";
+//    public static final String TEMP_INTERSTITIAL_LINK = "http://track.adform.net/mobile/script/?bn=3919540";
     // View parameters
     public static final int PHONE_WIDTH = 320;
     public static final int PHONE_HEIGHT = 50;

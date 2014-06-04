@@ -4,7 +4,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
 import com.adform.sdk.Constants;
+import com.adform.sdk.mraid.properties.MraidBaseProperty;
+import com.adform.sdk.mraid.properties.MraidMasterTagProperty;
+import com.adform.sdk.mraid.properties.MraidPlacementSizeProperty;
+import com.adform.sdk.mraid.properties.SimpleMraidProperty;
 import com.adform.sdk.view.CoreAdView;
+
+import java.util.ArrayList;
 
 /**
  * Created by marius on 8/16/13.
@@ -58,4 +64,5 @@ public class Utils {
     public static int pxToDp(int pixels) {
         return (int) Math.ceil(pixels / CoreAdView.sDeviceDensity);
     }
+
 }

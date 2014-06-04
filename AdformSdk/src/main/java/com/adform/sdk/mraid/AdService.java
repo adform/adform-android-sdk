@@ -10,6 +10,7 @@ import com.adform.sdk.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.network.base.ito.observable.ObservableService2;
 import com.adform.sdk.utils.Utils;
+import com.adform.sdk.view.base.BaseCoreContainer;
 
 import java.util.ArrayList;
 
@@ -18,8 +19,6 @@ import java.util.ArrayList;
  * A service that controls when the ad should be loaded from the network.
  */
 public class AdService extends ObservableService2 {
-    private static boolean IS_CUSTOMDATA_LOADED = false;
-    private static boolean IS_REQUEST_WITH_CUSTOMDATA = false;
     private static final String TAG = AdService.class.getSimpleName();
     public static final long INSTANT_EXECUTION_DELAY = 500;
     public static final String INSTANCE_KEY_STOP = "instance_key_stop";
@@ -31,19 +30,16 @@ public class AdService extends ObservableService2 {
     public interface AdServiceBinder {
         /** @return view context */
         public Context getContext();
+        public BaseCoreContainer getView();
         public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
-
-
 
     private AdServingEntity mAdServingEntity;
     private long mTimerStop;
     private AdServiceBinder mListener;
-    private AdformRequestParamsListener mParamsListener;
 
-    public AdService(AdServiceBinder mListener, AdformRequestParamsListener mParamsListener) {
+    public AdService(AdServiceBinder mListener) {
         this.mListener = mListener;
-        this.mParamsListener = mParamsListener;
     }
 
     /**
@@ -75,9 +71,7 @@ public class AdService extends ObservableService2 {
     private SuccessListener<AdServingEntity> mGetSuccessListener = new SuccessListener<AdServingEntity>() {
         @Override
         public void onSuccess(NetworkTask request, NetworkResponse<AdServingEntity> response) {
-            if (IS_REQUEST_WITH_CUSTOMDATA && !IS_CUSTOMDATA_LOADED) {
-                IS_CUSTOMDATA_LOADED = true;
-            }
+            BaseCoreContainer.setCustomDataLoaded();
             mAdServingEntity = response.getEntity();
             triggerObservers(mAdServingEntity);
             if (mAdServingEntity != null
@@ -112,9 +106,8 @@ public class AdService extends ObservableService2 {
      * @return formed network request
      */
     private AdformNetworkTask<AdServingEntity> getRequest(){
-
-        String additionalPOSTProperties = getGeneratedPOSTPropertiesToString();
-        String additionalURLProperties = getGeneratedUrlPropertiesToString();
+        String additionalPOSTProperties = mListener.getView().getRequestProperties();
+        String additionalURLProperties = mListener.getView().getUrlProperties();
         Utils.p("Generated params: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
@@ -125,47 +118,6 @@ public class AdService extends ObservableService2 {
         getTask.setSuccessListener(mGetSuccessListener);
         getTask.setErrorListener(mGetErrorListener);
         return getTask;
-    }
-
-    /**
-     * Generates required parameters that are needed with the request for a contract.
-     * This also forms a json object.
-     * @return formed parameters as json
-     */
-    private String getGeneratedPOSTPropertiesToString() {
-        if (mListener == null)
-//            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
-            return null;
-        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
-        properties.add(MraidPlacementSizeProperty.createWithDimension(mParamsListener.getAdDimension()));
-        properties.add(MraidMasterTagProperty.createWithMasterTag(mParamsListener.getMasterId()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", mParamsListener.getVersion()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", mParamsListener.getUserAgent()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "\"accepted_languages\"", mParamsListener.getLocale().replaceAll("_", "-")));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "\"type\"", mParamsListener.getBannerType()));
-        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"publisher_id\"", mParamsListener.getPublisherId()));
-        if (!IS_CUSTOMDATA_LOADED) {
-            if (!mParamsListener.isCustomParamsEmpty())
-                IS_REQUEST_WITH_CUSTOMDATA = true;
-            properties.add(MraidCustomProperty.createWithCustomParams(mParamsListener.getCustomParameters()));
-        }
-        properties.add(mParamsListener.getDeviceId());
-        return MraidBaseProperty.generateJSONPropertiesToString(properties);
-    }
-
-    /**
-     * Generates required parameters that have to be passed with the request in GET form.
-     * @return required parameters appended to url
-     */
-    private String getGeneratedUrlPropertiesToString() {
-        if (mListener == null)
-//            throw new IllegalStateException("AdService requires for an AdServiceBinder interface implementation");
-            return null;
-        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
-        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
-        return MraidBaseProperty.generateGETPropertiesToString(properties);
     }
 
     @Override

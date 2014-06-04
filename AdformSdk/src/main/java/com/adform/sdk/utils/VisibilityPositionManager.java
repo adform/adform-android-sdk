@@ -6,6 +6,7 @@ import android.view.*;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import com.adform.sdk.utils.entities.ViewCoords;
+import com.adform.sdk.view.base.BaseCoreContainer;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         public int getWidth();
         public ViewParent getParent();
         public boolean isContentMraid();
-        public View getView();
+        public BaseCoreContainer getView();
         public Context getContext();
         // Callback functions
         public void onVisibilityManagerUpdate(boolean visibility);

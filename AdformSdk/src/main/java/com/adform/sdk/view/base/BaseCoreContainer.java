@@ -5,25 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
+import com.adform.sdk.mraid.properties.*;
 import com.adform.sdk.network.app.RawNetworkTask;
-import com.adform.sdk.network.app.entities.entities.RawResponse;
 import com.adform.sdk.network.base.ito.network.NetworkRequest;
-import com.adform.sdk.network.base.ito.network.NetworkResponse;
-import com.adform.sdk.network.base.ito.network.NetworkTask;
-import com.adform.sdk.network.base.ito.network.SuccessListener;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
-import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -36,6 +31,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public static final String MASTER_ID = "master_id";
     public static final String API_VERSION = "api_version";
     public static final String HIDDEN_STATE = "hidden_state";
+    private static boolean IS_CUSTOMDATA_LOADED = false;
+    private static boolean IS_REQUEST_WITH_CUSTOMDATA = false;
 
     protected Context mContext;
     /** States that helps handle various states for the view visibility */
@@ -136,8 +133,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     @Override
-    public String getBannerType() {
-        return AdformEnum.PlacementType.getPlacementString(getInnerView().getPlacementType());
+    public AdformEnum.PlacementType getBannerType() {
+        return getInnerView().getPlacementType();
     }
 
     @Override
@@ -293,8 +290,52 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     @Override
-    public View getView() {
+    public BaseCoreContainer getView() {
         return this;
+    }
+
+    /**
+     * Generates required parameters that are needed with the request for a contract.
+     * This also forms a json object.
+     * @return formed parameters as json
+     */
+    public String getRequestProperties() {
+        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
+        if (getBannerType() == AdformEnum.PlacementType.INTERSTITIAL)
+            properties.add(MraidPlacementSizeProperty.createWithSize(1, 1));
+        else
+            properties.add(MraidPlacementSizeProperty.createWithDimension(getAdDimension()));
+        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterId()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", getVersion()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", getUserAgent()));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue(
+                "\"accepted_languages\"", getLocale().replaceAll("_", "-")));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue(
+                "\"type\"", AdformEnum.PlacementType.getPlacementString(getBannerType())));
+        properties.add(SimpleMraidProperty.createWithKeyAndValue("\"publisher_id\"", getPublisherId()));
+        if (!IS_CUSTOMDATA_LOADED) {
+            if (!isCustomParamsEmpty())
+                IS_REQUEST_WITH_CUSTOMDATA = true;
+            properties.add(MraidCustomProperty.createWithCustomParams(getCustomParameters()));
+        }
+        properties.add(getDeviceId());
+        return MraidBaseProperty.getRequestPropertiesToString(properties);
+    }
+
+    /**
+     * Generates required parameters that have to be passed with the request in GET form.
+     * @return required parameters appended to url
+     */
+    public String getUrlProperties() {
+        ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
+        properties.add(MraidRandomNumberProperty.createWithRandomNumber());
+        return MraidBaseProperty.getUrlPropertiesToString(properties);
+    }
+
+    public static void setCustomDataLoaded() {
+        if (IS_REQUEST_WITH_CUSTOMDATA && !IS_CUSTOMDATA_LOADED) {
+            IS_CUSTOMDATA_LOADED = true;
+        }
     }
 
     // -------------------
