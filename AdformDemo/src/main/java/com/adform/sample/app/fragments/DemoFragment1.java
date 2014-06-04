@@ -21,7 +21,7 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
     }
 
     @Override
@@ -31,7 +31,8 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         mAdView.setListener(this);
         mAdView.addCustomParam("gender", "female");
         mAdView.addCustomParam("age", "23");
-        mAdView.setMasterId(111111);
+//        mAdView.setMasterId(111111);
+        mAdView.setMasterId(11234);
         mAdView.setPublisherId(654321);
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);

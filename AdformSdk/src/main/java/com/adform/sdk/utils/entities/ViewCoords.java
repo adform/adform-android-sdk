@@ -27,8 +27,33 @@ public class ViewCoords implements Cloneable {
         view.getLocationInWindow(location);
         return new ViewCoords(location[0], location[1], view.getWidth(), view.getHeight());
     }
+
+    public static ViewCoords createViewCoordSubrtactModifier(View view, ViewCoords viewCoords) {
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        return new ViewCoords(location[0]-viewCoords.getWidth(),
+                location[1]-viewCoords.getHeight(), view.getWidth(), view.getHeight());
+    }
+
     public static ViewCoords createViewCoord(int x, int y) {
         return new ViewCoords(x, y);
+    }
+
+    /**
+     * Method calculates a distinction gap between two coordinates, and creates a new one, from the found difference.
+     * Note that x and y variables are obsolete, only width and height properties are calculated.
+     * @param largeViewCoords larger (container) input coordinate 1
+     * @param smallViewCoords smaller input coordinate 2
+     * @return gap coordinates
+     */
+    public static ViewCoords createViewCoordFromGapBetweenCoords(
+            ViewCoords largeViewCoords, ViewCoords smallViewCoords) {
+        if (largeViewCoords == null || smallViewCoords == null)
+            return null;
+        ViewCoords gapCoords = new ViewCoords(0, 0);
+        gapCoords.setWidth(largeViewCoords.getWidth() - smallViewCoords.getWidth());
+        gapCoords.setHeight(largeViewCoords.getHeight() - smallViewCoords.getHeight());
+        return gapCoords;
     }
 
     public static ViewCoords createViewCoord(int x, int y, int width, int height) {

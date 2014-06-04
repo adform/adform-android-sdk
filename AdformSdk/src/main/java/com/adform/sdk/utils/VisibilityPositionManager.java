@@ -46,6 +46,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     private ViewParent mViewParent;
     private ArrayList<ViewCoords> mParentCoords;
     private ViewCoords mDefaultPosition, mCurrentPosition, mMaxSize, mScreenSize;
+    private ViewCoords mGapBetweenScreenSizeMaxSize;
     private View mLastContainer;
     private final VisibilityManagerListener mVisibilityManagerListener;
     private PositionManagerListener mPositionManagerListener;
@@ -54,10 +55,6 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
      * It reacts when visibility changes depending on the percent of the view displayed
      * */
     private double mVisibilityKoef = 0.5;
-
-//    public VisibilityPositionManager(Context context, VisibilityManagerListener visibilityManagerListener) {
-//        this(context, visibilityManagerListener, null);
-//    }
 
     public VisibilityPositionManager(Context context,
                                      VisibilityManagerListener visibilityManager,
@@ -86,7 +83,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             screenCoords.setHeight(display.getHeight());
         }
         // Need to modify screen height, as status bar is always included in the counting
-        screenCoords.setHeight(screenCoords.getHeight() + getNavigationBarHeight());
+        screenCoords.setHeight(screenCoords.getHeight());
         setScreenSize(screenCoords);
     }
 
@@ -105,7 +102,8 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             @Override
             public void run() {
                 if (mPositionManagerListener != null) {
-                    setCurrentPosition(ViewCoords.createViewCoord(mVisibilityManagerListener.getView()));
+                    setCurrentPosition(ViewCoords.createViewCoordSubrtactModifier(
+                            mVisibilityManagerListener.getView(), mGapBetweenScreenSizeMaxSize));
                     if ((mDefaultPosition != null && mDefaultPosition.isZero()) || mDefaultPosition == null) {
                         setDefaultPosition(ViewCoords.createViewCoord(mCurrentPosition));
                     }
@@ -118,29 +116,6 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         mVisibilityManagerListener.postDelayed(mVisibilityRunnable, VISIBILITY_CHECK_DELAY);
     }
 
-    /**
-     * @return size in pixels of android status (notifications, clock) bar
-     */
-    private int getStatusBarHeight() {
-        int result = 0;
-        int resourceId = mVisibilityManagerListener.getContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = mVisibilityManagerListener.getContext().getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
-    }
-
-    /**
-     * @return size in pixels of android navigation (home, back buttons) bar
-     */
-    private int getNavigationBarHeight() {
-        int result = 0;
-        int resourceId = mVisibilityManagerListener.getContext().getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return mVisibilityManagerListener.getContext().getResources().getDimensionPixelSize(resourceId);
-        }
-        return 0;
-    }
     /**
      * Runs the checks through all the containers if something has changed.
      * @see #isViewVisible(ViewCoords, ViewCoords)
@@ -262,6 +237,9 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         if (mPositionManagerListener == null)
             return;
         this.mMaxSize = maxSize;
+        mGapBetweenScreenSizeMaxSize = ViewCoords.createViewCoordFromGapBetweenCoords(
+                mScreenSize, mMaxSize
+        );
         mPositionManagerListener.onMaxSizeUpdate(mMaxSize, false);
     }
 

@@ -77,6 +77,12 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         addView(getInnerView());
     }
 
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mVisibilityPositionManager.checkVisibilityService();
+    }
+
     /**
      * Initializes inner used view that display an ad
      * @return initialized inner view
@@ -128,7 +134,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     public void loadImpression(String impressionUrl) {
         // Loading impression
-        Utils.p("Sending impression");
         RawNetworkTask impressionTask =
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);
@@ -140,11 +145,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         return getInnerView().getPlacementType();
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        mVisibilityPositionManager.checkVisibilityService();
-    }
+//    @Override
+//    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+//        super.onLayout(changed, l, t, r, b);
+//    }
 
     @Override
     protected void onAttachedToWindow() {
