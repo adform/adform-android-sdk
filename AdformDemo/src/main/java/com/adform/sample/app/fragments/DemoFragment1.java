@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.adform.sample.app.R;
 import com.adform.sdk.network.base.ito.network.NetworkError;
 import com.adform.sdk.network.base.ito.network.NetworkTask;
-import com.adform.sdk.utils.CustomParamBuilder;
+import com.adform.sdk.utils.builders.CustomParamBuilder;
 import com.adform.sdk.view.CoreAdView;
 
 import java.util.HashMap;
@@ -83,4 +83,5 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
 //        );
 //        Utils.p("Sent error event from url: "+request.getRequest().getUrl());
     }
+
 }

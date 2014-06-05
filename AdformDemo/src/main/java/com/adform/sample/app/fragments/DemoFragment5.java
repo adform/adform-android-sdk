@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import com.adform.sample.app.R;
 import com.adform.sdk.activities.AdformInterstitialActivity;
-import com.adform.sdk.utils.AdformContentLoadManager;
+import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.view.DummyView;
 
 /**

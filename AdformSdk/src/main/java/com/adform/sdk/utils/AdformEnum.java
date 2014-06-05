@@ -41,7 +41,7 @@ public class AdformEnum {
 
     /**
      * Helps to describe ad visibility depending on ad coordinates in the window.
-     * @see com.adform.sdk.utils.VisibilityPositionManager
+     * @see com.adform.sdk.utils.managers.VisibilityPositionManager
      * @see com.adform.sdk.view.base.BaseCoreContainer
      */
     public enum VisibilityOnScreenState {

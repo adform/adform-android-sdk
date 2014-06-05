@@ -1,4 +1,4 @@
-package com.adform.sdk.utils;
+package com.adform.sdk.utils.managers;
 
 import android.view.View;
 import android.view.animation.Animation;
@@ -7,7 +7,7 @@ import android.view.animation.TranslateAnimation;
 /**
  * Created by mariusm on 28/04/14.
  * Manager that helps to handle animation showing.
- * Callback for view control is provided with {@link com.adform.sdk.utils.SlidingManager.SliderableWidget}
+ * Callback for view control is provided with {@link SlidingManager.SliderableWidget}
  */
 public class SlidingManager {
 

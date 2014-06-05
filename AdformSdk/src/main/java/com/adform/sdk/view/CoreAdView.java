@@ -2,8 +2,6 @@ package com.adform.sdk.view;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +13,8 @@ import com.adform.sdk.mraid.AdService;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.*;
+import com.adform.sdk.utils.managers.AdformContentLoadManager;
+import com.adform.sdk.utils.managers.SlidingManager;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerBannerView;
@@ -396,4 +396,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
         // Nothing should be done
     }
+
+    @Override
+    public void onMraidOpen(String url) {
+        super.onMraidOpen(url);
+    }
+
+    // View switching implementation
+
 }

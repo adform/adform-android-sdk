@@ -5,6 +5,7 @@ import com.adform.sdk.mraid.properties.MraidSizeProperty;
 import com.adform.sdk.mraid.properties.MraidViewableProperty;
 import com.adform.sdk.mraid.properties.SimpleMraidProperty;
 import com.adform.sdk.utils.entities.ViewCoords;
+import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
 
 /**

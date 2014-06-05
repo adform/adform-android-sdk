@@ -1,22 +1,17 @@
 package com.adform.sdk.view.base;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.webkit.*;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.MraidWebViewClient;
 import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.*;
+import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.view.inner.AdWebView;
-import com.adform.sdk.view.CoreAdView;
 
 import java.util.HashMap;
 

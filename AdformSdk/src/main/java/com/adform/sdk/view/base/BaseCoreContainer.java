@@ -15,8 +15,7 @@ import com.adform.sdk.network.base.ito.network.NetworkRequest;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
-import com.adform.sdk.utils.Utils;
-import com.adform.sdk.utils.VisibilityPositionManager;
+import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.ArrayList;

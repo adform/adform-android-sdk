@@ -1,4 +1,4 @@
-package com.adform.sdk.utils;
+package com.adform.sdk.utils.managers;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -216,7 +216,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     /**
      * Sets current position. This also checks if there are any changes to the old position.
      * Notifies listener to invoke #onCurrentPositionUpdate(ViewCoords)
-     * @see com.adform.sdk.utils.VisibilityPositionManager.PositionManagerListener
+     * @see VisibilityPositionManager.PositionManagerListener
      * @param currentPosition provided new position
      */
     private void setCurrentPosition(ViewCoords currentPosition) {

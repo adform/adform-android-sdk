@@ -1,4 +1,4 @@
-package com.adform.sdk.utils;
+package com.adform.sdk.utils.builders;
 
 import java.util.HashMap;
 

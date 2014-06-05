@@ -1,4 +1,4 @@
-package com.adform.sdk.utils;
+package com.adform.sdk.utils.managers;
 
 import android.os.Bundle;
 import com.adform.sdk.Constants;
@@ -7,6 +7,7 @@ import com.adform.sdk.network.app.RawNetworkTask;
 import com.adform.sdk.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk.network.app.entities.entities.RawResponse;
 import com.adform.sdk.network.base.ito.network.*;
+import com.adform.sdk.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -131,7 +132,7 @@ public class AdformContentLoadManager implements ErrorListener, LoadingStateList
      * @param properties properties that are added with the request. This probably will be json properties
      */
     public AdformNetworkTask getContractTask(String urlPostfix, String properties) throws ContentLoadException {
-        Utils.p("Generated params: "+properties);
+        Utils.p("Generated params: " + properties);
         AdformNetworkTask<AdServingEntity> contractTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
                         Constants.SDK_INFO_PATH+
