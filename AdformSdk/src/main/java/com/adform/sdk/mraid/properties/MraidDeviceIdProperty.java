@@ -29,7 +29,7 @@ public class MraidDeviceIdProperty extends MraidBaseProperty implements Parcelab
         try {
             AdvertisingIdClient.Info adInfo = null;
             adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
-            if (adInfo != null)
+            if (adInfo != null && !adInfo.isLimitAdTrackingEnabled())
                 advertisingId = adInfo.getId();
         } catch (Exception e) {
             e.printStackTrace();

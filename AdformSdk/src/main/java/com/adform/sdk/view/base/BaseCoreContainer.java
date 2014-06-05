@@ -52,6 +52,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected int mHiddenState = INVISIBLE;
     private boolean isAnimating;
     protected AdDimension mPlacementDimen;
+    protected MraidDeviceIdProperty mDeviceId;
 
     public BaseCoreContainer(Context context) {
         this(context, null);
@@ -64,6 +65,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        initializeDeviceId();
 
         initializeCustomParameters(attrs);
         sDeviceDensity = mContext.getResources().getDisplayMetrics().density;
@@ -75,6 +77,20 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         getInnerView().getMraidBridge().setBridgeListener(this);
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
         addView(getInnerView());
+    }
+
+    private void initializeDeviceId() {
+        Thread thr = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mDeviceId = MraidDeviceIdProperty.createWithDeviceId(mContext);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thr.start();
     }
 
     @Override
@@ -252,6 +268,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     public void setMasterId(int masterId) {
         this.mMasterId = masterId;
+    }
+
+    @Override
+    public MraidDeviceIdProperty getDeviceId() {
+        return mDeviceId;
     }
 
     @Override

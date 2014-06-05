@@ -268,18 +268,22 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
             resumeService();
         else {
-            Thread thr = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mDeviceId = MraidDeviceIdProperty.createWithDeviceId(mContext);
-                        mAdService.startService();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            if (mDeviceId == null) {
+                Thread thr = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            mDeviceId = MraidDeviceIdProperty.createWithDeviceId(mContext);
+                            mAdService.startService();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-            thr.start();
+                });
+                thr.start();
+            } else {
+                mAdService.startService();
+            }
         }
     }
 

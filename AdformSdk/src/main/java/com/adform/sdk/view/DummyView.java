@@ -22,8 +22,6 @@ import java.util.ArrayList;
 public class DummyView extends BaseCoreContainer {
     private BaseInnerContainer mInnerContainer;
     private AdWebView mWebView;
-    private MraidDeviceIdProperty mDeviceId;
-
 
     public DummyView(Context context) {
         this(context, null);
@@ -35,17 +33,6 @@ public class DummyView extends BaseCoreContainer {
 
     public DummyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Thread thr = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mDeviceId = MraidDeviceIdProperty.createWithDeviceId(mContext);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thr.start();
     }
 
 
@@ -86,11 +73,6 @@ public class DummyView extends BaseCoreContainer {
 
     @Override
     protected void onVisibilityCallback(boolean isVisible) {}
-
-    @Override
-    public MraidDeviceIdProperty getDeviceId() {
-        return mDeviceId;
-    }
 
     @Override
     public String getUserAgent() {
