@@ -24,6 +24,7 @@ public class AdWebView extends WebView {
         public void onMraidSetOrientation(boolean allowOrientationChange,
                                           AdformEnum.ForcedOrientation forcedOrientation);
         public void onMraidUseCustomClose(boolean shouldUseCustomClose);
+        public void onMraidExpand();
     }
 
     private Context mContext;
@@ -92,6 +93,7 @@ public class AdWebView extends WebView {
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
     public void fireNativeCommandCompleteEvent(String command) {
+        Utils.p("completing command "+command);
         injectJavascript("window.mraidbridge.nativeCallComplete('" + command + "');");
     }
 

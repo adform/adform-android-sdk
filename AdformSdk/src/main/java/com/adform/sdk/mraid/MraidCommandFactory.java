@@ -86,6 +86,8 @@ public class MraidCommandFactory {
                 return new MraidCommandOrientationProperties(params, view);
             case CUSTOM_CLOSE:
                 return new MraidCommandCustomClose(params, view);
+            case EXPAND:
+                return new MraidCommandExpand(params, view);
             case UNSPECIFIED:
                 return null;
             default:

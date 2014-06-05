@@ -1,11 +1,14 @@
 package com.adform.sdk.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.network.app.entities.entities.AdServingEntity;
@@ -29,6 +32,8 @@ import java.util.Observer;
 public class CoreAdView extends BaseCoreContainer implements Observer,
         SlidingManager.SliderableWidget, AdformContentLoadManager.ContentLoaderListener,
         AdService.AdServiceBinder {
+
+    private CoreInterstitialView mCoreInterstitialView;
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
@@ -59,6 +64,10 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mPlaceholderView = new FrameLayout(context);
+//        mExpansionLayout = new RelativeLayout(context);
+//        mAdContainerLayout = new FrameLayout(context);
+
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
@@ -403,5 +412,86 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     // View switching implementation
+    private FrameLayout mRootView;
+    private FrameLayout mPlaceholderView;
+    private RelativeLayout mExpandContainer;
+//    private RelativeLayout mExpansionLayout;
+//    private FrameLayout mAdContainerLayout;
+    // The view's position within its parent.
+    private int mViewIndexInParent;
+
+    @Override
+    public void onMraidExpand() {
+        mExpandContainer = new RelativeLayout(mContext);
+        mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
+        swapViewWithPlaceholderView();
+
+        getExpandedLayouts(getInnerView(), (int) (500), (int) (500));
+        mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
+    }
+
+    private void swapViewWithPlaceholderView() {
+        ViewGroup parent = (ViewGroup) getInnerView().getParent();
+        if (parent == null) return;
+
+        int index;
+        int count = parent.getChildCount();
+        for (index = 0; index < count; index++) {
+            if (parent.getChildAt(index) == getInnerView()) break;
+        }
+
+        mViewIndexInParent = index;
+        parent.addView(mPlaceholderView, index,
+                new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
+        parent.removeView(getInnerView());
+    }
+    private View getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
+        View dimmingView = new View(getContext());
+        dimmingView.setBackgroundColor(Color.BLACK);
+        dimmingView.setAlpha(0.8f);
+        dimmingView.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        mExpandContainer.addView(dimmingView);
+        mCoreInterstitialView = new CoreInterstitialView(mContext, expansionContentView);
+        mCoreInterstitialView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
+            @Override
+            public void onAdClose() {
+                resetViewToDefaultState();
+                getInnerView().getMraidBridge().onStateChange(AdformEnum.State.DEFAULT, false);
+                getInnerView().getMraidBridge().forceSettingUpdate();
+            }
+
+            @Override
+            public void onAdOrientationChange(int orientation) {}
+
+            @Override
+            public void onAdShown() {}
+        });
+
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(expandWidth, expandHeight);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mExpandContainer.addView(mCoreInterstitialView, lp);
+        return mExpandContainer;
+    }
+    private void resetViewToDefaultState() {
+        mCoreInterstitialView.removeAllViewsInLayout();
+        mExpandContainer.removeAllViewsInLayout();
+        mRootView.removeView(mExpandContainer);
+
+        getInnerView().requestLayout();
+
+        ViewGroup parent = (ViewGroup) mPlaceholderView.getParent();
+        parent.addView(getInnerView(), mViewIndexInParent);
+        parent.removeView(mPlaceholderView);
+        parent.invalidate();
+        getInnerView().setBaseListener(this);
+        getInnerView().getMraidBridge().setMraidListener(this);
+        getInnerView().getMraidBridge().setBridgeListener(this);
+    }
 
 }

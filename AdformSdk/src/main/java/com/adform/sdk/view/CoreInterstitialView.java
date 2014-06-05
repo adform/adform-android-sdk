@@ -5,13 +5,10 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.utils.AdformEnum;
-import com.adform.sdk.utils.Utils;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerInterstitialView;
@@ -29,19 +26,22 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
         public void onAdShown();
     }
 
-    private InnerInterstitialView mInterstitialView;
     private CoreInterstitialListener mListener;
 
+    public CoreInterstitialView(Context context, BaseInnerContainer innerContainer) {
+        this(context, null, 0, innerContainer);
+    }
+
     public CoreInterstitialView(Context context) {
-        this(context, null);
+        this(context, null, 0, null);
     }
 
     public CoreInterstitialView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0, null);
     }
 
-    public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle, BaseInnerContainer innerContainer) {
+        super(context, attrs, defStyle, innerContainer);
         if (mContext instanceof CoreInterstitialListener)
             mListener = (CoreInterstitialListener)mContext;
         setAnimating(false);
@@ -55,15 +55,15 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     public void showContent(String content) {
         // Loaded content will always be loaded and mraid type
         setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
-        mInterstitialView.showContent(content);
+        mInnerContainer.showContent(content);
     }
 
     @Override
     protected BaseInnerContainer getInnerView() {
-        if (mInterstitialView == null) {
-            mInterstitialView = new InnerInterstitialView(mContext);
+        if (mInnerContainer == null) {
+            mInnerContainer = new InnerInterstitialView(mContext);
         }
-        return mInterstitialView;
+        return mInnerContainer;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     @Override
     protected void onVisibilityCallback(boolean isVisible) {
-        mInterstitialView.getMraidBridge().changeVisibility(isVisible, false);
+        mInnerContainer.getMraidBridge().changeVisibility(isVisible, false);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     @Override
     public String getUserAgent() {
-        return mInterstitialView.getUserAgent();
+        return mInnerContainer.getUserAgent();
     }
 
     @Override
@@ -139,5 +139,10 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     @Override
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
         mCloseImageView.setVisible(shouldUseCustomClose);
+    }
+
+    @Override
+    public void onMraidExpand() {
+        // Nothing to do here
     }
 }

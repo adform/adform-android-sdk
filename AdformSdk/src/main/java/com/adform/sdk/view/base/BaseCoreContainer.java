@@ -52,6 +52,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private boolean isAnimating;
     protected AdDimension mPlacementDimen;
     protected MraidDeviceIdProperty mDeviceId;
+    protected BaseInnerContainer mInnerContainer;
 
     public BaseCoreContainer(Context context) {
         this(context, null);
@@ -62,10 +63,14 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle) {
+        this(context, attrs, defStyle, null);
+    }
+
+    public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle, BaseInnerContainer innerContainer) {
         super(context, attrs, defStyle);
         mContext = context;
+        mInnerContainer = innerContainer;
         initializeDeviceId();
-
         initializeCustomParameters(attrs);
         sDeviceDensity = mContext.getResources().getDisplayMetrics().density;
         mPlacementDimen = initAdDimen();

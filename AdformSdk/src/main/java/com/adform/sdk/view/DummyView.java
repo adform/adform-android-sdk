@@ -93,4 +93,7 @@ public class DummyView extends BaseCoreContainer {
 
     @Override
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {}
+
+    @Override
+    public void onMraidExpand() {}
 }

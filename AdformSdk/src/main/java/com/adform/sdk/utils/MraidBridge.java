@@ -263,4 +263,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         if (mMraidListener != null)
             mMraidListener.onMraidUseCustomClose(shouldUseCustomClose);
     }
+
+    @Override
+    public void onMraidExpand() {
+        if (mMraidListener != null)
+            mMraidListener.onMraidExpand();
+    }
 }
