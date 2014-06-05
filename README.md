@@ -34,9 +34,9 @@ How to add AdformSDK to your project
 Thats it! If you had any problems, a more detailed implementation is described **below**.
 
 ## Basic AdformSDK Banner View implementation
-To add an ad view, simply insert a view with a path `com.adform.sdk2.view.CoreAdView`. This can be done like this:
+To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdView`. This can be done like this:
 
-	<com.adform.sdk2.view.CoreAdView
+	<com.adform.sdk.view.CoreAdView
 			master_id="1234"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
@@ -58,10 +58,20 @@ To add custom additional values, first View must be found.
 
 Later on, just add wanted values.
 
-        mAdView.addCustomParam("customTestId", "1234567890");
-        mAdView.addCustomParam("customTestId2", "1234567890");
-        mAdView.addCustomParam("customTestId3", "1234567890");
-        mAdView.addCustomParam("customTestId4", "1234567890");
+        // Use builder to set custom parameters...
+        mAdView.setCustomParams(new CustomParamBuilder()
+                        .addCustomParam("gender", "female")
+                        .addCustomParam("age", "23")
+                        .buildParams()
+        );
+        mAdView.clearCustomParams();
+
+        // ...or use variable to store custom params.
+        HashMap<String, String> customParams = new CustomParamBuilder()
+                .addCustomParam("gender", "female")
+                .addCustomParam("age", "23")
+                .buildParams();
+        mAdView.setCustomParams(customParams);
 
 These values also can be cleared by using snippet below.
 
@@ -150,33 +160,36 @@ The interstitial ad has two types, preload info before showing and show info ins
 * If info is loaded from the network, show button uses it to display it. 
 * If info was not loaded, show button loads it automatically and shows it.
 
-		public class DemoFragment5 extends Fragment implements View.OnClickListener,
+        public class DemoFragment5 extends Fragment implements View.OnClickListener,
                 AdformContentLoadManager.ContentLoaderListener {
-    
+        
             // A variable that contains a key for persistent loaded ad saving
             public static final String CONTENT_LOADER_INFO = "CONTENT_LOADER_INFO";
             // A flag that handles when the ad should be shown
             private boolean showAfterLoad = false;
             // Manager that handles network loading tasks
             private AdformContentLoadManager mAdformContentLoadManager;
-    
+            // Dummy view is used to collect all the paramters that are needed for the request
+            private DummyView mDummyView;
+        
             @Override
             public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
             }
-    
+        
             @Override
             public void onActivityCreated(Bundle savedInstanceState) {
                 super.onActivityCreated(savedInstanceState);
+                // We just initialize view for it to collect all the required info
+                mDummyView = new DummyView(getActivity());
+                // Adding custom data
+                mDummyView.setMasterId(222222);
+                mDummyView.setPublisherId(666666);
+        
                 // Initializing loading manager
-                mAdformContentLoadManager = new AdformContentLoadManager(this);
-                if (savedInstanceState != null) {
-                    // If there is info that should be restored (like loaded content that can be reused) to load manager,
-                    // restoreInstanceWithBundle exactly does that
-                    mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
-                }
+                mAdformContentLoadManager = new AdformContentLoadManager();
             }
-    
+        
             @Override
             public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 View view = inflater.inflate(R.layout.activity_main4, null);
@@ -189,51 +202,70 @@ The interstitial ad has two types, preload info before showing and show info ins
                     showButton.setOnClickListener(this);
                 return view;
             }
-    
+        
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.load_button: {
                         // Loading information from the network with the provided link
-                        try {
-                            mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
-                        } catch (AdformContentLoadManager.ContentLoadException e) {
-                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        }
+                        if (!mAdformContentLoadManager.isLoading())
+                            loadContract();
                         break;
                     }
                     case R.id.show_button: {
                         // Showing information that was loaded
                         showAfterLoad = true;
-                        if (mAdformContentLoadManager.getResponse() == null)
-                            try {
-                                mAdformContentLoadManager.loadContent(Constants.TEMP_INTERSTITIAL_LINK);
-                            } catch (AdformContentLoadManager.ContentLoadException e) {
-                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                            }
+                        if (mAdformContentLoadManager.getLastRawResponse() == null)
+                            loadContract();
                         else {
                             showAfterLoad = false;
+                            // Opening interstitial window with content response
+                            // and its impression url
                             AdformInterstitialActivity.startActivity(getActivity(),
-                                    mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+                                    mAdformContentLoadManager.getLastRawResponse(),
+                                    mAdformContentLoadManager.getLastAdServingResponse()
+                                            .getAdEntity().getTagDataEntity().getImpressionUrl()
+                            );
                         }
                         break;
                     }
                 }
             }
-    
-            // Response callback when loaded basic type of content
-            @Override
-            public void onContentLoadSuccessful(String content) {
-                showToast("Loaded basic ad");
-                if (showAfterLoad) {
-                    showAfterLoad = false;
-                    AdformInterstitialActivity.startActivity(getActivity(),
-                            mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+        
+            private void loadContract() {
+                if (!mAdformContentLoadManager.isLoading()) {
+                    try {
+                        // First we need to load a contract for the ad
+                        // We use additional parameters from the dummy view.
+                        mAdformContentLoadManager.loadContent(
+                                mAdformContentLoadManager.getContractTask(
+                                        mDummyView.getUrlProperties(),
+                                        mDummyView.getRequestProperties())
+                        );
+                        mAdformContentLoadManager.setListener(new AdformContentLoadManager.ContentLoaderListener() {
+                            @Override
+                            public void onContentMraidLoadSuccessful(String content) {
+                                try {
+                                    // After successfully loading contract, we load the real ad content
+                                    mAdformContentLoadManager.loadContent(mAdformContentLoadManager.getRawGetTask(
+                                            content, true
+                                    ));
+                                    mAdformContentLoadManager.setListener(DemoFragment5.this);
+                                } catch (AdformContentLoadManager.ContentLoadException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+        
+                            @Override
+                            public void onContentLoadFailed() {}
+                        });
+                    } catch (AdformContentLoadManager.ContentLoadException e) {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
                 }
             }
-    
+        
             // Response callback when loaded mraid type of content
             @Override
             public void onContentMraidLoadSuccessful(String content) {
@@ -241,29 +273,25 @@ The interstitial ad has two types, preload info before showing and show info ins
                 if (showAfterLoad) {
                     showAfterLoad = false;
                     AdformInterstitialActivity.startActivity(getActivity(),
-                            mAdformContentLoadManager.getResponse(), mAdformContentLoadManager.isMraid());
+                            mAdformContentLoadManager.getLastRawResponse(),
+                            mAdformContentLoadManager.getLastAdServingResponse()
+                                    .getAdEntity().getTagDataEntity().getImpressionUrl());
                 }
             }
-    
+        
             // Callback when something went wrong, and couldn't load content
             @Override
             public void onContentLoadFailed() {
                 showToast("Error loading interstitial ad");
             }
-    
+        
             private void showToast(String message) {
                 if (getActivity() != null)
                     Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
-    
-            @Override
-            public void onSaveInstanceState(Bundle outState) {
-                super.onSaveInstanceState(outState);
-                // Saving instance of the content loader
-                if (mAdformContentLoadManager != null)
-                    outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
-            }
+        
         }
+
 
 ## Project preparations for AdformSDK (Detailed)
 These instructions are given assuming this is a new project.

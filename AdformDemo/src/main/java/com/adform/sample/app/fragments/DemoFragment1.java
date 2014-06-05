@@ -9,7 +9,10 @@ import android.view.ViewGroup;
 import com.adform.sample.app.R;
 import com.adform.sdk.network.base.ito.network.NetworkError;
 import com.adform.sdk.network.base.ito.network.NetworkTask;
+import com.adform.sdk.utils.CustomParamBuilder;
 import com.adform.sdk.view.CoreAdView;
+
+import java.util.HashMap;
 
 /**
  * Created by mariusm on 13/05/14.
@@ -28,8 +31,22 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         View view = inflater.inflate(R.layout.activity_main, null);
         CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
-        mAdView.addCustomParam("gender", "female");
-        mAdView.addCustomParam("age", "23");
+
+        // Use builder to set custom parameters...
+        mAdView.setCustomParams(new CustomParamBuilder()
+                        .addCustomParam("gender", "female")
+                        .addCustomParam("age", "23")
+                        .buildParams()
+        );
+        mAdView.clearCustomParams();
+
+        // ...or use variable to store custom params.
+        HashMap<String, String> customParams = new CustomParamBuilder()
+                .addCustomParam("gender", "female")
+                .addCustomParam("age", "23")
+                .buildParams();
+        mAdView.setCustomParams(customParams);
+
         mAdView.setMasterId(111111);
         mAdView.setPublisherId(654321);
         mPlaceHolder = view.findViewById(R.id.place_holder);

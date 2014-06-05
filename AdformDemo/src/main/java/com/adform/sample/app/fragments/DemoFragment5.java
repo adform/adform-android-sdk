@@ -23,6 +23,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     private boolean showAfterLoad = false;
     // Manager that handles network loading tasks
     private AdformContentLoadManager mAdformContentLoadManager;
+    // Dummy view is used to collect all the paramters that are needed for the request
     private DummyView mDummyView;
 
     @Override
@@ -33,17 +34,14 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        // We just initialize view for it to collect all the required info
         mDummyView = new DummyView(getActivity());
+        // Adding custom data
         mDummyView.setMasterId(222222);
         mDummyView.setPublisherId(666666);
 
         // Initializing loading manager
         mAdformContentLoadManager = new AdformContentLoadManager();
-//        if (savedInstanceState != null) {
-            // If there is info that should be restored (like loaded content that can be reused) to load manager,
-            // restoreInstanceWithBundle exactly does that
-//            mAdformContentLoadManager.restoreInstanceWithBundle(savedInstanceState.getBundle(CONTENT_LOADER_INFO));
-//        }
     }
 
     @Override
@@ -75,6 +73,8 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                     loadContract();
                 else {
                     showAfterLoad = false;
+                    // Opening interstitial window with content response
+                    // and its impression url
                     AdformInterstitialActivity.startActivity(getActivity(),
                             mAdformContentLoadManager.getLastRawResponse(),
                             mAdformContentLoadManager.getLastAdServingResponse()
@@ -89,6 +89,8 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
     private void loadContract() {
         if (!mAdformContentLoadManager.isLoading()) {
             try {
+                // First we need to load a contract for the ad
+                // We use additional parameters from the dummy view.
                 mAdformContentLoadManager.loadContent(
                         mAdformContentLoadManager.getContractTask(
                                 mDummyView.getUrlProperties(),
@@ -98,6 +100,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                     @Override
                     public void onContentMraidLoadSuccessful(String content) {
                         try {
+                            // After successfully loading contract, we load the real ad content
                             mAdformContentLoadManager.loadContent(mAdformContentLoadManager.getRawGetTask(
                                     content, true
                             ));
@@ -141,11 +144,4 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Saving instance of the content loader
-//        if (mAdformContentLoadManager != null)
-//            outState.putBundle(CONTENT_LOADER_INFO, mAdformContentLoadManager.getSaveInstanceBundle());
-    }
 }

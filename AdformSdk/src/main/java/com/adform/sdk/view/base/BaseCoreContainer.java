@@ -242,6 +242,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // -------------------------
     // Custom parameter handling
     // -------------------------
+
+    public void setCustomParams(HashMap<String, String> customParams) {
+        mCustomParams = customParams;
+    }
+
     public void addCustomParam(String name, String value) {
         if (mCustomParams != null && name != null && value != null)
             mCustomParams.put(name, value);
