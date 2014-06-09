@@ -61,7 +61,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
     }
 
     @Override
-    protected BaseInnerContainer getInnerView() {
+    public BaseInnerContainer getInnerView() {
         if (mInnerContainer == null) {
             mInnerContainer = new InnerInterstitialView(mContext);
         }

@@ -117,7 +117,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * Initializes inner used view that display an ad
      * @return initialized inner view
      */
-    protected abstract BaseInnerContainer getInnerView();
+    public abstract BaseInnerContainer getInnerView();
 
     protected abstract ViewGroup.LayoutParams getInnerViewLayoutParams();
 

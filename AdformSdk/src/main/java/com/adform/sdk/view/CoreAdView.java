@@ -79,7 +79,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    protected BaseInnerContainer getInnerView() {
+    public BaseInnerContainer getInnerView() {
         if (mBannerView == null) {
             mBannerView = new InnerBannerView(mContext);
             // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
@@ -184,27 +184,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         post(new Runnable() {
             @Override
             public void run() {
+                mBannerView.clearAnimation();
                 mBannerView.startAnimation(animation);
-            }
-        });
-    }
-
-    @Override
-    public void onSliderVisibilityChange(final int visibility) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                setVisibility(visibility);
-            }
-        });
-    }
-
-    @Override
-    public void onSliderPreOn() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                setVisibility(View.VISIBLE);
             }
         });
     }

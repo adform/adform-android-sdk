@@ -37,7 +37,7 @@ public class DummyView extends BaseCoreContainer {
 
 
     @Override
-    protected BaseInnerContainer getInnerView() {
+    public BaseInnerContainer getInnerView() {
         if (mInnerContainer == null)
             mInnerContainer = new BaseInnerContainer(mContext) {
                 @Override

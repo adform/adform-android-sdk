@@ -4,7 +4,7 @@ cd /Users/mariusm/Projects/ads/AdformSdkProject/
 
 
 echo "*** Starting release script ***";
-gradle clean assembleRelease;
+gradle --daemon clean assembleRelease;
 
 sh run_script/build_start.sh
 
