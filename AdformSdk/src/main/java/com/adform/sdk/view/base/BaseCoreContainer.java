@@ -4,10 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
 import com.adform.sdk.mraid.properties.*;
@@ -17,6 +20,8 @@ import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
+import com.adform.sdk.view.CoreExpandedView;
+import com.adform.sdk.view.CoreInterstitialView;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.ArrayList;
@@ -395,6 +400,112 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             }
         }
     };
+
+    // ----------------
+    // Expand functions
+    // ----------------
+    // View switching implementation
+    private FrameLayout mRootView;
+    private FrameLayout mPlaceholderView;
+    private RelativeLayout mExpandContainer;
+    private CoreExpandedView mCoreExpandView;
+
+    @Override
+    public void onMraidExpand() {
+        mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
+        // Changing inner container with an empty view
+        if (mPlaceholderView == null)
+            mPlaceholderView = new FrameLayout(mContext);
+        addView(mPlaceholderView,
+                new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
+        removeView(getInnerView());
+
+        mExpandContainer = getExpandedLayouts(getInnerView());
+        mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
+    }
+
+    /**
+     * Expands inner view with MATCH_PARENT parameters
+     * @see #getExpandedLayouts(BaseInnerContainer, int, int)
+     * @param expansionContentView view to expand
+     * @return expansion container
+     */
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView) {
+        return getExpandedLayouts(expansionContentView, -1, -1);
+    }
+
+    /**
+     * Expands banner view to a bigger container.
+     * InnerView is swapped and replaced with a dummy view and pulled out in from.
+     * InnerView is wrapped in {@link com.adform.sdk.view.CoreExpandedView}
+     * When closing, {@link #resetViewToDefaultState()} is called, and everything is put back.
+     * Note, if expand width/height is provided -1, view is expanded to full scale.
+     *
+     * @param expansionContentView inner view that will be swapped
+     * @param expandWidth expansion width
+     * @param expandHeight expansion height
+     * @return expansion container
+     */
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
+        if (mExpandContainer == null)
+            mExpandContainer = new RelativeLayout(mContext);
+        View dimmingView = new View(getContext());
+        dimmingView.setBackgroundColor(Color.BLACK);
+        dimmingView.setAlpha(0.8f);
+        dimmingView.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        mExpandContainer.addView(dimmingView);
+        mCoreExpandView = new CoreExpandedView(mContext, expansionContentView);
+        mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
+            @Override
+            public void onAdClose() {
+                resetViewToDefaultState();
+                getInnerView().getMraidBridge().onStateChange(AdformEnum.State.DEFAULT, false);
+                getInnerView().getMraidBridge().forceSettingUpdate();
+            }
+
+            @Override
+            public void onAdOrientationChange(int orientation) {
+            }
+
+            @Override
+            public void onAdShown() {
+            }
+        });
+
+        RelativeLayout.LayoutParams lp;
+        if (expandWidth < 0 && expandHeight < 0)
+            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+        else
+            lp = new RelativeLayout.LayoutParams(expandWidth, expandHeight);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mExpandContainer.addView(mCoreExpandView, lp);
+        return mExpandContainer;
+    }
+
+    /**
+     * Resets expanded view to its default state
+     */
+    private void resetViewToDefaultState() {
+        mCoreExpandView.removeAllViewsInLayout();
+        mExpandContainer.removeAllViewsInLayout();
+        mRootView.removeView(mExpandContainer);
+
+        getInnerView().requestLayout();
+
+        addView(getInnerView(), getInnerViewLayoutParams());
+        removeView(mPlaceholderView);
+        invalidate();
+        getInnerView().setBaseListener(this);
+        getInnerView().getMraidBridge().setMraidListener(this);
+        getInnerView().getMraidBridge().setBridgeListener(this);
+    }
 
     // ---------------
     // Instance saving
