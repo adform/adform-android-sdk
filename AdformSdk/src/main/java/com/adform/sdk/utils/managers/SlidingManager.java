@@ -25,11 +25,11 @@ public class SlidingManager {
 
         /** Gets height that animation should slide to */
         public int getHeight();
-        /** Gets state that should be set when hiding slider */
-        public int getHiddenState();
         public void setAnimating(boolean isAnimating);
         public BaseCoreContainer getView();
+        public void onSliderStartedShowing();
         public void onSliderFinishedShowing();
+        public void onSliderStartedHiding();
         public void onSliderFinishedHiding();
 
     }
@@ -126,6 +126,7 @@ public class SlidingManager {
         public void onAnimationStart(Animation animation) {
             isAnimating = true;
             mListener.setAnimating((animation.getDuration() != 0));
+            mListener.onSliderStartedHiding();
         }
 
         public void onAnimationEnd(Animation animation) {
@@ -143,6 +144,7 @@ public class SlidingManager {
             mListener.getView().getInnerView().setVisibility(View.VISIBLE);
             isAnimating = true;
             mListener.setAnimating((animation.getDuration() != 0));
+            mListener.onSliderStartedShowing();
         }
 
         public void onAnimationEnd(Animation animation) {

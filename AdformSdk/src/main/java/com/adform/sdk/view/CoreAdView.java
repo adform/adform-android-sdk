@@ -186,6 +186,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     @Override
     public void onSliderFinishedShowing() {}
 
+    @Override
+    public void onSliderStartedHiding() {}
+
+    @Override
+    public void onSliderStartedShowing() {}
+
     /* Start service runnable is needed as of this moment there is no better way to check
              * if view is being restored from an instance, or is created anew.
              */
@@ -350,11 +356,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     public void setListener(CoreAdViewListener l) {
         this.mListener = l;
-    }
-
-    @Override
-    public int getHiddenState() {
-        return mHiddenState;
     }
 
     @Override

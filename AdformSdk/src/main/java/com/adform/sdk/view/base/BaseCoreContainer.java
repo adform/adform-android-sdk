@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected AdDimension mPlacementDimen;
     protected MraidDeviceIdProperty mDeviceId;
     protected BaseInnerContainer mInnerContainer;
+    protected Bundle mExtraParams;
 
     public BaseCoreContainer(Context context) {
         this(context, null);
@@ -67,11 +69,13 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle) {
-        this(context, attrs, defStyle, null);
+        this(context, attrs, defStyle, null, null);
     }
 
-    public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle, BaseInnerContainer innerContainer) {
+    public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle,
+                             BaseInnerContainer innerContainer, Bundle extras) {
         super(context, attrs, defStyle);
+        mExtraParams = extras;
         mContext = context;
         mInnerContainer = innerContainer;
         initializeDeviceId();
@@ -431,7 +435,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * @return expansion container
      */
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView) {
-        return getExpandedLayouts(expansionContentView, -1, -1);
+        return getExpandedLayouts(expansionContentView, 500, 500);
     }
 
     /**
@@ -449,7 +453,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
         if (mExpandContainer == null)
             mExpandContainer = new RelativeLayout(mContext);
-        mCoreExpandView = new CoreExpandedView(mContext, expansionContentView);
+        Bundle extraParams = new Bundle();
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH, expandWidth);
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT, expandHeight);
+        mCoreExpandView = new CoreExpandedView(mContext, expansionContentView, extraParams);
         mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
             @Override
             public void onAdClose() {
@@ -465,11 +472,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             public void onAdShown() {}
         });
         RelativeLayout.LayoutParams lp;
-        if (expandWidth < 0 && expandHeight < 0)
-            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
-        else
-            lp = new RelativeLayout.LayoutParams(expandWidth, expandHeight);
+        lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
         mExpandContainer.addView(mCoreExpandView, lp);
         return mExpandContainer;

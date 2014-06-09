@@ -3,6 +3,7 @@ package com.adform.sdk.view;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +29,24 @@ public class CoreInterstitialView extends BaseCoreContainer {
 
     private CoreInterstitialListener mListener;
 
-    public CoreInterstitialView(Context context, BaseInnerContainer innerContainer) {
-        this(context, null, 0, innerContainer);
+    public CoreInterstitialView(Context context, BaseInnerContainer innerContainer, Bundle extras) {
+        this(context, null, 0, innerContainer, extras);
     }
 
     public CoreInterstitialView(Context context) {
-        this(context, null, 0, null);
+        this(context, null, 0);
     }
 
     public CoreInterstitialView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, null);
+        this(context, attrs, 0);
     }
 
-    public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle, BaseInnerContainer innerContainer) {
-        super(context, attrs, defStyle, innerContainer);
+    public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle) {
+        this(context, attrs, 0, null, null);
+    }
+    public CoreInterstitialView(Context context, AttributeSet attrs, int defStyle,
+                                BaseInnerContainer innerContainer, Bundle extras) {
+        super(context, attrs, defStyle, innerContainer, extras);
         if (mContext instanceof CoreInterstitialListener)
             mListener = (CoreInterstitialListener)mContext;
         setAnimating(false);
