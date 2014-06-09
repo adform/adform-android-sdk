@@ -421,8 +421,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mExpandContainer = getExpandedLayouts(getInnerView());
         mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mCoreExpandView.slideOut();
-
         getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
     }
 

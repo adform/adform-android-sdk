@@ -23,17 +23,15 @@ public class SlidingManager {
          */
 //        public void onSliderPreOn();
 
-        /**
-         * A callback when animation should occur.
-         * @param animation prided animation
-         */
-        public void onSliderAnimating(Animation animation);
         /** Gets height that animation should slide to */
         public int getHeight();
         /** Gets state that should be set when hiding slider */
         public int getHiddenState();
         public void setAnimating(boolean isAnimating);
         public BaseCoreContainer getView();
+        public void onSliderFinishedShowing();
+        public void onSliderFinishedHiding();
+
     }
 
     private static final int SHOW_SPEED = 500;
@@ -51,6 +49,7 @@ public class SlidingManager {
     public void turnOffImmediate() {
         turnOff(0);
     }
+
     public void turnOff() {
         turnOff(HIDE_SPEED);
     }
@@ -66,14 +65,8 @@ public class SlidingManager {
         mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListener.getHeight());
         mAnimation.setDuration(hideSpeed);
         mAnimation.setAnimationListener(collapseListener);
-        mListener.getView().post(new Runnable() {
-            @Override
-            public void run() {
-                mListener.getView().setVisibility(View.VISIBLE);
-                mListener.getView().getInnerView().setVisibility(View.VISIBLE);
-            }
-        });
-        mListener.onSliderAnimating(mAnimation);
+        mListener.getView().post(preHideRunnable);
+        mListener.getView().post(animationRunnable);
     }
 
     public void turnOnImmediate() {
@@ -95,16 +88,38 @@ public class SlidingManager {
         mAnimation = new TranslateAnimation(0.0f, 0.0f, mListener.getHeight(), 0.0f);
         mAnimation.setDuration(showSpeed);
         mAnimation.setAnimationListener(expandListener);
-        mListener.getView().post(new Runnable() {
-            @Override
-            public void run() {
-                mListener.getView().setVisibility(View.VISIBLE);
-                mListener.getView().getInnerView().setVisibility(View.INVISIBLE);
-            }
-        });
-        mListener.onSliderAnimating(mAnimation);
+        mListener.getView().post(preShowRunnable);
+        mListener.getView().post(animationRunnable);
     }
 
+    // ---------
+    // Runnables
+    // ---------
+    private Runnable preShowRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mListener.getView().setVisibility(View.VISIBLE);
+            mListener.getView().getInnerView().setVisibility(View.INVISIBLE);
+        }
+    };
+    private Runnable preHideRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mListener.getView().setVisibility(View.VISIBLE);
+            mListener.getView().getInnerView().setVisibility(View.VISIBLE);
+        }
+    };
+    private Runnable animationRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mListener.getView().getInnerView().clearAnimation();
+            mListener.getView().getInnerView().startAnimation(mAnimation);
+        }
+    };
+
+    // -------------------
+    // Animation callbacks
+    // -------------------
     private Animation.AnimationListener collapseListener = new Animation.AnimationListener() {
         public void onAnimationRepeat(Animation animation) {}
 
@@ -117,6 +132,7 @@ public class SlidingManager {
             isOpen = false;
             isAnimating = false;
             mListener.setAnimating(false);
+            mListener.onSliderFinishedHiding();
         }
     };
 
@@ -133,6 +149,7 @@ public class SlidingManager {
             isOpen = true;
             isAnimating = false;
             mListener.setAnimating(false);
+            mListener.onSliderFinishedShowing();
         }
     };
 }

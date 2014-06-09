@@ -181,19 +181,14 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    public void onSliderAnimating(final Animation animation) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                mBannerView.clearAnimation();
-                mBannerView.startAnimation(animation);
-            }
-        });
-    }
+    public void onSliderFinishedHiding() {}
+
+    @Override
+    public void onSliderFinishedShowing() {}
 
     /* Start service runnable is needed as of this moment there is no better way to check
-     * if view is being restored from an instance, or is created anew.
-     */
+             * if view is being restored from an instance, or is created anew.
+             */
     private Runnable mStartServiceRunnable = null;
 
     @Override

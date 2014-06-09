@@ -55,29 +55,23 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-    }
-
-    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         mSlidingManager.turnOn();
     }
 
     @Override
-    public void onSliderAnimating(final Animation animation) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getInnerView().clearAnimation();
-                getInnerView().startAnimation(animation);
-            }
-        });
+    public void onSliderFinishedHiding() {
+        super.onMraidClose();
     }
 
-    public void slideOut() {
-        mSlidingManager.turnOn();
+    @Override
+    public void onSliderFinishedShowing() {}
+
+    @Override
+    public void onMraidClose() {
+        mSlidingManager.turnOff();
+//        super.onMraidClose();
     }
 
     @Override
