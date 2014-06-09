@@ -70,6 +70,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         mAdformContentLoadManager = new AdformContentLoadManager();
         mAdformContentLoadManager.setListener(this);
         setVisibility(INVISIBLE);
+        getInnerView().setCloseButtonEnabled(false);
     }
 
     @Override

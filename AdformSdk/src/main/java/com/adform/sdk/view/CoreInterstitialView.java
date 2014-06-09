@@ -18,9 +18,7 @@ import com.adform.sdk.view.inner.InnerInterstitialView;
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreInterstitialView extends BaseCoreContainer implements View.OnClickListener {
-
-    private CloseImageView mCloseImageView;
+public class CoreInterstitialView extends BaseCoreContainer {
 
     public interface CoreInterstitialListener {
         public void onAdClose();
@@ -47,11 +45,8 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
         if (mContext instanceof CoreInterstitialListener)
             mListener = (CoreInterstitialListener)mContext;
         setAnimating(false);
-        mCloseImageView = new CloseImageView(mContext);
-        mCloseImageView.setVisible(true);
-        mCloseImageView.setOnClickListener(this);
-        addView(mCloseImageView, mCloseImageView.getStandardLayoutParams());
-        mCloseImageView.bringToFront();
+        getInnerView().setCloseButtonEnabled(true);
+        getInnerView().onUseCustomClose(true);
     }
 
     public void showContent(String content) {
@@ -104,13 +99,6 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
             mListener.onAdShown();
     }
 
-    @Override
-    public void onClick(View v) {
-        if (mListener != null) {
-            mListener.onAdClose();
-        }
-    }
-
     public void setListener(CoreInterstitialListener listener) {
         this.mListener = listener;
     }
@@ -147,7 +135,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
 
     @Override
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
-        mCloseImageView.setVisible(shouldUseCustomClose);
+        // Nothing to respond to here anymore
     }
 
     @Override

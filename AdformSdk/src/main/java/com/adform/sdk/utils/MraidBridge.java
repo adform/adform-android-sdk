@@ -14,8 +14,13 @@ import com.adform.sdk.view.inner.AdWebView;
 public class MraidBridge implements VisibilityPositionManager.PositionManagerListener,
         AdWebView.NativeWebviewListener {
 
-    public interface MraidBridgeListener {
+    public interface CoreMraidBridgeListener {
         public void onIsContentMraidChange(boolean isContentMraid);
+    }
+
+    public interface InnerMraidBridgeListener {
+//        public void onIsContentMraidChange(boolean isContentMraid);
+        public void onUseCustomClose(boolean useCustomClose);
     }
 
     public static final String VAR_PLACEMENT_TYPE = "placementType";
@@ -26,13 +31,18 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private AdformEnum.PlacementType mPlacementType = AdformEnum.PlacementType.UNKNOWN;
     private AdformEnum.State mState = AdformEnum.State.LOADING;
     private AdWebView.NativeWebviewListener mMraidListener;
-    private MraidBridgeListener mBridgeListener;
+    private CoreMraidBridgeListener mCoreBridgeListener;
+    private InnerMraidBridgeListener mInnerBridgeListener;
     private boolean mVisible;
     private boolean mUseCustomClose = false;
     private boolean mAllowOrientationChange = true;
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
 
     public MraidBridge() {}
+
+    public MraidBridge(InnerMraidBridgeListener innerBridge) {
+        mInnerBridgeListener = innerBridge;
+    }
 
     private boolean isPropertyNotValid(Object property) {
         if (!isContentMraid)
@@ -207,16 +217,20 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
 
     public void setContentMraid(boolean isContentMraid) {
         this.isContentMraid = isContentMraid;
-        if (mBridgeListener != null)
-            mBridgeListener.onIsContentMraidChange(isContentMraid);
+        if (mCoreBridgeListener != null)
+            mCoreBridgeListener.onIsContentMraidChange(isContentMraid);
     }
 
     public boolean isContentMraid() {
         return isContentMraid;
     }
 
-    public void setBridgeListener(MraidBridgeListener bridgeListener) {
-        this.mBridgeListener = bridgeListener;
+    public void setCoreBridgeListener(CoreMraidBridgeListener coreBridgeListener) {
+        this.mCoreBridgeListener = coreBridgeListener;
+    }
+
+    public void setInnerBridgeListener(InnerMraidBridgeListener innerBridgeListener) {
+        this.mInnerBridgeListener = innerBridgeListener;
     }
 
     // ---------
@@ -262,6 +276,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mUseCustomClose = shouldUseCustomClose;
         if (mMraidListener != null)
             mMraidListener.onMraidUseCustomClose(shouldUseCustomClose);
+        if (mInnerBridgeListener != null)
+            mInnerBridgeListener.onUseCustomClose(shouldUseCustomClose);
     }
 
     @Override

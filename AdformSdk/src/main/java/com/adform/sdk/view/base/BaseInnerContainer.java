@@ -8,6 +8,7 @@ import android.view.View;
 import android.webkit.*;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.MraidWebViewClient;
+import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.*;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
@@ -20,7 +21,8 @@ import java.util.HashMap;
  * Base view that is showing content in webview.
  * It handles content loading, saving, restoring, mraid functions.
  */
-public abstract class BaseInnerContainer extends RelativeLayout implements JsLoadBridge.LoadBridgeHandler {
+public abstract class BaseInnerContainer extends RelativeLayout implements
+        JsLoadBridge.LoadBridgeHandler, MraidBridge.InnerMraidBridgeListener, View.OnClickListener {
     public static final String MRAID_JS_INTERFACE = "mraid";
 
     /**
@@ -58,6 +60,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
     private HashMap<String, Boolean> mConfigurationPreset;
 //    private boolean mIsLoadedContentMraid = false;
     private MraidBridge mMraidBridge;
+    private CloseImageView mCloseImageView;
+    private boolean mUseCloseButton = false;
 
     public BaseInnerContainer(Context context) {
         this(context, null);
@@ -77,8 +81,9 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
 
         // Base parameters
         setBackgroundColor(Color.TRANSPARENT);
-        mMraidBridge = new MraidBridge();
+        mMraidBridge = new MraidBridge(this);
         initView();
+        setCloseButtonEnabled(false);
     }
 
     /**
@@ -100,6 +105,28 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
      * Method is called when content is ready to be displayed, and all html is ready.
      */
     protected abstract void animateAdShowing();
+
+    public void setCloseButtonEnabled(boolean isEnabled) {
+        mUseCloseButton = isEnabled;
+        if (mCloseImageView == null)
+            initClose();
+        if (isEnabled)
+            mCloseImageView.setVisibility(View.VISIBLE);
+        else
+            mCloseImageView.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void onUseCustomClose(boolean useCustomClose) {
+        if (mUseCloseButton)
+            mCloseImageView.setVisible(useCustomClose);
+    }
+
+    @Override
+    public void onClick(View v) {
+        mMraidBridge.onMraidClose();
+    }
 
     /**
      * Creates web view and returns its instance. Inside all needed clients and variables are binded.
@@ -165,6 +192,13 @@ public abstract class BaseInnerContainer extends RelativeLayout implements JsLoa
         return webView;
     }
 
+    private void initClose() {
+        mCloseImageView = new CloseImageView(mContext);
+        mCloseImageView.setVisible(false);
+        mCloseImageView.setOnClickListener(this);
+        addView(mCloseImageView, mCloseImageView.getStandardLayoutParams());
+        mCloseImageView.bringToFront();
+    }
 
     public void showContent(String content) {
         showContent(content, false);

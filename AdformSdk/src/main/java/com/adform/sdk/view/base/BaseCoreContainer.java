@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,7 +30,7 @@ import java.util.HashMap;
  */
 public abstract class BaseCoreContainer extends RelativeLayout implements
         VisibilityPositionManager.VisibilityManagerListener, BaseInnerContainer.BaseAdViewListener,
-        AdformRequestParamsListener, AdWebView.NativeWebviewListener, MraidBridge.MraidBridgeListener {
+        AdformRequestParamsListener, AdWebView.NativeWebviewListener, MraidBridge.CoreMraidBridgeListener {
     // Special variables that can be set by the view
     public static final String MASTER_ID = "master_id";
     public static final String API_VERSION = "api_version";
@@ -84,7 +82,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         setBackgroundResource(android.R.color.transparent);
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
-        getInnerView().getMraidBridge().setBridgeListener(this);
+        getInnerView().getMraidBridge().setCoreBridgeListener(this);
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
                 mPlacementDimen.getWidth(),
@@ -423,6 +421,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mExpandContainer = getExpandedLayouts(getInnerView());
         mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mCoreExpandView.slideOut();
+
         getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
     }
 
@@ -451,15 +451,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
         if (mExpandContainer == null)
             mExpandContainer = new RelativeLayout(mContext);
-        View dimmingView = new View(getContext());
-        dimmingView.setBackgroundColor(Color.BLACK);
-        dimmingView.setAlpha(0.8f);
-        dimmingView.setOnTouchListener(new OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-        mExpandContainer.addView(dimmingView);
         mCoreExpandView = new CoreExpandedView(mContext, expansionContentView);
         mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
             @Override
@@ -470,14 +461,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             }
 
             @Override
-            public void onAdOrientationChange(int orientation) {
-            }
+            public void onAdOrientationChange(int orientation) {}
 
             @Override
-            public void onAdShown() {
-            }
+            public void onAdShown() {}
         });
-
         RelativeLayout.LayoutParams lp;
         if (expandWidth < 0 && expandHeight < 0)
             lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -504,7 +492,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         invalidate();
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
-        getInnerView().getMraidBridge().setBridgeListener(this);
+        getInnerView().getMraidBridge().setCoreBridgeListener(this);
+        getInnerView().setCloseButtonEnabled(false);
     }
 
     // ---------------
