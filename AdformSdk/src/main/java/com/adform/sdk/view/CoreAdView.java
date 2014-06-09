@@ -101,7 +101,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public void update(Observable observable, Object data) {
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
-//            mBannerView.flipLoadedContent();
             mBannerView.showContent(null);
             mSlidingManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);

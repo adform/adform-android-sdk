@@ -435,7 +435,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * @return expansion container
      */
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView) {
-        return getExpandedLayouts(expansionContentView, 500, 500);
+        return getExpandedLayouts(expansionContentView, -1, -1);
     }
 
     /**
