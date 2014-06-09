@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
 import com.adform.sdk.mraid.properties.*;
@@ -80,7 +81,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setBridgeListener(this);
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
-        addView(getInnerView());
+        ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
+                mPlacementDimen.getWidth(),
+                mPlacementDimen.getHeight());
+        setLayoutParams(params);
+        addView(getInnerView(), getInnerViewLayoutParams());
     }
 
     private void initializeDeviceId() {
@@ -108,6 +113,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * @return initialized inner view
      */
     protected abstract BaseInnerContainer getInnerView();
+
+    protected abstract ViewGroup.LayoutParams getInnerViewLayoutParams();
 
     /**
      * Initializes created ad used dimensions.

@@ -67,6 +67,13 @@ public class DummyView extends BaseCoreContainer {
     }
 
     @Override
+    protected ViewGroup.LayoutParams getInnerViewLayoutParams() {
+        return new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    @Override
     protected AdDimension initAdDimen() {
         return new AdDimension(mContext);
     }

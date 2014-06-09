@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
@@ -64,6 +66,13 @@ public class CoreInterstitialView extends BaseCoreContainer implements View.OnCl
             mInnerContainer = new InnerInterstitialView(mContext);
         }
         return mInnerContainer;
+    }
+
+    @Override
+    protected ViewGroup.LayoutParams getInnerViewLayoutParams() {
+        return new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     @Override

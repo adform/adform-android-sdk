@@ -56,9 +56,8 @@ public class InnerBannerView extends BaseInnerContainer {
 
     @Override
     protected void initView() {
-        final float scale = mContext.getResources().getDisplayMetrics().density;
         setLayoutParams(new RelativeLayout.LayoutParams(
-                (int) (Utils.getWidthDeviceType(mContext) * scale + 0.5f), (int) (Utils.getHeightDeviceType(mContext) * scale + 0.5f)));
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         mViewAnimator = new ViewAnimator(mContext);
         mWebViews = new ArrayList<AdWebView>();

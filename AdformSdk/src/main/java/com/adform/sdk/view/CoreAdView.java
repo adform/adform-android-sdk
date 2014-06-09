@@ -65,18 +65,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public CoreAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mPlaceholderView = new FrameLayout(context);
-//        mExpansionLayout = new RelativeLayout(context);
-//        mAdContainerLayout = new FrameLayout(context);
 
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
         mAdformContentLoadManager = new AdformContentLoadManager();
         mAdformContentLoadManager.setListener(this);
-        ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
-                mPlacementDimen.getWidth(),
-                mPlacementDimen.getHeight());
-        setLayoutParams(params);
         setVisibility(INVISIBLE);
     }
 
@@ -91,9 +85,16 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mBannerView == null) {
             mBannerView = new InnerBannerView(mContext);
             // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
-            mBannerView.setId(156554);
+//            mBannerView.setId(156554);
         }
         return mBannerView;
+    }
+
+    @Override
+    protected ViewGroup.LayoutParams getInnerViewLayoutParams() {
+        return new RelativeLayout.LayoutParams(
+                mPlacementDimen.getWidth(),
+                mPlacementDimen.getHeight());
     }
 
     /** An update from configuration json */
@@ -415,39 +416,28 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     private FrameLayout mRootView;
     private FrameLayout mPlaceholderView;
     private RelativeLayout mExpandContainer;
-//    private RelativeLayout mExpansionLayout;
-//    private FrameLayout mAdContainerLayout;
-    // The view's position within its parent.
-    private int mViewIndexInParent;
 
     @Override
     public void onMraidExpand() {
-        mExpandContainer = new RelativeLayout(mContext);
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
-        swapViewWithPlaceholderView();
+        // Changing inner container with an empty view
+        addView(mPlaceholderView,
+                new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
+        removeView(getInnerView());
 
-        getExpandedLayouts(getInnerView(), (int) (500), (int) (500));
+        mExpandContainer = getExpandedLayouts(getInnerView());
         mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
     }
 
-    private void swapViewWithPlaceholderView() {
-        ViewGroup parent = (ViewGroup) getInnerView().getParent();
-        if (parent == null) return;
-
-        int index;
-        int count = parent.getChildCount();
-        for (index = 0; index < count; index++) {
-            if (parent.getChildAt(index) == getInnerView()) break;
-        }
-
-        mViewIndexInParent = index;
-        parent.addView(mPlaceholderView, index,
-                new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
-        parent.removeView(getInnerView());
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView) {
+        return getExpandedLayouts(expansionContentView, -1, -1);
     }
-    private View getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
+
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
+        if (mExpandContainer == null)
+            mExpandContainer = new RelativeLayout(mContext);
         View dimmingView = new View(getContext());
         dimmingView.setBackgroundColor(Color.BLACK);
         dimmingView.setAlpha(0.8f);
@@ -473,7 +463,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
             public void onAdShown() {}
         });
 
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(expandWidth, expandHeight);
+        RelativeLayout.LayoutParams lp;
+        if (expandWidth < 0 && expandHeight < 0)
+            lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+        else
+            lp = new RelativeLayout.LayoutParams(expandWidth, expandHeight);
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
         mExpandContainer.addView(mCoreInterstitialView, lp);
         return mExpandContainer;
@@ -485,10 +480,9 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
         getInnerView().requestLayout();
 
-        ViewGroup parent = (ViewGroup) mPlaceholderView.getParent();
-        parent.addView(getInnerView(), mViewIndexInParent);
-        parent.removeView(mPlaceholderView);
-        parent.invalidate();
+        addView(getInnerView(), getInnerViewLayoutParams());
+        removeView(mPlaceholderView);
+        invalidate();
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setBridgeListener(this);
