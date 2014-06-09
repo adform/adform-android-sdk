@@ -45,7 +45,7 @@ public class MraidDeviceIdProperty extends MraidBaseProperty implements Parcelab
 
     @Override
     public String toJson() {
-        return "\"aid\":\""+mAdvertisingId+"\"";
+        return "\"aid\":"+((mAdvertisingId != null)?"\""+mAdvertisingId+"\"":"null");
     }
 
     public int describeContents() {
