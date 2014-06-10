@@ -29,7 +29,7 @@ How to add AdformSDK to your project
 
 	    <meta-data android:name="com.google.android.gms.version"
 	               android:value="@integer/google_play_services_version" />
-		<activity android:name="com.adform.sdk2.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
+		<activity android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
 
 Thats it! If you had any problems, a more detailed implementation is described **below**.
 
@@ -42,7 +42,6 @@ To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdV
 			android:layout_height="wrap_content" />
 
 * Note that, when initializing a view master tag is set by providing it to the view parameters.
-* Rignt now, this view does not respond to width and height, and it is set by default vales (320x50 for phones, 728x90 for tablets). 
 * Gravity can be changed by inserting the adView into the container and changing its position.
 
 
@@ -324,7 +323,7 @@ Furthermore, we need some additional data for the AdformSDK to work, that is ins
 
 	    <meta-data android:name="com.google.android.gms.version"
 	               android:value="@integer/google_play_services_version" />
-		<activity android:name="com.adform.sdk2.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
+		<activity android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
 	               
 And that is it! Your library is ready to be used.	               
 	
