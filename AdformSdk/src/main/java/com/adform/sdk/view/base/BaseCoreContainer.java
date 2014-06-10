@@ -422,8 +422,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         addView(mPlaceholderView,
                 new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
         removeView(getInnerView());
-
-        mExpandContainer = getExpandedLayouts(getInnerView(), properties.getWidth(), properties.getHeight());
+        mExpandContainer = getExpandedLayouts(getInnerView(), properties.getWidth(),
+                properties.getHeight(), properties);
         mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
@@ -431,12 +431,13 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     /**
      * Expands inner view with MATCH_PARENT parameters
-     * @see #getExpandedLayouts(BaseInnerContainer, int, int)
+     * @see #getExpandedLayouts(BaseInnerContainer, int, int, ExpandProperties)
      * @param expansionContentView view to expand
      * @return expansion container
      */
-    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView) {
-        return getExpandedLayouts(expansionContentView, -1, -1);
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
+                                              ExpandProperties expandProperties) {
+        return getExpandedLayouts(expansionContentView, -1, -1, expandProperties);
     }
 
     /**
@@ -451,12 +452,14 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * @param expandHeight expansion height
      * @return expansion container
      */
-    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView, int expandWidth, int expandHeight) {
+    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
+                                              int expandWidth, int expandHeight, ExpandProperties expandProperties) {
         if (mExpandContainer == null)
             mExpandContainer = new RelativeLayout(mContext);
         Bundle extraParams = new Bundle();
         extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH, expandWidth);
         extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT, expandHeight);
+        extraParams.putBoolean(CoreExpandedView.INNER_EXTRA_USE_CUSTOM_CLOSE, expandProperties.useCustomClose());
         mCoreExpandView = new CoreExpandedView(mContext, expansionContentView, extraParams);
         mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
             @Override

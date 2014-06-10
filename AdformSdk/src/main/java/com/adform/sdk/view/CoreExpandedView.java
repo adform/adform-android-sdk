@@ -22,6 +22,7 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     public static final float FROM_ALPHA = 0.0f;
     public static final String INNER_EXTRA_WIDTH = "INNER_EXTRA_WIDTH";
     public static final String INNER_EXTRA_HEIGHT = "INNER_EXTRA_HEIGHT";
+    public static final String INNER_EXTRA_USE_CUSTOM_CLOSE = "INNER_EXTRA_USE_CUSTOM_CLOSE";
     private Animation mAnimation;
     private SlidingManager mSlidingManager;
     private View mDimmingView;
@@ -63,7 +64,7 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
         addView(mDimmingView, 0);
         getInnerView().setVisibility(View.INVISIBLE);
         getInnerView().setCloseButtonEnabled(true);
-        getInnerView().onUseCustomClose(true);
+        getInnerView().onUseCustomClose(extras.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, true));
 
         mFadeInAnimation = createAlphaAnimation(FROM_ALPHA, TO_ALPHA);
         mFadeOutAnimation = createAlphaAnimation(TO_ALPHA, FROM_ALPHA);

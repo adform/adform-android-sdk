@@ -120,7 +120,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     @Override
     public void onUseCustomClose(boolean useCustomClose) {
         if (mUseCloseButton)
-            mCloseImageView.setVisible(useCustomClose);
+            mCloseImageView.setVisible(!useCustomClose);
     }
 
     @Override
