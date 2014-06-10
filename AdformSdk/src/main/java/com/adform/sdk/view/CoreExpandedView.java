@@ -108,7 +108,9 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     }
 
     @Override
-    public void onSliderFinishedShowing() {}
+    public void onSliderFinishedShowing() {
+        getInnerView().setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void onSliderStartedHiding() {

@@ -180,10 +180,14 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    public void onSliderFinishedHiding() {}
+    public void onSliderFinishedHiding() {
+        getInnerView().setVisibility(View.INVISIBLE);
+    }
 
     @Override
-    public void onSliderFinishedShowing() {}
+    public void onSliderFinishedShowing() {
+        getInnerView().setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void onSliderStartedHiding() {}

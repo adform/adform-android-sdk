@@ -141,7 +141,6 @@ public class SlidingManager {
         public void onAnimationRepeat(Animation animation) {}
 
         public void onAnimationStart(Animation animation) {
-            mListener.getView().getInnerView().setVisibility(View.VISIBLE);
             isAnimating = true;
             mListener.setAnimating((animation.getDuration() != 0));
             mListener.onSliderStartedShowing();
