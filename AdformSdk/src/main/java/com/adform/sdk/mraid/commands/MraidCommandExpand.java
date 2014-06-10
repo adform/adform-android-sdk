@@ -16,9 +16,9 @@ public class MraidCommandExpand extends MraidBaseCommand {
     @Override
     public void execute() {
         String url = getStringFromParamsForKey("url");
-        int width = getIntFromParamsForKey("w");
-        int height = getIntFromParamsForKey("h");
-        boolean shouldUseCustomClose = getBooleanFromParamsForKey("shouldUseCustomClose");
+        int width = getIntFromParamsForKey("width");
+        int height = getIntFromParamsForKey("height");
+        boolean shouldUseCustomClose = getBooleanFromParamsForKey("useCustomClose");
         mWebView.getListener().onMraidExpand(url, new ExpandProperties(width, height, shouldUseCustomClose));
     }
 }

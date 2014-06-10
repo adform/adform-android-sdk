@@ -131,24 +131,24 @@
 
   // Constants. ////////////////////////////////////////////////////////////////////////////////////
 
-  var VERSION = mraid.VERSION = '2.0';
+  var VERSION = '2.0';
 
-  var STATES = mraid.STATES = {
+  var STATES = {
     LOADING: 'loading',     // Initial state.
     DEFAULT: 'default',
     EXPANDED: 'expanded',
     HIDDEN: 'hidden'
   };
 
-  var EVENTS = mraid.EVENTS = {
+  var EVENTS = {
     ERROR: 'error',
-    INFO: 'info',
     READY: 'ready',
     STATECHANGE: 'stateChange',
-    VIEWABLECHANGE: 'viewableChange'
+    VIEWABLECHANGE: 'viewableChange',
+    SIZECHANGE: 'sizeChange'
   };
 
-  var PLACEMENT_TYPES = mraid.PLACEMENT_TYPES = {
+  var PLACEMENT_TYPES = {
     UNKNOWN: 'unknown',
     INLINE: 'inline',
     INTERSTITIAL: 'interstitial'
@@ -288,29 +288,22 @@
   // Functions that will be invoked by the native SDK whenever a "change" event occurs.
   var changeHandlers = {
     state: function(val) {
-      if (state === STATES.LOADING) {
-        broadcastEvent(EVENTS.INFO, 'Native SDK initialized.');
-      }
       state = val;
-      broadcastEvent(EVENTS.INFO, 'Set state to ' + stringify(val));
       broadcastEvent(EVENTS.STATECHANGE, state);
       AdformNativeJs.configurationPreset('state');
     },
 
     viewable: function(val) {
       isViewable = val;
-      broadcastEvent(EVENTS.INFO, 'Set isViewable to ' + stringify(val));
       broadcastEvent(EVENTS.VIEWABLECHANGE, isViewable);
     },
 
     placementType: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Set placementType to ' + stringify(val));
       placementType = val;
       AdformNativeJs.configurationPreset('placementType');
     },
 
     screenSize: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Set screenSize to ' + stringify(val));
       for (var key in val) {
         if (val.hasOwnProperty(key)) screenSize[key] = val[key];
       }
@@ -323,19 +316,16 @@
     },
 
     expandProperties: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Merging expandProperties with ' + stringify(val));
       for (var key in val) {
         if (val.hasOwnProperty(key)) expandProperties[key] = val[key];
       }
     },
 
     supports: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Set supports to ' + stringify(val));
         supports = val;
     },
 
     defaultPosition: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Setting defaultPosition ' + stringify(val));
       for (var key in val) {
         if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];
       }
@@ -343,7 +333,6 @@
     },
 
     currentPosition: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Setting currentPosition ' + stringify(val));
       for (var key in val) {
         if (val.hasOwnProperty(key)) currentPosition[key] = val[key];
       }
@@ -351,11 +340,15 @@
     },
 
     maxSize: function(val) {
-      broadcastEvent(EVENTS.INFO, 'Setting maxSize ' + stringify(val));
       for (var key in val) {
         if (val.hasOwnProperty(key)) maxSize[key] = val[key];
       }
       AdformNativeJs.configurationPreset('maxSize')
+    },
+
+    size: function(val) {
+      broadcastEvent(EVENTS.SIZECHANGE, val['width'], val['height']);
+      console.log('SizeChanged: ' + stringify(val));
     },
   };
 
@@ -440,12 +433,12 @@
       var args = ['expand'];
 
       if (this.getHasSetCustomClose()) {
-        args = args.concat(['shouldUseCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);
+        args = args.concat(['useCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);
       }
 
       if (this.getHasSetCustomSize()) {
         if (expandProperties.width >= 0 && expandProperties.height >= 0) {
-          args = args.concat(['w', expandProperties.width, 'h', expandProperties.height]);
+          args = args.concat(['width', expandProperties.width, 'height', expandProperties.height]);
         }
       }
 

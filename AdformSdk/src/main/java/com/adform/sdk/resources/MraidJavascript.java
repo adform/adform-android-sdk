@@ -166,24 +166,24 @@ public class MraidJavascript {
         "\n" +
         "  // Constants. ////////////////////////////////////////////////////////////////////////////////////\n" +
         "\n" +
-        "  var VERSION = mraid.VERSION = '2.0';\n" +
+        "  var VERSION = '2.0';\n" +
         "\n" +
-        "  var STATES = mraid.STATES = {\n" +
+        "  var STATES = {\n" +
         "    LOADING: 'loading',     // Initial state.\n" +
         "    DEFAULT: 'default',\n" +
         "    EXPANDED: 'expanded',\n" +
         "    HIDDEN: 'hidden'\n" +
         "  };\n" +
         "\n" +
-        "  var EVENTS = mraid.EVENTS = {\n" +
+        "  var EVENTS = {\n" +
         "    ERROR: 'error',\n" +
-        "    INFO: 'info',\n" +
         "    READY: 'ready',\n" +
         "    STATECHANGE: 'stateChange',\n" +
-        "    VIEWABLECHANGE: 'viewableChange'\n" +
+        "    VIEWABLECHANGE: 'viewableChange',\n" +
+        "    SIZECHANGE: 'sizeChange'\n" +
         "  };\n" +
         "\n" +
-        "  var PLACEMENT_TYPES = mraid.PLACEMENT_TYPES = {\n" +
+        "  var PLACEMENT_TYPES = {\n" +
         "    UNKNOWN: 'unknown',\n" +
         "    INLINE: 'inline',\n" +
         "    INTERSTITIAL: 'interstitial'\n" +
@@ -323,29 +323,22 @@ public class MraidJavascript {
         "  // Functions that will be invoked by the native SDK whenever a \"change\" event occurs.\n" +
         "  var changeHandlers = {\n" +
         "    state: function(val) {\n" +
-        "      if (state === STATES.LOADING) {\n" +
-        "        broadcastEvent(EVENTS.INFO, 'Native SDK initialized.');\n" +
-        "      }\n" +
         "      state = val;\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Set state to ' + stringify(val));\n" +
         "      broadcastEvent(EVENTS.STATECHANGE, state);\n" +
         "      AdformNativeJs.configurationPreset('state');\n" +
         "    },\n" +
         "\n" +
         "    viewable: function(val) {\n" +
         "      isViewable = val;\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Set isViewable to ' + stringify(val));\n" +
         "      broadcastEvent(EVENTS.VIEWABLECHANGE, isViewable);\n" +
         "    },\n" +
         "\n" +
         "    placementType: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Set placementType to ' + stringify(val));\n" +
         "      placementType = val;\n" +
         "      AdformNativeJs.configurationPreset('placementType');\n" +
         "    },\n" +
         "\n" +
         "    screenSize: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Set screenSize to ' + stringify(val));\n" +
         "      for (var key in val) {\n" +
         "        if (val.hasOwnProperty(key)) screenSize[key] = val[key];\n" +
         "      }\n" +
@@ -358,19 +351,16 @@ public class MraidJavascript {
         "    },\n" +
         "\n" +
         "    expandProperties: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Merging expandProperties with ' + stringify(val));\n" +
         "      for (var key in val) {\n" +
         "        if (val.hasOwnProperty(key)) expandProperties[key] = val[key];\n" +
         "      }\n" +
         "    },\n" +
         "\n" +
         "    supports: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Set supports to ' + stringify(val));\n" +
         "        supports = val;\n" +
         "    },\n" +
         "\n" +
         "    defaultPosition: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Setting defaultPosition ' + stringify(val));\n" +
         "      for (var key in val) {\n" +
         "        if (val.hasOwnProperty(key)) defaultPosition[key] = val[key];\n" +
         "      }\n" +
@@ -378,7 +368,6 @@ public class MraidJavascript {
         "    },\n" +
         "\n" +
         "    currentPosition: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Setting currentPosition ' + stringify(val));\n" +
         "      for (var key in val) {\n" +
         "        if (val.hasOwnProperty(key)) currentPosition[key] = val[key];\n" +
         "      }\n" +
@@ -386,11 +375,15 @@ public class MraidJavascript {
         "    },\n" +
         "\n" +
         "    maxSize: function(val) {\n" +
-        "      broadcastEvent(EVENTS.INFO, 'Setting maxSize ' + stringify(val));\n" +
         "      for (var key in val) {\n" +
         "        if (val.hasOwnProperty(key)) maxSize[key] = val[key];\n" +
         "      }\n" +
         "      AdformNativeJs.configurationPreset('maxSize')\n" +
+        "    },\n" +
+        "\n" +
+        "    size: function(val) {\n" +
+        "      broadcastEvent(EVENTS.SIZECHANGE, val['width'], val['height']);\n" +
+        "      console.log('SizeChanged: ' + stringify(val));\n" +
         "    },\n" +
         "  };\n" +
         "\n" +
@@ -475,12 +468,12 @@ public class MraidJavascript {
         "      var args = ['expand'];\n" +
         "\n" +
         "      if (this.getHasSetCustomClose()) {\n" +
-        "        args = args.concat(['shouldUseCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);\n" +
+        "        args = args.concat(['useCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);\n" +
         "      }\n" +
         "\n" +
         "      if (this.getHasSetCustomSize()) {\n" +
         "        if (expandProperties.width >= 0 && expandProperties.height >= 0) {\n" +
-        "          args = args.concat(['w', expandProperties.width, 'h', expandProperties.height]);\n" +
+        "          args = args.concat(['width', expandProperties.width, 'height', expandProperties.height]);\n" +
         "        }\n" +
         "      }\n" +
         "\n" +
