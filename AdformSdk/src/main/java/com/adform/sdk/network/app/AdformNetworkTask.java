@@ -27,24 +27,29 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
     @Override
     protected NetworkResponse<ResponseType> handleResponse(HttpResponse response) throws IOException, AuthorizationError {
         int statusCode = response.getStatusLine().getStatusCode();
-        mRawStringResponse = responseToRawString(response).toString();
-        Utils.p("Raw response: "+mRawStringResponse);
         NetworkResponse networkResponse = null;
+        if (response != null &&
+                response.getEntity() != null &&
+                response.getEntity().getContent() != null
+                ) {
+            mRawStringResponse = responseToRawString(response).toString();
+            Utils.p("Raw response: " + mRawStringResponse);
 
-        switch (statusCode){
-            case 200:
-                //check if not empty response
-                if(mRawStringResponse != null && mRawStringResponse.length() > 0) {
-                    networkResponse = parseJsonResponseBody();
-                    if (networkResponse == null) {
-                        networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Failed to parse (Raw: "+mRawStringResponse+")");
+            switch (statusCode) {
+                case 200:
+                    //check if not empty response
+                    if (mRawStringResponse != null && mRawStringResponse.length() > 0) {
+                        networkResponse = parseJsonResponseBody();
+                        if (networkResponse == null) {
+                            networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Failed to parse (Raw: " + mRawStringResponse + ")");
+                        }
+                    } else {
+                        networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
                     }
-                } else {
-                    networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
         if (networkResponse == null)
             networkResponse = createResponseWithError(
