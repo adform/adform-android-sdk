@@ -11,7 +11,7 @@ How to add AdformSDK to your project
 
 ## Project preparations for AdformSDK (Short) 
 
-1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.2. 
+1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.4.6 
 2. Insert library into your project.
 3. Update `build.gradle` file with
 		
@@ -76,6 +76,10 @@ Later on, just add wanted values.
 These values also can be cleared by using snippet below.
 
         mAdView.clearCustomParams();
+        
+### Expandable view
+
+Library is capable of expanding a one way ad. The implementation is the same, as using a CoreAdView. Executing a mraid function expand with its setting, a view is expanded in the front. 
 
 ### ListView implementation
 
@@ -296,7 +300,7 @@ The interstitial ad has two types, preload info before showing and show info ins
 ## Project preparations for AdformSDK (Detailed)
 These instructions are given assuming this is a new project.
 
-1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.2. 
+1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.4.6  
 2. Insert library into your project. This can be done by copying the AdformSDK.jar file into `libs` directory.
 3. Update `build.gradle` file, to load the library when compiling project and add additional needed library. 
 
