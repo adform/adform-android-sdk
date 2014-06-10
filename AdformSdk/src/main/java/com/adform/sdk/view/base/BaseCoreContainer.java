@@ -61,7 +61,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
     protected int mHiddenState = INVISIBLE;
     private boolean isAnimating;
-    protected AdDimension mPlacementDimen;
+//    protected AdDimension mPlacementDimen;
     protected MraidDeviceIdProperty mDeviceId;
     protected BaseInnerContainer mInnerContainer;
     protected Bundle mExtraParams;
@@ -87,7 +87,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         initializeDeviceId();
         initializeCustomParameters(attrs);
         sDeviceDensity = mContext.getResources().getDisplayMetrics().density;
-        mPlacementDimen = initAdDimen();
         mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
         getInnerView().setBaseListener(this);
@@ -95,8 +94,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         getInnerView().getMraidBridge().setCoreBridgeListener(this);
         mVisibilityPositionManager = new VisibilityPositionManager(mContext, this, getInnerView().getMraidBridge());
         ViewGroup.LayoutParams params = new RelativeLayout.LayoutParams(
-                mPlacementDimen.getWidth(),
-                mPlacementDimen.getHeight());
+                getInnerView().getAdDimension().getWidth(),
+                getInnerView().getAdDimension().getHeight());
         setLayoutParams(params);
         addView(getInnerView(), getInnerViewLayoutParams());
     }
@@ -130,12 +129,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     protected abstract ViewGroup.LayoutParams getInnerViewLayoutParams();
 
-    /**
-     * Initializes created ad used dimensions.
-     *
-     * @return return ad dimensions
-     */
-    protected abstract AdDimension initAdDimen();
+    @Override
+    public AdDimension getAdDimension() {
+        return getInnerView().getAdDimension();
+    }
 
     protected void startService() {
         mVisibilityPositionManager.checkVisibilityService();
@@ -304,11 +301,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // -----------------
     // Getters / Setters
     // -----------------
-
-    @Override
-    public AdDimension getAdDimension() {
-        return mPlacementDimen;
-    }
 
     @Override
     public int getMasterId() {

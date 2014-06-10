@@ -74,12 +74,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    protected AdDimension initAdDimen() {
-        //TODO mariusm 27/05/14 It uses default constructor with default parameters. This should be smarter
-        return new AdDimension(mContext);
-    }
-
-    @Override
     public BaseInnerContainer getInnerView() {
         if (mBannerView == null) {
             mBannerView = new InnerBannerView(mContext);
@@ -91,9 +85,10 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     protected ViewGroup.LayoutParams getInnerViewLayoutParams() {
+        AdDimension mockDimension = AdDimension.createDefaultDimension(mContext);
         return new RelativeLayout.LayoutParams(
-                mPlacementDimen.getWidth(),
-                mPlacementDimen.getHeight());
+                mockDimension.getWidth(),
+                mockDimension.getHeight());
     }
 
     /** An update from configuration json */

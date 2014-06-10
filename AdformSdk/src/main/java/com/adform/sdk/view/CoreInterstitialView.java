@@ -77,11 +77,6 @@ public class CoreInterstitialView extends BaseCoreContainer {
     }
 
     @Override
-    protected AdDimension initAdDimen() {
-        return new AdDimension(mContext);
-    }
-
-    @Override
     protected void onVisibilityCallback(boolean isVisible) {
         mInnerContainer.getMraidBridge().changeVisibility(isVisible, false);
     }

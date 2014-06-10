@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.*;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.MraidWebViewClient;
+import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.*;
@@ -62,6 +64,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     private MraidBridge mMraidBridge;
     private CloseImageView mCloseImageView;
     private boolean mUseCloseButton = false;
+//    private AdDimension mAdDimension;
 
     public BaseInnerContainer(Context context) {
         this(context, null);
@@ -74,6 +77,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     public BaseInnerContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutObserver);
 
         // Compability issues
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
@@ -84,6 +88,24 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         mMraidBridge = new MraidBridge(this);
         initView();
         setCloseButtonEnabled(false);
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutObserver =
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            if (mMraidBridge.getAdDimension() == null)
+                mMraidBridge.setAdDimension(AdDimension.createDefaultDimension(mContext));
+            if (!mMraidBridge.getAdDimension().equals(getWidth(), getHeight())){
+                mMraidBridge.onSizeUpdate(AdDimension.createDimensionWithSize(getWidth(), getHeight()), false);
+            }
+        }
+    };
+
+    public AdDimension getAdDimension() {
+        if (mMraidBridge.getAdDimension() == null)
+            mMraidBridge.setAdDimension(AdDimension.createDefaultDimension(mContext));
+        return mMraidBridge.getAdDimension();
     }
 
     /**

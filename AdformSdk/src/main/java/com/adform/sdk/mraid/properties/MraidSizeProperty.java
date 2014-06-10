@@ -1,5 +1,6 @@
 package com.adform.sdk.mraid.properties;
 
+import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.entities.ViewCoords;
 
@@ -9,12 +10,15 @@ import com.adform.sdk.utils.entities.ViewCoords;
 public class MraidSizeProperty extends MraidBaseProperty {
     public enum SizeType {
         MAX_SIZE,
+        SIZE,
         SCREEN_SIZE;
 
         public static String printType(SizeType position) {
             switch (position) {
                 case MAX_SIZE:
                     return "maxSize";
+                case SIZE:
+                    return "size";
                 case SCREEN_SIZE:
                     return "screenSize";
             }
@@ -35,9 +39,14 @@ public class MraidSizeProperty extends MraidBaseProperty {
         return new MraidSizeProperty(sizeType, width, height);
     }
 
-    public static MraidSizeProperty createWithSize(SizeType sizeType,
-                                                           ViewCoords viewCoords) {
+    public static MraidSizeProperty createWithViewCoords(SizeType sizeType,
+                                                         ViewCoords viewCoords) {
         return new MraidSizeProperty(sizeType, viewCoords.getWidth(), viewCoords.getHeight());
+    }
+
+    public static MraidSizeProperty createWithAdDimension(SizeType sizeType,
+                                                         AdDimension adDimension) {
+        return new MraidSizeProperty(sizeType, adDimension.getWidth(), adDimension.getHeight());
     }
 
     @Override

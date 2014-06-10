@@ -4,6 +4,7 @@ import com.adform.sdk.mraid.properties.MraidPositionProperty;
 import com.adform.sdk.mraid.properties.MraidSizeProperty;
 import com.adform.sdk.mraid.properties.MraidViewableProperty;
 import com.adform.sdk.mraid.properties.SimpleMraidProperty;
+import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.entities.ViewCoords;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
@@ -38,6 +39,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private boolean mAllowOrientationChange = true;
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
     private ExpandProperties mExpandProperties;
+    private AdDimension mAdDimension;
 
     public MraidBridge() {}
 
@@ -111,7 +113,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
             public void run() {
                 mWebView
                         .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithSize(
+                                MraidSizeProperty.createWithViewCoords(
                                         MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
                         );
             }
@@ -132,8 +134,28 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
             public void run() {
                 mWebView
                         .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithSize(
+                                MraidSizeProperty.createWithViewCoords(
                                         MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
+                        );
+            }
+        });
+    }
+
+    public void onSizeUpdate(AdDimension adDimension, boolean forceUpdate) {
+        if (adDimension == null)
+            return;
+        if (adDimension.equals(mAdDimension) && !forceUpdate)
+            return;
+        mAdDimension = adDimension;
+        if (mWebView == null)
+            return;
+        mWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                mWebView
+                        .fireChangeEventForProperty(
+                                MraidSizeProperty.createWithAdDimension(
+                                        MraidSizeProperty.SizeType.SIZE, mAdDimension)
                         );
             }
         });
@@ -232,6 +254,14 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
 
     public void setInnerBridgeListener(InnerMraidBridgeListener innerBridgeListener) {
         this.mInnerBridgeListener = innerBridgeListener;
+    }
+
+    public AdDimension getAdDimension() {
+        return mAdDimension;
+    }
+
+    public void setAdDimension(AdDimension adDimension) {
+        mAdDimension = adDimension;
     }
 
     // ---------

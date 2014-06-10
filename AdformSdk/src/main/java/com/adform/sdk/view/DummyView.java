@@ -36,7 +36,6 @@ public class DummyView extends BaseCoreContainer {
         super(context, attrs, defStyle);
     }
 
-
     @Override
     public BaseInnerContainer getInnerView() {
         if (mInnerContainer == null)
@@ -72,11 +71,6 @@ public class DummyView extends BaseCoreContainer {
         return new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-    }
-
-    @Override
-    protected AdDimension initAdDimen() {
-        return new AdDimension(mContext);
     }
 
     @Override

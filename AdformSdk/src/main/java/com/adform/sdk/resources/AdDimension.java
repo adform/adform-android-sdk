@@ -9,16 +9,31 @@ import com.adform.sdk.utils.Utils;
 public class AdDimension {
     private int mWidth;
     private int mHeight;
+    private float mScale = 0;
 
-    public AdDimension(int width, int height) {
+    private AdDimension() {}
+
+    public static AdDimension createEmptyDimension() {
+        return new AdDimension();
+    }
+
+    private AdDimension(int width, int height) {
         this.mWidth = width;
         this.mHeight = height;
     }
 
-    public AdDimension(Context context) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        mWidth = (int)(Utils.getWidthDeviceType(context) * scale+0.5f);
-        mHeight = (int)(Utils.getHeightDeviceType(context) * scale+0.5f);
+    public static AdDimension createDimensionWithSize(int width, int height) {
+        return new AdDimension(width, height);
+    }
+
+    private AdDimension(Context context) {
+        mScale = context.getResources().getDisplayMetrics().density;
+        mWidth = (int)(Utils.getWidthDeviceType(context) * mScale+0.5f);
+        mHeight = (int)(Utils.getHeightDeviceType(context) * mScale+0.5f);
+    }
+
+    public static AdDimension createDefaultDimension(Context context) {
+        return new AdDimension(context);
     }
 
     public int getWidth() {
@@ -35,5 +50,25 @@ public class AdDimension {
 
     public void setHeight(int height) {
         this.mHeight = height;
+    }
+
+    public boolean equals(int width, int height) {
+        if (mWidth != width || mHeight != height)
+            return false;
+        return true;
+    }
+
+    public boolean equals(AdDimension adDimension) {
+        if (adDimension == null)
+            return false;
+        if (adDimension.getWidth() == getWidth() &&
+                adDimension.getHeight() == getHeight())
+            return true;
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString()+" - dimen: w:"+mWidth+" / h:"+mHeight;
     }
 }
