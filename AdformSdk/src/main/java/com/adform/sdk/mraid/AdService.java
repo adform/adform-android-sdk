@@ -36,6 +36,7 @@ public class AdService extends ObservableService2 {
 
     private AdServingEntity mAdServingEntity;
     private long mTimerStop;
+    private long mTimerPauseOffset = 0;
     private AdServiceBinder mListener;
 
     public AdService(AdServiceBinder mListener) {
@@ -58,6 +59,11 @@ public class AdService extends ObservableService2 {
     public void restoreInstanceWithBundle(Bundle restoreBundle) {
         if (mTimerStop == 0 && restoreBundle != null)
             mTimerStop = restoreBundle.getLong(INSTANCE_KEY_STOP);
+        // todo when instance saving is enabled once again, mTimerPauseOffset should be restored here
+        if (mTimerPauseOffset != 0) {
+            mTimerStop = System.currentTimeMillis() + mTimerPauseOffset;
+            mTimerPauseOffset = 0;
+        }
         setStatus(Status.RUNNING);
         long executionTime = mTimerStop - System.currentTimeMillis();
         scheduleRequest(getRequest(), (executionTime > 0)?executionTime:INSTANT_EXECUTION_DELAY);
@@ -131,7 +137,9 @@ public class AdService extends ObservableService2 {
     }
 
     @Override
-    protected void onPauseService() {}
+    protected void onPauseService() {
+        mTimerPauseOffset = mTimerStop - System.currentTimeMillis();
+    }
 
     @Override
     protected void onResumeService() {

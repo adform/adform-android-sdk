@@ -139,6 +139,9 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected void resumeService() {
         mVisibilityPositionManager.checkVisibilityService();
     }
+    protected void pauseService() {
+
+    }
 
     protected void initializeCustomParameters(AttributeSet attributes) {
         if (attributes != null) {
@@ -415,6 +418,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     @Override
     public void onMraidExpand(String url, ExpandProperties properties) {
+        pauseService();
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
         // Changing inner container with an empty view
         if (mPlaceholderView == null)
@@ -501,6 +505,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setCoreBridgeListener(this);
         getInnerView().setCloseButtonEnabled(false);
+        resumeService();
     }
 
     // ---------------

@@ -281,7 +281,15 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         }
     }
 
-//    @Override
+    @Override
+    protected void pauseService() {
+        super.pauseService();
+        if (mAdService != null) {
+            mAdService.pauseService();
+        }
+    }
+
+    //    @Override
 //    protected Parcelable onSaveInstanceState() {
 //        Parcelable superState = super.onSaveInstanceState();
 //        SavedState savedState = new SavedState(superState);
