@@ -37,14 +37,19 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public static final String MASTER_ID = "master_id";
     public static final String API_VERSION = "api_version";
     public static final String HIDDEN_STATE = "hidden_state";
+    public static final String PUBLISHER_ID = "publisher_id";
     private static boolean IS_CUSTOMDATA_LOADED = false;
     private static boolean IS_REQUEST_WITH_CUSTOMDATA = false;
 
     protected Context mContext;
-    /** States that helps handle various states for the view visibility */
+    /**
+     * States that helps handle various states for the view visibility
+     */
     private AdformEnum.VisibilityGeneralState mVisibilityGeneralState = AdformEnum.VisibilityGeneralState.LOAD_FAIL;
     private AdformEnum.VisibilityOnScreenState mVisibilityOnScreenState = AdformEnum.VisibilityOnScreenState.OFF_SCREEN;
-    /** Manager that helps to handle visibility and position changes for the view */
+    /**
+     * Manager that helps to handle visibility and position changes for the view
+     */
     private VisibilityPositionManager mVisibilityPositionManager;
     public static float sDeviceDensity;
     private HashMap<String, String> mCustomParams;
@@ -118,6 +123,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     /**
      * Initializes inner used view that display an ad
+     *
      * @return initialized inner view
      */
     public abstract BaseInnerContainer getInnerView();
@@ -126,19 +132,24 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     /**
      * Initializes created ad used dimensions.
+     *
      * @return return ad dimensions
      */
     protected abstract AdDimension initAdDimen();
+
     protected void startService() {
         mVisibilityPositionManager.checkVisibilityService();
     }
+
     protected void stopService() {
         if (getInnerView() != null)
             getInnerView().getMraidBridge().changeVisibility(false, true);
     }
+
     protected void resumeService() {
         mVisibilityPositionManager.checkVisibilityService();
     }
+
     protected void pauseService() {
 
     }
@@ -157,15 +168,23 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
                     }
                 } else if (name.equals(API_VERSION)) {
                     mApiVersion = attributes.getAttributeValue(i);
-                } else if (name.equals(HIDDEN_STATE)) {
-                    String hiddenState = attributes.getAttributeValue(i);
-                    if (hiddenState.equals("invisible"))
-                        mHiddenState = View.INVISIBLE;
-                    else if (hiddenState.equals("gone"))
-                        mHiddenState = View.GONE;
-                    else
-                        mHiddenState = View.INVISIBLE;
+                } else if (name.equals(PUBLISHER_ID)) {
+                    String publisherAttr = attributes.getAttributeValue(i);
+                    try {
+                        mPublisherId = Integer.parseInt(publisherAttr);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 }
+//                else if (name.equals(HIDDEN_STATE)) {
+//                    String hiddenState = attributes.getAttributeValue(i);
+//                    if (hiddenState.equals("invisible"))
+//                        mHiddenState = View.INVISIBLE;
+//                    else if (hiddenState.equals("gone"))
+//                        mHiddenState = View.GONE;
+//                    else
+//                        mHiddenState = View.INVISIBLE;
+//                }
             }
         }
     }
@@ -209,6 +228,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     /**
      * Final call when visibility has changed. This should be called when something should be indicated
      * as visibility state changed
+     *
      * @param isVisible
      */
     protected abstract void onVisibilityCallback(boolean isVisible);
@@ -219,6 +239,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         setViewState((visibility) ? AdformEnum.VisibilityOnScreenState.ON_SCREEN :
                 AdformEnum.VisibilityOnScreenState.OFF_SCREEN);
     }
+
     public void setViewState(AdformEnum.VisibilityGeneralState state) {
         setViewState(state, mVisibilityOnScreenState);
     }
@@ -241,6 +262,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected AdformEnum.VisibilityGeneralState getGeneralState() {
         return mVisibilityGeneralState;
     }
+
     protected AdformEnum.VisibilityOnScreenState getOnScreenState() {
         return mVisibilityOnScreenState;
     }
@@ -274,7 +296,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             mCustomParams.put(name, value);
     }
 
-    public void clearCustomParams(){
+    public void clearCustomParams() {
         if (mCustomParams != null)
             mCustomParams.clear();
     }
@@ -352,6 +374,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     /**
      * Generates required parameters that are needed with the request for a contract.
      * This also forms a json object.
+     *
      * @return formed parameters as json
      */
     public String getRequestProperties() {
@@ -379,6 +402,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     /**
      * Generates required parameters that have to be passed with the request in GET form.
+     *
      * @return required parameters appended to url
      */
     public String getUrlProperties() {
@@ -435,9 +459,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     /**
      * Expands inner view with MATCH_PARENT parameters
-     * @see #getExpandedLayouts(BaseInnerContainer, int, int, ExpandProperties)
+     *
      * @param expansionContentView view to expand
      * @return expansion container
+     * @see #getExpandedLayouts(BaseInnerContainer, int, int, ExpandProperties)
      */
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
                                               ExpandProperties expandProperties) {
@@ -452,8 +477,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * Note, if expand width/height is provided -1, view is expanded to full scale.
      *
      * @param expansionContentView inner view that will be swapped
-     * @param expandWidth expansion width
-     * @param expandHeight expansion height
+     * @param expandWidth          expansion width
+     * @param expandHeight         expansion height
      * @return expansion container
      */
     private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
@@ -589,8 +614,4 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(browserIntent);
     }
-
-    // This should always be implemented
-//    @Override
-//    public void onMraidClose() {}
 }

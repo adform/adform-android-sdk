@@ -30,7 +30,6 @@ public class DemoFragment2 extends Fragment {
                         .addCustomParam("age", "23")
                         .buildParams()
         );
-        mAdView.setMasterId(333333);
         return view;
     }
 
