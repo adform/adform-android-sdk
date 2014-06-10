@@ -75,7 +75,8 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
             RelativeLayout.LayoutParams relativeLayoutParams = new RelativeLayout.LayoutParams(
                     mExtraParams.getInt(INNER_EXTRA_WIDTH),
                     mExtraParams.getInt(INNER_EXTRA_HEIGHT));
-            relativeLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            relativeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            relativeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             return relativeLayoutParams;
         }
         return super.getInnerViewLayoutParams();
@@ -122,7 +123,8 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
 
     @Override
     public void onMraidClose() {
-        mSlidingManager.turnOff();
+        if (!mSlidingManager.isAnimating())
+            mSlidingManager.turnOff();
     }
 
 }

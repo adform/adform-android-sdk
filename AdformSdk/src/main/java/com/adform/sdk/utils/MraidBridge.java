@@ -4,6 +4,7 @@ import com.adform.sdk.mraid.properties.MraidPositionProperty;
 import com.adform.sdk.mraid.properties.MraidSizeProperty;
 import com.adform.sdk.mraid.properties.MraidViewableProperty;
 import com.adform.sdk.mraid.properties.SimpleMraidProperty;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.entities.ViewCoords;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.inner.AdWebView;
@@ -19,7 +20,6 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     public interface InnerMraidBridgeListener {
-//        public void onIsContentMraidChange(boolean isContentMraid);
         public void onUseCustomClose(boolean useCustomClose);
     }
 
@@ -37,6 +37,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private boolean mUseCustomClose = false;
     private boolean mAllowOrientationChange = true;
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
+    private ExpandProperties mExpandProperties;
 
     public MraidBridge() {}
 
@@ -281,8 +282,11 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     }
 
     @Override
-    public void onMraidExpand() {
+    public void onMraidExpand(String url, ExpandProperties expandProperties) {
+        mExpandProperties = expandProperties;
+        mUseCustomClose = expandProperties.useCustomClose();
         if (mMraidListener != null)
-            mMraidListener.onMraidExpand();
+            mMraidListener.onMraidExpand(url, expandProperties);
     }
+
 }

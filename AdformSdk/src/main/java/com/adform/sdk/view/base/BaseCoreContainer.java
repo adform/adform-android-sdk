@@ -18,6 +18,7 @@ import com.adform.sdk.network.base.ito.network.NetworkRequest;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.CoreExpandedView;
 import com.adform.sdk.view.CoreInterstitialView;
@@ -413,7 +414,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private CoreExpandedView mCoreExpandView;
 
     @Override
-    public void onMraidExpand() {
+    public void onMraidExpand(String url, ExpandProperties properties) {
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
         // Changing inner container with an empty view
         if (mPlaceholderView == null)
@@ -422,7 +423,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
                 new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
         removeView(getInnerView());
 
-        mExpandContainer = getExpandedLayouts(getInnerView());
+        mExpandContainer = getExpandedLayouts(getInnerView(), properties.getWidth(), properties.getHeight());
         mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
@@ -483,6 +484,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      * Resets expanded view to its default state
      */
     private void resetViewToDefaultState() {
+        mCoreExpandView.setListener(null);
         mCoreExpandView.removeAllViewsInLayout();
         mExpandContainer.removeAllViewsInLayout();
         mRootView.removeView(mExpandContainer);

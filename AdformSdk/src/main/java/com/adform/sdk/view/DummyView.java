@@ -10,6 +10,7 @@ import com.adform.sdk.mraid.properties.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.utils.AdformEnum;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.AdWebView;
@@ -102,5 +103,5 @@ public class DummyView extends BaseCoreContainer {
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {}
 
     @Override
-    public void onMraidExpand() {}
+    public void onMraidExpand(String url, ExpandProperties expandProperties) {}
 }

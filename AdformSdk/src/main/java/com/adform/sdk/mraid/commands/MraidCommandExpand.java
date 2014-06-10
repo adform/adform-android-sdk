@@ -1,5 +1,6 @@
 package com.adform.sdk.mraid.commands;
 
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.Map;
@@ -14,6 +15,10 @@ public class MraidCommandExpand extends MraidBaseCommand {
 
     @Override
     public void execute() {
-        mWebView.getListener().onMraidExpand();
+        String url = getStringFromParamsForKey("url");
+        int width = getIntFromParamsForKey("w");
+        int height = getIntFromParamsForKey("h");
+        boolean shouldUseCustomClose = getBooleanFromParamsForKey("shouldUseCustomClose");
+        mWebView.getListener().onMraidExpand(url, new ExpandProperties(width, height, shouldUseCustomClose));
     }
 }

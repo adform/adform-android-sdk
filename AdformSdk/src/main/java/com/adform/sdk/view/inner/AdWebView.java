@@ -10,6 +10,7 @@ import com.adform.sdk.mraid.MraidWebViewClient;
 import com.adform.sdk.mraid.properties.MraidBaseProperty;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.Utils;
+import com.adform.sdk.utils.entities.ExpandProperties;
 
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ public class AdWebView extends WebView {
         public void onMraidSetOrientation(boolean allowOrientationChange,
                                           AdformEnum.ForcedOrientation forcedOrientation);
         public void onMraidUseCustomClose(boolean shouldUseCustomClose);
-        public void onMraidExpand();
+        public void onMraidExpand(String url, ExpandProperties expandProperties);
     }
 
     private Context mContext;
@@ -93,7 +94,6 @@ public class AdWebView extends WebView {
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
     public void fireNativeCommandCompleteEvent(String command) {
-        Utils.p("completing command "+command);
         injectJavascript("window.mraidbridge.nativeCallComplete('" + command + "');");
     }
 

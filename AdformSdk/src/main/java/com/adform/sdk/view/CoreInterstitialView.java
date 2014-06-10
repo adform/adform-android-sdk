@@ -12,6 +12,7 @@ import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.utils.AdformEnum;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerInterstitialView;
@@ -144,7 +145,7 @@ public class CoreInterstitialView extends BaseCoreContainer {
     }
 
     @Override
-    public void onMraidExpand() {
+    public void onMraidExpand(String url, ExpandProperties expandProperties) {
         // Nothing to do here
     }
 }
