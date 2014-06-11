@@ -16,6 +16,15 @@ import com.adform.sdk.view.inner.AdWebView;
 public class MraidBridge implements VisibilityPositionManager.PositionManagerListener,
         AdWebView.NativeWebviewListener {
 
+    public static final int RUN_INDEX_DEFAULT_POS = 0;
+    public static final int RUN_INDEX_CURR_POS = 1;
+    public static final int RUN_INDEX_MAX_SIZE = 2;
+    public static final int RUN_INDEX_SCREEN_SIZE = 3;
+    public static final int RUN_INDEX_SIZE = 4;
+    public static final int RUN_INDEX_STATE = 5;
+    public static final int RUN_INDEX_PLACEMENT = 6;
+    public static final int RUN_INDEX_VISIBILITY = 7;
+
     public interface CoreMraidBridgeListener {
         public void onIsContentMraidChange(boolean isContentMraid);
     }
@@ -40,6 +49,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
     private AdformEnum.ForcedOrientation mForcedOrientation = AdformEnum.ForcedOrientation.UNKNOWN;
     private ExpandProperties mExpandProperties;
     private AdDimension mAdDimension;
+    private Runnable[] mRunnableArray = new Runnable[10];
 
     public MraidBridge() {}
 
@@ -67,7 +77,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mDefaultPosition = viewCoords;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_DEFAULT_POS] = new Runnable() {
             @Override
             public void run() {
                 mWebView
@@ -76,7 +86,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
                                         MraidPositionProperty.PositionType.DEFAULT_POSITION, mDefaultPosition)
                         );
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_DEFAULT_POS]);
     }
 
     public void onCurrentPositionUpdate(ViewCoords viewCoords, boolean forceUpdate) {
@@ -87,7 +98,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mCurrentPosition = viewCoords;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_CURR_POS] = new Runnable() {
             @Override
             public void run() {
                 mWebView
@@ -96,7 +107,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
                                         MraidPositionProperty.PositionType.CURRENT_POSITION, mCurrentPosition)
                         );
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_CURR_POS]);
     }
 
     @Override
@@ -108,7 +120,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mMaxSize = viewCoords;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_MAX_SIZE] = new Runnable() {
             @Override
             public void run() {
                 mWebView
@@ -117,7 +129,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
                                         MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
                         );
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_MAX_SIZE]);
     }
 
     @Override
@@ -129,7 +142,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mScreenSize = viewCoords;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_SCREEN_SIZE] = new Runnable() {
             @Override
             public void run() {
                 mWebView
@@ -138,7 +151,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
                                         MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
                         );
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_SCREEN_SIZE]);
     }
 
     public void onSizeUpdate(AdDimension adDimension, boolean forceUpdate) {
@@ -149,7 +163,7 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mAdDimension = adDimension;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_SIZE] = new Runnable() {
             @Override
             public void run() {
                 mWebView
@@ -158,7 +172,8 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
                                         MraidSizeProperty.SizeType.SIZE, mAdDimension)
                         );
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_SIZE]);
     }
 
     public void onStateChange(AdformEnum.State state, boolean forceUpdate) {
@@ -169,13 +184,14 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mState = state;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_STATE] = new Runnable() {
             @Override
             public void run() {
                 mWebView.fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
                         AdformEnum.State.getStateString(mState)));
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_STATE]);
     }
 
     public void setState(AdformEnum.State state) {
@@ -190,15 +206,15 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mPlacementType = placementType;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[RUN_INDEX_PLACEMENT] = new Runnable() {
             @Override
             public void run() {
                 mWebView.fireChangeEventForProperty(
                         SimpleMraidProperty.createWithKeyAndValue(VAR_PLACEMENT_TYPE,
                                 AdformEnum.PlacementType.getPlacementString(placementType)));
             }
-        });
-
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_PLACEMENT]);
     }
 
     public void setPlacementType(AdformEnum.PlacementType placementType) {
@@ -214,13 +230,14 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mVisible = visible;
         if (mWebView == null)
             return;
-        mWebView.post(new Runnable() {
+        mRunnableArray[4] = new Runnable() {
             @Override
             public void run() {
                 mWebView
                         .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(mVisible));
             }
-        });
+        };
+        mWebView.post(mRunnableArray[RUN_INDEX_VISIBILITY]);
     }
 
     public void forceSettingUpdate() {
@@ -317,6 +334,20 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mUseCustomClose = expandProperties.useCustomClose();
         if (mMraidListener != null)
             mMraidListener.onMraidExpand(url, expandProperties);
+    }
+
+    public void destroy() {
+        if (mWebView != null) {
+            for (int i = 0; i < mRunnableArray.length; i++) {
+                if (mRunnableArray[i] != null)
+                    mWebView.removeCallbacks(mRunnableArray[i]);
+            }
+            mWebView.removeCallbacks(forcePositionSettingRunnable);
+            mWebView = null;
+        }
+        mMraidListener = null;
+        mCoreBridgeListener = null;
+        mInnerBridgeListener = null;
     }
 
 }

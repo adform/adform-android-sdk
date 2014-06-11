@@ -49,7 +49,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     private BaseAdViewListener mBaseListener;
     protected Context mContext = null;
     private String mLoadedContent;
-    private WebViewClient mSimpleWebViewClient;
+//    private WebViewClient mSimpleWebViewClient;
     private WebViewClient mMraidWebViewClient;
     private String mUserAgent;
     private boolean mIsRestoring = false;
@@ -155,20 +155,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     protected AdWebView createWebView(final Context context) {
         final AdWebView webView = new AdWebView(context);
 
-        if (mSimpleWebViewClient == null)
-            mSimpleWebViewClient = new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(final WebView view,
-                                                        final String url) {
-                    return true;
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                }
-            };
-
-        webView.setWebViewClient(mSimpleWebViewClient);
+        webView.setWebViewClient(getMraidWebViewClient());
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -462,10 +449,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         return mUserAgent;
     }
 
-    public WebViewClient getSimpleWebViewClient() {
-        return mSimpleWebViewClient;
-    }
-
     public WebViewClient getMraidWebViewClient() {
         // Lazy instantiation for mraid type of client
         if (mMraidWebViewClient == null)
@@ -489,4 +472,14 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         return mMraidBridge;
     }
 
+    public abstract void destroyWebView();
+
+    public void destroy() {
+        mMraidBridge.destroy();
+        mMraidBridge = null;
+        mBaseListener = null;
+        mMraidWebViewClient = null;
+        removeAllViewsInLayout();
+        destroyWebView();
+    }
 }

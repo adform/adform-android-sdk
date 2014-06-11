@@ -131,4 +131,11 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
             mSlidingManager.turnOff();
     }
 
+    @Override
+    public void destroy() {
+        if (mSlidingManager != null)
+            mSlidingManager.destroy();
+        mSlidingManager = null;
+        super.destroy();
+    }
 }

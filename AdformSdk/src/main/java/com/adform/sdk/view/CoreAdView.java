@@ -34,7 +34,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     public interface CoreAdViewListener {
         public void onAdVisibilityChange(boolean visible);
-        public void onNetworkError(NetworkTask request, NetworkError networkError);
+//        public void onNetworkError(NetworkTask request, NetworkError networkError);
     }
 
     private AdService mAdService;
@@ -42,7 +42,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     private Bundle mServiceInstanceBundle;
     /** Manager that handles core container sliding animation */
     private SlidingManager mSlidingManager;
-    private InnerBannerView mBannerView;
     /** Manager that handles contract (json) loading */
     private AdformContentLoadManager mAdformContentLoadManager;
     /** An interface for calling back handler functions for outer control */
@@ -74,12 +73,10 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public BaseInnerContainer getInnerView() {
-        if (mBannerView == null) {
-            mBannerView = new InnerBannerView(mContext);
-            // TODO: Change this to something nicer. This must be binded, as this lets instance to be saved
-//            mBannerView.setId(156554);
+        if (mInnerContainer == null) {
+            mInnerContainer = new InnerBannerView(mContext);
         }
-        return mBannerView;
+        return mInnerContainer;
     }
 
     @Override
@@ -95,7 +92,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public void update(Observable observable, Object data) {
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
-            mBannerView.showContent(null);
+            getInnerView().showContent(null);
             mSlidingManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
@@ -103,7 +100,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         }
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
-            mBannerView.showContent(null);
+            getInnerView().showContent(null);
             mSlidingManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
@@ -125,7 +122,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                     e.printStackTrace();
                 }
             } else {
-                mBannerView.showContent(null);
+                getInnerView().showContent(null);
                 mSlidingManager.turnOff();
                 setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
                 resetTimesLoaded();
@@ -135,7 +132,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-        mBannerView.showContent(content);
+        getInnerView().showContent(content);
     }
 
     @Override
@@ -164,8 +161,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onNetworkError(NetworkTask request, NetworkError networkError) {
-        if (mListener != null)
-            mListener.onNetworkError(request, networkError);
+//        if (mListener != null)
+//            mListener.onNetworkError(request, networkError);
     }
 
     @Override
@@ -193,7 +190,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentLoadFailed() {
-        mBannerView.showContent(null);
+        getInnerView().showContent(null);
     }
 
     @Override
@@ -249,7 +246,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
      */
     protected void stopService() {
         super.stopService();
-        mBannerView.getMraidBridge().changeVisibility(false, true);
+        getInnerView().getMraidBridge().changeVisibility(false, true);
         if (mAdService != null) {
             mAdService.deleteObserver(this);
             mAdService.stopService();
@@ -276,7 +273,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mAdService == null)
             mAdService = new AdService(this);
         mAdService.addObserver(this);
-        if (mBannerView != null && mBannerView.getTimesLoaded() > 0)
+        if (getInnerView() != null && getInnerView().getTimesLoaded() > 0)
             resumeService();
         else {
             if (mDeviceId == null) {
@@ -374,12 +371,12 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     protected void onVisibilityCallback(boolean isVisible) {
         if (mListener != null)
             mListener.onAdVisibilityChange(isVisible);
-        mBannerView.getMraidBridge().changeVisibility(isVisible, false);
+        getInnerView().getMraidBridge().changeVisibility(isVisible, false);
     }
 
     private void resetTimesLoaded() {
         if (getGeneralState() == AdformEnum.VisibilityGeneralState.LOAD_FAIL)
-            mBannerView.setTimesLoaded(0);
+            getInnerView().setTimesLoaded(0);
     }
 
     public void setListener(CoreAdViewListener l) {
@@ -393,7 +390,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public String getUserAgent() {
-        return mBannerView.getUserAgent();
+        return getInnerView().getUserAgent();
     }
 
     @Override
@@ -416,5 +413,17 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         super.onMraidOpen(url);
     }
 
-
+    @Override
+    public void destroy() {
+        if (mAdService != null)
+            mAdService.stopService();
+        mAdService = null;
+        if (mSlidingManager != null)
+            mSlidingManager.destroy();
+        mSlidingManager = null;
+        mListener = null;
+        mAdformContentLoadManager.setListener(null);
+        mAdformContentLoadManager = null;
+        super.destroy();
+    }
 }

@@ -143,4 +143,10 @@ public class CoreInterstitialView extends BaseCoreContainer {
     public void onMraidExpand(String url, ExpandProperties expandProperties) {
         // Nothing to do here
     }
+
+    @Override
+    public void destroy() {
+        mListener = null;
+        super.destroy();
+    }
 }

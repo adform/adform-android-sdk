@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewListener {
     private View mPlaceHolder;
     private Handler mHandler = new Handler();
+    private CoreAdView mAdView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_main, null);
-        CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+        mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
 
         // Use builder to set custom parameters...
@@ -63,23 +64,9 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
     }
 
     @Override
-    public void onNetworkError(NetworkTask request, NetworkError networkError) {
-//        HashMap<String, String> networkMap = new HashMap<String, String>();
-//        networkMap.put("url", request.getRequest().getUrl());
-//        for (String s : request.getRequest().getHeaders().keySet()) {
-//            networkMap.put("header_"+s, request.getRequest().getHeaders().get(s));
-//        }
-//        for (NameValuePair nameValuePair : request.getRequest().getParams()) {
-//            networkMap.put("param_"+nameValuePair.getName(), nameValuePair.getValue());
-//        }
-//        Sentry.captureEvent(new Sentry.SentryEventBuilder()
-//                        .setMessage("NetworkError(" + networkError.getType().name() + ":" + networkError.getErrorCode() + "):" + networkError.getMessage())
-//                        .setExtra(networkMap)
-//                        .setCulprit("AdformDemoApp")
-//                        .setLevel(Sentry.SentryEventBuilder.SentryEventLevel.WARNING)
-//                        .setTimestamp(System.currentTimeMillis())
-//        );
-//        Utils.p("Sent error event from url: "+request.getRequest().getUrl());
+    public void onDestroy() {
+        if (mAdView != null)
+            mAdView.destroy();
+        super.onDestroy();
     }
-
 }

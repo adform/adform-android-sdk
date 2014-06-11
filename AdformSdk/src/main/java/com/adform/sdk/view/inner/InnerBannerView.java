@@ -157,4 +157,11 @@ public class InnerBannerView extends BaseInnerContainer {
         return null;
     }
 
+    @Override
+    public void destroyWebView() {
+        for (AdWebView mWebView : mWebViews) {
+            mWebView.setWebViewClient(null);
+            mWebView.destroy();
+        }
+    }
 }

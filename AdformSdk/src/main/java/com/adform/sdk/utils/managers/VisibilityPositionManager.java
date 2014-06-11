@@ -48,7 +48,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     private ViewCoords mDefaultPosition, mCurrentPosition, mMaxSize, mScreenSize;
     private ViewCoords mGapBetweenScreenSizeMaxSize;
     private View mLastContainer;
-    private final VisibilityManagerListener mVisibilityManagerListener;
+    private VisibilityManagerListener mVisibilityManagerListener;
     private PositionManagerListener mPositionManagerListener;
     private boolean isVisible = false;
     /** This can go from 0 to 1.
@@ -101,7 +101,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         mVisibilityRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mPositionManagerListener != null) {
+                if (mPositionManagerListener != null && mGapBetweenScreenSizeMaxSize != null) {
                     setCurrentPosition(ViewCoords.createViewCoordSubrtactModifier(
                             mVisibilityManagerListener.getView(), mGapBetweenScreenSizeMaxSize));
                     if ((mDefaultPosition != null && mDefaultPosition.isZero()) || mDefaultPosition == null) {
@@ -253,4 +253,10 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     public void setPositionManagerListener(PositionManagerListener positionManagerListener) {
         this.mPositionManagerListener = positionManagerListener;
     }
+
+    public void destroy() {
+        mVisibilityManagerListener = null;
+        mPositionManagerListener = null;
+    }
+
 }

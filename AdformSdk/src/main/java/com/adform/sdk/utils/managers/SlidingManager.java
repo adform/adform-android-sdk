@@ -168,4 +168,9 @@ public class SlidingManager {
     public void setListenerCallbacks(SliderableWidgetCallbacks listenerCallbacks) {
         this.mListenerCallbacks = listenerCallbacks;
     }
+
+    public void destroy() {
+        mListenerCallbacks = null;
+        mListenerProperties = null;
+    }
 }

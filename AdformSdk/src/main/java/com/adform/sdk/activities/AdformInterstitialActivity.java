@@ -89,4 +89,11 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
+
+    @Override
+    protected void onDestroy() {
+        mInterstitialView.destroy();
+        super.onDestroy();
+    }
+
 }

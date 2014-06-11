@@ -41,6 +41,14 @@ public class DummyView extends BaseCoreContainer {
         if (mInnerContainer == null)
             mInnerContainer = new BaseInnerContainer(mContext) {
                 @Override
+                public void destroyWebView() {
+                    if (mWebView != null) {
+                        mWebView.destroy();
+                        mWebView = null;
+                    }
+                }
+
+                @Override
                 protected void initView() {
                     mWebView = createWebView(mContext);
                 }

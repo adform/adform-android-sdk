@@ -13,6 +13,9 @@ import com.adform.sdk.view.CoreAdView;
  * Created by mariusm on 13/05/14.
  */
 public class DemoFragment2 extends Fragment {
+
+    private CoreAdView mAdView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +25,7 @@ public class DemoFragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_main2, null);
-        CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+        mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
 
         // Use builder to set custom parameters...
         mAdView.setCustomParams(new CustomParamBuilder()
@@ -31,6 +34,13 @@ public class DemoFragment2 extends Fragment {
                         .buildParams()
         );
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mAdView != null)
+            mAdView.destroy();
+        super.onDestroy();
     }
 
 }

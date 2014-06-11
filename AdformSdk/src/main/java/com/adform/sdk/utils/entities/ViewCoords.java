@@ -29,6 +29,8 @@ public class ViewCoords implements Cloneable {
     }
 
     public static ViewCoords createViewCoordSubrtactModifier(View view, ViewCoords viewCoords) {
+        if (viewCoords == null)
+            return null;
         int[] location = new int[2];
         view.getLocationInWindow(location);
         return new ViewCoords(location[0]-viewCoords.getWidth(),

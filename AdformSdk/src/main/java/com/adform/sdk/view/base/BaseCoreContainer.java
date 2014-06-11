@@ -609,4 +609,13 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(browserIntent);
     }
+
+    public void destroy() {
+        if (mVisibilityPositionManager != null) {
+            mVisibilityPositionManager.destroy();
+            mVisibilityPositionManager = null;
+        }
+        mInnerContainer.destroy();
+        removeAllViews();
+    }
 }

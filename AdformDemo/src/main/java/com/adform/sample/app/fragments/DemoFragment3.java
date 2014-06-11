@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class DemoFragment3 extends Fragment implements TestAdapter3.TestAdapterListener {
 
     private ListView mListView;
+    private TestAdapter3 mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class DemoFragment3 extends Fragment implements TestAdapter3.TestAdapterL
             templateList.add(getString(R.string.temp_info));
         }
 
-        final TestAdapter3 adapter = new TestAdapter3(getActivity(), templateList, this);
-        mListView.setAdapter(adapter);
+        mAdapter = new TestAdapter3(getActivity(), templateList, this);
+        mListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -47,5 +48,14 @@ public class DemoFragment3 extends Fragment implements TestAdapter3.TestAdapterL
         if (position % 5 == 0)
             return 1;
         return 0;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAdapter != null)
+            mAdapter.clear();
+        if (mListView != null)
+            mListView.setAdapter(null);
     }
 }
