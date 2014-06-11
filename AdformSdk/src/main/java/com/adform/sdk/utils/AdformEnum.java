@@ -196,5 +196,29 @@ public class AdformEnum {
                 return UNKNOWN;
         }
     }
+    /**
+     * Type of expanded view
+     */
+    public enum ExpandType {
+        ONE_PART(0),
+        TWO_PART(1);
+        private int value;
+
+        private ExpandType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static ExpandType parseType(int type) {
+            switch (type) {
+                case 0: return ONE_PART;
+                case 1: return TWO_PART;
+                default: return ONE_PART;
+            }
+        }
+    }
 
 }

@@ -166,29 +166,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    public void onMraidExpand(final String url, final ExpandProperties properties) {
-        pauseService();
-        super.onMraidExpand(url, properties);
-//        isViewExpanding = true;
-//        mSlidingManager.setListenerCallbacks(new SlidingManager.SliderableWidgetCallbacks() {
-//            @Override
-//            public void onSliderStartedShowing() {}
-//
-//            @Override
-//            public void onSliderFinishedShowing() {}
-//
-//            @Override
-//            public void onSliderStartedHiding() {}
-//
-//            @Override
-//            public void onSliderFinishedHiding() {
-//                expand(url, properties);
-//            }
-//        });
-//        mSlidingManager.turnOff();
-    }
-
-    @Override
     public void onContentLoadFailed() {
         getInnerView().showContent(null);
     }

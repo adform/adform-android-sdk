@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
+import com.adform.sdk.utils.AdformEnum;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.managers.SlidingManager;
 import com.adform.sdk.view.base.BaseInnerContainer;
 
@@ -23,18 +25,24 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     public static final String INNER_EXTRA_WIDTH = "INNER_EXTRA_WIDTH";
     public static final String INNER_EXTRA_HEIGHT = "INNER_EXTRA_HEIGHT";
     public static final String INNER_EXTRA_USE_CUSTOM_CLOSE = "INNER_EXTRA_USE_CUSTOM_CLOSE";
+    public static final String INNER_EXTRA_CONTENT = "INNER_EXTRA_CONTENT";
     private Animation mAnimation;
     private SlidingManager mSlidingManager;
     private View mDimmingView;
     private Animation mFadeInAnimation;
     private Animation mFadeOutAnimation;
+    private AdformEnum.ExpandType mExpandType = AdformEnum.ExpandType.ONE_PART;
 
     public CoreExpandedView(Context context, BaseInnerContainer innerContainer, Bundle extras) {
         this(context, null, 0, innerContainer, extras);
     }
 
+    public CoreExpandedView(Context context, Bundle extras) {
+        this(context, null, 0, null, extras);
+    }
+
     public CoreExpandedView(Context context) {
-        this(context, null);
+        this(context, null, 0);
     }
 
     public CoreExpandedView(Context context, AttributeSet attrs) {
@@ -69,6 +77,14 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
 
         mFadeInAnimation = createAlphaAnimation(FROM_ALPHA, TO_ALPHA);
         mFadeOutAnimation = createAlphaAnimation(TO_ALPHA, FROM_ALPHA);
+
+        String extraContent = extras.getString(INNER_EXTRA_CONTENT);
+        if (extraContent != null) {
+            mExpandType = AdformEnum.ExpandType.TWO_PART;
+            showContent(extraContent);
+        }
+        mDimmingView.setVisibility(View.VISIBLE);
+        mDimmingView.startAnimation(mFadeInAnimation);
     }
 
     @Override
@@ -95,12 +111,15 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     @Override
     public void onContentRender() {
         super.onContentRender();
+        if (mExpandType == AdformEnum.ExpandType.TWO_PART)
+            mSlidingManager.turnOn();
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        mSlidingManager.turnOn();
+        if (mExpandType == AdformEnum.ExpandType.ONE_PART)
+            mSlidingManager.turnOn();
     }
 
     @Override
@@ -120,10 +139,7 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     }
 
     @Override
-    public void onSliderStartedShowing() {
-        mDimmingView.setVisibility(View.VISIBLE);
-        mDimmingView.startAnimation(mFadeInAnimation);
-    }
+    public void onSliderStartedShowing() {}
 
     @Override
     public void onMraidClose() {

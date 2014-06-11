@@ -18,7 +18,9 @@ import com.adform.sdk.network.base.ito.network.NetworkRequest;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.MraidBridge;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.entities.ExpandProperties;
+import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.CoreExpandedView;
 import com.adform.sdk.view.CoreInterstitialView;
@@ -433,11 +435,30 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private CoreExpandedView mCoreExpandView;
 
     @Override
-    public void onMraidExpand(String url, ExpandProperties properties) {
-        expand(url, properties);
+    public void onMraidExpand(String url, final ExpandProperties properties) {
+        pauseService();
+        if (url == null) {
+            expand(null, properties);
+        } else {
+            AdformContentLoadManager expandLoader = new AdformContentLoadManager();
+            expandLoader.setListener(new AdformContentLoadManager.ContentLoaderListener() {
+                @Override
+                public void onContentMraidLoadSuccessful(String content) {
+                    expand(content, properties);
+                }
+
+                @Override
+                public void onContentLoadFailed() { }
+            });
+            try {
+                expandLoader.loadContent(expandLoader.getRawGetTask(url, false));
+            } catch (AdformContentLoadManager.ContentLoadException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    protected void expand(String url, ExpandProperties properties) {
+    protected void expand(String content, ExpandProperties properties) {
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
         // Changing inner container with an empty view
         if (mPlaceholderView == null)
@@ -445,46 +466,19 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         addView(mPlaceholderView,
                 new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
         removeView(getInnerView());
-        mExpandContainer = getExpandedLayouts(getInnerView(), properties.getWidth(),
-                properties.getHeight(), properties);
-        mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
-    }
 
-    /**
-     * Expands inner view with MATCH_PARENT parameters
-     *
-     * @param expansionContentView view to expand
-     * @return expansion container
-     * @see #getExpandedLayouts(BaseInnerContainer, int, int, ExpandProperties)
-     */
-    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
-                                              ExpandProperties expandProperties) {
-        return getExpandedLayouts(expansionContentView, -1, -1, expandProperties);
-    }
-
-    /**
-     * Expands banner view to a bigger container.
-     * InnerView is swapped and replaced with a dummy view and pulled out in from.
-     * InnerView is wrapped in {@link com.adform.sdk.view.CoreExpandedView}
-     * When closing, {@link #resetViewToDefaultState()} is called, and everything is put back.
-     * Note, if expand width/height is provided -1, view is expanded to full scale.
-     *
-     * @param expansionContentView inner view that will be swapped
-     * @param expandWidth          expansion width
-     * @param expandHeight         expansion height
-     * @return expansion container
-     */
-    private RelativeLayout getExpandedLayouts(BaseInnerContainer expansionContentView,
-                                              int expandWidth, int expandHeight, ExpandProperties expandProperties) {
         if (mExpandContainer == null)
             mExpandContainer = new RelativeLayout(mContext);
         Bundle extraParams = new Bundle();
-        extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH, expandWidth);
-        extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT, expandHeight);
-        extraParams.putBoolean(CoreExpandedView.INNER_EXTRA_USE_CUSTOM_CLOSE, expandProperties.useCustomClose());
-        mCoreExpandView = new CoreExpandedView(mContext, expansionContentView, extraParams);
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH, properties.getWidth());
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT, properties.getHeight());
+        extraParams.putBoolean(CoreExpandedView.INNER_EXTRA_USE_CUSTOM_CLOSE, properties.useCustomClose());
+        if (content == null) {
+            mCoreExpandView = new CoreExpandedView(mContext, getInnerView(), extraParams);
+        } else {
+            extraParams.putString(CoreExpandedView.INNER_EXTRA_CONTENT, content);
+            mCoreExpandView = new CoreExpandedView(mContext, extraParams);
+        }
         mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
             @Override
             public void onAdClose() {
@@ -494,17 +488,23 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             }
 
             @Override
-            public void onAdOrientationChange(int orientation) {}
+            public void onAdOrientationChange(int orientation) {
+            }
 
             @Override
-            public void onAdShown() {}
+            public void onAdShown() {
+            }
         });
         RelativeLayout.LayoutParams lp;
         lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         lp.addRule(RelativeLayout.CENTER_IN_PARENT);
         mExpandContainer.addView(mCoreExpandView, lp);
-        return mExpandContainer;
+
+
+        mRootView.addView(mExpandContainer, new RelativeLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        getInnerView().getMraidBridge().onStateChange(AdformEnum.State.EXPANDED, false);
     }
 
     /**
