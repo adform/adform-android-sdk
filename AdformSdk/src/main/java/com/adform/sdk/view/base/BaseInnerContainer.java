@@ -55,16 +55,12 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     private boolean mIsRestoring = false;
     private int mTimesLoaded = 0;
     private JsLoadBridge mLoadBridge;
-//    private ImageView mViewCache;
-//    private Canvas mCanvas;
-//    private Bitmap mBitmap;
     private boolean mIsMraidReady = false;
     private HashMap<String, Boolean> mConfigurationPreset;
-//    private boolean mIsLoadedContentMraid = false;
     private MraidBridge mMraidBridge;
     private CloseImageView mCloseImageView;
     private boolean mUseCloseButton = false;
-//    private AdDimension mAdDimension;
+    
 
     public BaseInnerContainer(Context context) {
         this(context, null);

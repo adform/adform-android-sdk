@@ -1,14 +1,10 @@
 package com.adform.sdk.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.network.app.entities.entities.AdServingEntity;
@@ -16,6 +12,7 @@ import com.adform.sdk.mraid.AdService;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.*;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.utils.managers.SlidingManager;
 import com.adform.sdk.view.base.BaseCoreContainer;
@@ -30,7 +27,8 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends BaseCoreContainer implements Observer,
-        SlidingManager.SliderableWidget, AdformContentLoadManager.ContentLoaderListener,
+        SlidingManager.SliderableWidgetProperties, SlidingManager.SliderableWidgetCallbacks,
+        AdformContentLoadManager.ContentLoaderListener,
         AdService.AdServiceBinder {
 
 
@@ -49,9 +47,9 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     private AdformContentLoadManager mAdformContentLoadManager;
     /** An interface for calling back handler functions for outer control */
     private CoreAdViewListener mListener;
-
     /* Basic values that store persistent information */
     private MraidDeviceIdProperty mDeviceId;
+    private boolean isViewExpanding = false;
 
     public CoreAdView(Context context) {
         this(context, null);
@@ -67,6 +65,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
+        mSlidingManager.setListenerCallbacks(this);
         mAdformContentLoadManager = new AdformContentLoadManager();
         mAdformContentLoadManager.setListener(this);
         setVisibility(INVISIBLE);
@@ -167,6 +166,29 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     public void onNetworkError(NetworkTask request, NetworkError networkError) {
         if (mListener != null)
             mListener.onNetworkError(request, networkError);
+    }
+
+    @Override
+    public void onMraidExpand(final String url, final ExpandProperties properties) {
+        pauseService();
+        super.onMraidExpand(url, properties);
+//        isViewExpanding = true;
+//        mSlidingManager.setListenerCallbacks(new SlidingManager.SliderableWidgetCallbacks() {
+//            @Override
+//            public void onSliderStartedShowing() {}
+//
+//            @Override
+//            public void onSliderFinishedShowing() {}
+//
+//            @Override
+//            public void onSliderStartedHiding() {}
+//
+//            @Override
+//            public void onSliderFinishedHiding() {
+//                expand(url, properties);
+//            }
+//        });
+//        mSlidingManager.turnOff();
     }
 
     @Override

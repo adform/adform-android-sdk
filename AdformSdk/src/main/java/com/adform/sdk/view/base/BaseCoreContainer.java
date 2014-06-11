@@ -434,7 +434,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     @Override
     public void onMraidExpand(String url, ExpandProperties properties) {
-        pauseService();
+        expand(url, properties);
+    }
+
+    protected void expand(String url, ExpandProperties properties) {
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
         // Changing inner container with an empty view
         if (mPlaceholderView == null)

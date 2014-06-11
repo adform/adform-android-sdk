@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.utils.managers.SlidingManager;
 import com.adform.sdk.view.base.BaseInnerContainer;
@@ -17,7 +16,8 @@ import com.adform.sdk.view.base.BaseInnerContainer;
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreExpandedView extends CoreInterstitialView implements SlidingManager.SliderableWidget {
+public class CoreExpandedView extends CoreInterstitialView implements SlidingManager.SliderableWidgetProperties,
+        SlidingManager.SliderableWidgetCallbacks {
     public static final float TO_ALPHA = 0.80f;
     public static final float FROM_ALPHA = 0.0f;
     public static final String INNER_EXTRA_WIDTH = "INNER_EXTRA_WIDTH";
@@ -49,6 +49,7 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
                             BaseInnerContainer innerContainer, Bundle extras) {
         super(context, attrs, defStyle, innerContainer, extras);
         mSlidingManager = new SlidingManager(this);
+        mSlidingManager.setListenerCallbacks(this);
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setCoreBridgeListener(this);
