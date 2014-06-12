@@ -138,7 +138,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     }
 
     public int getCloseButtonDimen() {
-        return mCloseImageView.getCloseButtonDimen();
+        return mCloseImageView.getDpUnits(CloseImageView.CLOSE_IMAGE_DIMEN);
     }
 
     @Override

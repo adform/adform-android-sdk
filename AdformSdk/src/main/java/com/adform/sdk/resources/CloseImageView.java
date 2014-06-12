@@ -8,17 +8,15 @@ import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import com.adform.sdk.utils.Utils;
 
 /**
  * Created by mariusm on 28/05/14.
  */
 public class CloseImageView extends ImageView {
-    public static final int CLOSE_IMAGE_DIMEN = 64;
+    public static final int CLOSE_IMAGE_DIMEN = 32;
+    public static final int CLOSE_IMAGE_MARGIN = 18;
     private Context mContext;
     private Bitmap mBitmap;
     public static final String CLOSE_INTERSTITIAL_XXHDPI = "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";
@@ -49,11 +47,14 @@ public class CloseImageView extends ImageView {
     }
 
     public RelativeLayout.LayoutParams getStandardLayoutParams() {
-        int closeDimen = getCloseButtonDimen();
+        int closeDimen = getDpUnits(CLOSE_IMAGE_DIMEN);
+        int closeMargin = (getDpUnits(CLOSE_IMAGE_MARGIN)) / 2;
+
         final RelativeLayout.LayoutParams closeImageViewParams = new RelativeLayout.LayoutParams(closeDimen,
                 closeDimen);
         closeImageViewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         closeImageViewParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+        closeImageViewParams.setMargins(closeMargin, closeMargin, closeMargin, closeMargin);
         return closeImageViewParams;
     }
 
@@ -85,8 +86,8 @@ public class CloseImageView extends ImageView {
         return mBitmap;
     }
 
-    public int getCloseButtonDimen(){
+    public int getDpUnits(int px){
         Resources r = getResources();
-        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CLOSE_IMAGE_DIMEN, r.getDisplayMetrics());
+        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, r.getDisplayMetrics());
     }
 }
