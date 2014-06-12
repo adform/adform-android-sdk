@@ -2,15 +2,14 @@ package com.adform.sdk.utils.managers;
 
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import com.adform.sdk.view.base.BaseCoreContainer;
 
 /**
  * Created by mariusm on 28/04/14.
  * Manager that helps to handle animation showing.
- * Callback for view control is provided with {@link com.adform.sdk.utils.managers.SlidingManager.SliderableWidgetCallbacks}
+ * Callback for view control is provided with {@link AdformAnimationManager.SliderableWidgetCallbacks}
  */
-public class SlidingManager {
+public class AdformAnimationManager {
 
     /**
      * An interface that bridges some needed states,
@@ -24,7 +23,6 @@ public class SlidingManager {
 //        public void onSliderPreOn();
 
         /** Gets height that animation should slide to */
-        public int getHeight();
         public void setAnimating(boolean isAnimating);
         public BaseCoreContainer getView();
     }
@@ -36,17 +34,24 @@ public class SlidingManager {
         public void onSliderFinishedHiding();
     }
 
-    private static final int SHOW_SPEED = 500;
-    private static final int HIDE_SPEED = 500;
+    public interface SlidingAnimationProperties {
+        public Animation getCollapseAnimation();
+        public Animation getExpandAnimation();
+        public int getAnimationDuration();
+    }
+
+    public static final int DEFAULT_DURATION = 500;
 //    private static final int SHOW_DELAY = 50;
     private boolean isOpen = false;
     private SliderableWidgetProperties mListenerProperties;
     private SliderableWidgetCallbacks mListenerCallbacks;
+    private SlidingAnimationProperties mListenerAnimationProperties;
     private boolean isAnimating = false;
     private Animation mAnimation;
 
-    public SlidingManager(SliderableWidgetProperties listener) {
+    public AdformAnimationManager(SliderableWidgetProperties listener, SlidingAnimationProperties listenerAnimationProperties) {
         this.mListenerProperties = listener;
+        this.mListenerAnimationProperties = listenerAnimationProperties;
     }
 
     public void turnOffImmediate() {
@@ -54,7 +59,7 @@ public class SlidingManager {
     }
 
     public void turnOff() {
-        turnOff(HIDE_SPEED);
+        turnOff(DEFAULT_DURATION);
     }
 
     /**
@@ -65,8 +70,10 @@ public class SlidingManager {
             return;
         if (mAnimation != null)
             mAnimation.cancel();
-        mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListenerProperties.getHeight());
-        mAnimation.setDuration(hideSpeed);
+//        mAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, mListenerProperties.getHeight());
+//        mAnimation.setDuration(hideSpeed);
+        mAnimation = mListenerAnimationProperties.getCollapseAnimation();
+        mAnimation.setDuration(mListenerAnimationProperties.getAnimationDuration());
         mAnimation.setAnimationListener(collapseListener);
         mListenerProperties.getView().post(preHideRunnable);
         mListenerProperties.getView().post(animationRunnable);
@@ -77,7 +84,7 @@ public class SlidingManager {
     }
 
     public void turnOn() {
-        turnOn(SHOW_SPEED);
+        turnOn(DEFAULT_DURATION);
     }
 
     /**
@@ -88,8 +95,10 @@ public class SlidingManager {
             return;
         if (mAnimation != null)
             mAnimation.cancel();
-        mAnimation = new TranslateAnimation(0.0f, 0.0f, mListenerProperties.getHeight(), 0.0f);
-        mAnimation.setDuration(showSpeed);
+//        mAnimation = new TranslateAnimation(0.0f, 0.0f, mListenerProperties.getHeight(), 0.0f);
+//        mAnimation.setDuration(showSpeed);
+        mAnimation = mListenerAnimationProperties.getExpandAnimation();
+        mAnimation.setDuration(mListenerAnimationProperties.getAnimationDuration());
         mAnimation.setAnimationListener(expandListener);
         mListenerProperties.getView().post(preShowRunnable);
         mListenerProperties.getView().post(animationRunnable);
@@ -110,6 +119,14 @@ public class SlidingManager {
         public void run() {
             mListenerProperties.getView().setVisibility(View.VISIBLE);
             mListenerProperties.getView().getInnerView().setVisibility(View.VISIBLE);
+        }
+    };
+
+    private Runnable postHideRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mListenerProperties.getView().setVisibility(View.GONE);
+            mListenerProperties.getView().getInnerView().setVisibility(View.GONE);
         }
     };
     private Runnable animationRunnable = new Runnable() {

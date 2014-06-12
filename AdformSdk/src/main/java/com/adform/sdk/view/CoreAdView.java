@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.network.app.entities.entities.AdServingEntity;
@@ -13,7 +15,7 @@ import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.*;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
-import com.adform.sdk.utils.managers.SlidingManager;
+import com.adform.sdk.utils.managers.AdformAnimationManager;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerBannerView;
@@ -26,7 +28,7 @@ import java.util.Observer;
  * Base view that should be implemented when adding a banner
  */
 public class CoreAdView extends BaseCoreContainer implements Observer,
-        SlidingManager.SliderableWidgetProperties, SlidingManager.SliderableWidgetCallbacks,
+        AdformAnimationManager.SliderableWidgetProperties, AdformAnimationManager.SliderableWidgetCallbacks,
         AdformContentLoadManager.ContentLoaderListener,
         AdService.AdServiceBinder {
 
@@ -40,7 +42,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     /** Bundle that packs AdService last state when saving view instance */
     private Bundle mServiceInstanceBundle;
     /** Manager that handles core container sliding animation */
-    private SlidingManager mSlidingManager;
+    private AdformAnimationManager mAdformAnimationManager;
     /** Manager that handles contract (json) loading */
     private AdformContentLoadManager mContentLoader;
     /** An interface for calling back handler functions for outer control */
@@ -62,8 +64,23 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
         if (mContext instanceof CoreAdViewListener)
             mListener = (CoreAdViewListener)mContext;
-        mSlidingManager = new SlidingManager(this);
-        mSlidingManager.setListenerCallbacks(this);
+        mAdformAnimationManager = new AdformAnimationManager(this, new AdformAnimationManager.SlidingAnimationProperties() {
+            @Override
+            public Animation getCollapseAnimation() {
+                return new TranslateAnimation(0.0f, 0.0f, 0.0f, getHeight());
+            }
+
+            @Override
+            public Animation getExpandAnimation() {
+                return new TranslateAnimation(0.0f, 0.0f, getHeight(), 0.0f);
+            }
+
+            @Override
+            public int getAnimationDuration() {
+                return AdformAnimationManager.DEFAULT_DURATION;
+            }
+        });
+        mAdformAnimationManager.setListenerCallbacks(this);
         mContentLoader = new AdformContentLoadManager();
         mContentLoader.setListener(this);
         setVisibility(INVISIBLE);
@@ -102,7 +119,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.NETWORK) {
             getInnerView().showContent(null);
-            mSlidingManager.turnOff();
+            mAdformAnimationManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
             return;
@@ -110,7 +127,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (data instanceof NetworkError
                 && ((NetworkError) data).getType() == NetworkError.Type.SERVER) {
             getInnerView().showContent(null);
-            mSlidingManager.turnOff();
+            mAdformAnimationManager.turnOff();
             setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
             resetTimesLoaded();
             return;
@@ -133,7 +150,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                 }
             } else {
                 getInnerView().showContent(null);
-                mSlidingManager.turnOff();
+                mAdformAnimationManager.turnOff();
                 setViewState(AdformEnum.VisibilityGeneralState.LOAD_FAIL);
                 resetTimesLoaded();
             }
@@ -149,16 +166,16 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     @Override
     public void onContentRestore(boolean state) {
         if (state)
-            mSlidingManager.turnOnImmediate();
+            mAdformAnimationManager.turnOnImmediate();
         else
-            mSlidingManager.turnOffImmediate();
+            mAdformAnimationManager.turnOffImmediate();
         if (mListener != null)
             mListener.onAdVisibilityChange(state);
     }
 
     @Override
     public void onContentRender() {
-        mSlidingManager.turnOn();
+        mAdformAnimationManager.turnOn();
         setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
         resetTimesLoaded();
         //TODO mariusm 22/05/14 There really should be a better way to check if impression exist
@@ -401,9 +418,9 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         if (mAdService != null)
             mAdService.stopService();
         mAdService = null;
-        if (mSlidingManager != null)
-            mSlidingManager.destroy();
-        mSlidingManager = null;
+        if (mAdformAnimationManager != null)
+            mAdformAnimationManager.destroy();
+        mAdformAnimationManager = null;
         mListener = null;
         mContentLoader.setListener(null);
         mContentLoader = null;

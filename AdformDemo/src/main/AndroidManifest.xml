@@ -45,7 +45,9 @@
             </intent-filter>
         </activity>
 		<!--Inner AdformSDK implementation-->
-		<activity android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
+		<activity
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
     </application>
 
 </manifest>

@@ -9,21 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.utils.AdformEnum;
-import com.adform.sdk.utils.Utils;
-import com.adform.sdk.utils.managers.SlidingManager;
+import com.adform.sdk.utils.managers.AdformAnimationManager;
 import com.adform.sdk.view.base.BaseInnerContainer;
 
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreExpandedView extends CoreInterstitialView implements SlidingManager.SliderableWidgetProperties,
-        SlidingManager.SliderableWidgetCallbacks {
+public class CoreExpandedView extends CoreInterstitialView implements AdformAnimationManager.SliderableWidgetProperties,
+        AdformAnimationManager.SliderableWidgetCallbacks {
     public static final float TO_ALPHA = 0.80f;
     public static final float FROM_ALPHA = 0.0f;
     private Animation mAnimation;
-    private SlidingManager mSlidingManager;
+    private AdformAnimationManager mAdformAnimationManager;
     private View mDimmingView;
     private Animation mFadeInAnimation;
     private Animation mFadeOutAnimation;
@@ -52,8 +52,23 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     public CoreExpandedView(Context context, AttributeSet attrs, int defStyle,
                             BaseInnerContainer innerContainer, Bundle extras) {
         super(context, attrs, defStyle, innerContainer, extras);
-        mSlidingManager = new SlidingManager(this);
-        mSlidingManager.setListenerCallbacks(this);
+        mAdformAnimationManager = new AdformAnimationManager(this, new AdformAnimationManager.SlidingAnimationProperties() {
+            @Override
+            public Animation getCollapseAnimation() {
+                return new TranslateAnimation(0.0f, 0.0f, 0.0f, getHeight());
+            }
+
+            @Override
+            public Animation getExpandAnimation() {
+                return new TranslateAnimation(0.0f, 0.0f, getHeight(), 0.0f);
+            }
+
+            @Override
+            public int getAnimationDuration() {
+                return AdformAnimationManager.DEFAULT_DURATION;
+            }
+        });
+        mAdformAnimationManager.setListenerCallbacks(this);
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setCoreBridgeListener(this);
@@ -118,19 +133,20 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     public void onContentRender() {
         super.onContentRender();
         if (mExpandType == AdformEnum.ExpandType.TWO_PART)
-            mSlidingManager.turnOn();
+            mAdformAnimationManager.turnOn();
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if (mExpandType == AdformEnum.ExpandType.ONE_PART)
-            mSlidingManager.turnOn();
+            mAdformAnimationManager.turnOn();
     }
 
     @Override
     public void onSliderFinishedHiding() {
-        super.onMraidClose();
+        if (mListener != null)
+            mListener.onAdClose();
     }
 
     @Override
@@ -149,15 +165,15 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
 
     @Override
     public void onMraidClose() {
-        if (!mSlidingManager.isAnimating())
-            mSlidingManager.turnOff();
+        if (!mAdformAnimationManager.isAnimating())
+            mAdformAnimationManager.turnOff();
     }
 
     @Override
     public void destroy() {
-        if (mSlidingManager != null)
-            mSlidingManager.destroy();
-        mSlidingManager = null;
+        if (mAdformAnimationManager != null)
+            mAdformAnimationManager.destroy();
+        mAdformAnimationManager = null;
         super.destroy();
     }
 }

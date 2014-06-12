@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.entities.ExpandProperties;
+import com.adform.sdk.utils.managers.AdformAnimationManager;
 import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
 import com.adform.sdk.view.inner.InnerInterstitialView;
@@ -20,14 +24,16 @@ import com.adform.sdk.view.inner.InnerInterstitialView;
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreInterstitialView extends BaseCoreContainer {
+public class CoreInterstitialView extends BaseCoreContainer implements AdformAnimationManager.SliderableWidgetProperties,
+        AdformAnimationManager.SliderableWidgetCallbacks {
 
     public interface CoreInterstitialListener {
         public void onAdClose();
         public void onAdShown();
     }
 
-    private CoreInterstitialListener mListener;
+    protected CoreInterstitialListener mListener;
+    private AdformAnimationManager mAdformAnimationManager;
 
     public CoreInterstitialView(Context context, BaseInnerContainer innerContainer, Bundle extras) {
         this(context, null, 0, innerContainer, extras);
@@ -49,6 +55,25 @@ public class CoreInterstitialView extends BaseCoreContainer {
         super(context, attrs, defStyle, innerContainer, extras);
         if (mContext instanceof CoreInterstitialListener)
             mListener = (CoreInterstitialListener)mContext;
+
+        mAdformAnimationManager = new AdformAnimationManager(this, new AdformAnimationManager.SlidingAnimationProperties() {
+            @Override
+            public Animation getCollapseAnimation() {
+                return new AlphaAnimation(1.0f, 0.0f);
+            }
+
+            @Override
+            public Animation getExpandAnimation() {
+                return new AlphaAnimation(0.0f, 1.0f);
+            }
+
+            @Override
+            public int getAnimationDuration() {
+                return AdformAnimationManager.DEFAULT_DURATION;
+            }
+        });
+        mAdformAnimationManager.setListenerCallbacks(this);
+
         setAnimating(false);
         getInnerView().setCloseButtonEnabled(true);
         getInnerView().onUseCustomClose(mExtraParams.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, false));
@@ -107,6 +132,7 @@ public class CoreInterstitialView extends BaseCoreContainer {
     public void onContentRender() {
         if (mListener != null)
             mListener.onAdShown();
+        mAdformAnimationManager.turnOn();
     }
 
     public void setListener(CoreInterstitialListener listener) {
@@ -116,9 +142,26 @@ public class CoreInterstitialView extends BaseCoreContainer {
     @Override
     public void onMraidClose() {
         // Closing functionality is passed to its listener
+        mAdformAnimationManager.turnOff();
+    }
+
+    @Override
+    public void onSliderFinishedHiding() {
+        getInnerView().setVisibility(View.GONE);
         if (mListener != null)
             mListener.onAdClose();
     }
+
+    @Override
+    public void onSliderFinishedShowing() {
+        getInnerView().setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSliderStartedHiding() {}
+
+    @Override
+    public void onSliderStartedShowing() {}
 
     @Override
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {

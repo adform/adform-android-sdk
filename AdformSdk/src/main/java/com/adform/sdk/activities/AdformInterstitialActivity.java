@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -30,8 +32,15 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Window w = getWindow();
+        w.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= 14) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        }
+
 
         final RelativeLayout mainContainer = new RelativeLayout(this);
         final RelativeLayout.LayoutParams adViewLayout = new RelativeLayout.LayoutParams(
@@ -45,6 +54,7 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
             mInterstitialView.showContent(extras.getString(HTML_DATA));
             mImpressionUrl = extras.getString(IMPRESSION_URL);
         }
+        mInterstitialView.setVisibility(View.INVISIBLE);
         setContentView(mainContainer);
     }
 
