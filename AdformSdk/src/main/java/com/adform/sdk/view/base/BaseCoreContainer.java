@@ -39,6 +39,12 @@ import java.util.HashMap;
 public abstract class BaseCoreContainer extends RelativeLayout implements
         VisibilityPositionManager.VisibilityManagerListener, BaseInnerContainer.BaseAdViewListener,
         AdformRequestParamsListener, AdWebView.NativeWebviewListener, MraidBridge.CoreMraidBridgeListener {
+    public static final String INNER_EXTRA_WIDTH = "INNER_EXTRA_WIDTH";
+    public static final String INNER_EXTRA_HEIGHT = "INNER_EXTRA_HEIGHT";
+    public static final String INNER_EXTRA_USE_CUSTOM_CLOSE = "INNER_EXTRA_USE_CUSTOM_CLOSE";
+    public static final String INNER_EXTRA_CONTENT = "INNER_EXTRA_CONTENT";
+    public static final String INNER_EXTRA_TYPE = "INNER_EXTRA_TYPE";
+
     // Special variables that can be set by the view
     public static final String MASTER_ID = "master_id";
     public static final String API_VERSION = "api_version";
@@ -85,6 +91,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public BaseCoreContainer(Context context, AttributeSet attrs, int defStyle,
                              BaseInnerContainer innerContainer, Bundle extras) {
         super(context, attrs, defStyle);
+        if (extras == null)
+            extras = new Bundle();
         mExtraParams = extras;
         mContext = context;
         mInnerContainer = innerContainer;

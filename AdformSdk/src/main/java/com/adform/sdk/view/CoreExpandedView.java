@@ -22,11 +22,6 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
         SlidingManager.SliderableWidgetCallbacks {
     public static final float TO_ALPHA = 0.80f;
     public static final float FROM_ALPHA = 0.0f;
-    public static final String INNER_EXTRA_WIDTH = "INNER_EXTRA_WIDTH";
-    public static final String INNER_EXTRA_HEIGHT = "INNER_EXTRA_HEIGHT";
-    public static final String INNER_EXTRA_USE_CUSTOM_CLOSE = "INNER_EXTRA_USE_CUSTOM_CLOSE";
-    public static final String INNER_EXTRA_CONTENT = "INNER_EXTRA_CONTENT";
-    public static final String INNER_EXTRA_TYPE = "INNER_EXTRA_TYPE";
     private Animation mAnimation;
     private SlidingManager mSlidingManager;
     private View mDimmingView;
@@ -74,12 +69,12 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
         addView(mDimmingView, 0);
         getInnerView().setVisibility(View.INVISIBLE);
         getInnerView().setCloseButtonEnabled(true);
-        getInnerView().onUseCustomClose(extras.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, true));
+        getInnerView().onUseCustomClose(mExtraParams.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, false));
 
         mFadeInAnimation = createAlphaAnimation(FROM_ALPHA, TO_ALPHA);
         mFadeOutAnimation = createAlphaAnimation(TO_ALPHA, FROM_ALPHA);
 
-        String extraContent = extras.getString(INNER_EXTRA_CONTENT);
+        String extraContent = mExtraParams.getString(INNER_EXTRA_CONTENT);
         if (extraContent != null) {
             mExpandType = AdformEnum.ExpandType.TWO_PART;
             showContent(extraContent);

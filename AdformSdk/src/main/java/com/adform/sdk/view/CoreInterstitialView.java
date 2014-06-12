@@ -51,7 +51,7 @@ public class CoreInterstitialView extends BaseCoreContainer {
             mListener = (CoreInterstitialListener)mContext;
         setAnimating(false);
         getInnerView().setCloseButtonEnabled(true);
-        getInnerView().onUseCustomClose(true);
+        getInnerView().onUseCustomClose(mExtraParams.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, false));
     }
 
     public void showContent(String content) {
