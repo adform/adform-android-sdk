@@ -71,6 +71,10 @@ public class CoreInterstitialView extends BaseCoreContainer implements AdformAni
             public int getAnimationDuration() {
                 return AdformAnimationManager.DEFAULT_DURATION;
             }
+            @Override
+            public int getAnimationDelay() {
+                return AdformAnimationManager.DEFAULT_DELAY;
+            }
         });
         mAdformAnimationManager.setListenerCallbacks(this);
 

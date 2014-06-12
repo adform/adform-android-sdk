@@ -79,6 +79,11 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
             public int getAnimationDuration() {
                 return AdformAnimationManager.DEFAULT_DURATION;
             }
+
+            @Override
+            public int getAnimationDelay() {
+                return AdformAnimationManager.DEFAULT_DELAY;
+            }
         });
         mAdformAnimationManager.setListenerCallbacks(this);
         mContentLoader = new AdformContentLoadManager();

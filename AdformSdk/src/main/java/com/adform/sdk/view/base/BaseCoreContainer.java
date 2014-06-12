@@ -71,7 +71,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // Should be taken from some kind of configuration
     private String mApiVersion = "1.0";
     private boolean isAnimating;
-//    protected AdDimension mPlacementDimen;
     protected MraidDeviceIdProperty mDeviceId;
     protected BaseInnerContainer mInnerContainer;
     protected Bundle mExtraParams;

@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.utils.AdformEnum;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.managers.AdformAnimationManager;
 import com.adform.sdk.view.base.BaseInnerContainer;
 
@@ -20,8 +21,9 @@ import com.adform.sdk.view.base.BaseInnerContainer;
  */
 public class CoreExpandedView extends CoreInterstitialView implements AdformAnimationManager.SliderableWidgetProperties,
         AdformAnimationManager.SliderableWidgetCallbacks {
-    public static final float TO_ALPHA = 0.80f;
+    public static final float TO_ALPHA = 0.44f; // like iOS var
     public static final float FROM_ALPHA = 0.0f;
+    public static final int DEFAULT_FADE_DURATION = 500;
     private Animation mAnimation;
     private AdformAnimationManager mAdformAnimationManager;
     private View mDimmingView;
@@ -67,6 +69,11 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
             public int getAnimationDuration() {
                 return AdformAnimationManager.DEFAULT_DURATION;
             }
+
+            @Override
+            public int getAnimationDelay() {
+                return AdformAnimationManager.DEFAULT_DELAY;
+            }
         });
         mAdformAnimationManager.setListenerCallbacks(this);
         getInnerView().setBaseListener(this);
@@ -94,8 +101,6 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
             mExpandType = AdformEnum.ExpandType.TWO_PART;
             showContent(extraContent);
         }
-        mDimmingView.setVisibility(View.VISIBLE);
-        mDimmingView.startAnimation(mFadeInAnimation);
     }
 
     @Override
@@ -125,22 +130,28 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
         AlphaAnimation alphaAnimation = new AlphaAnimation(from, to);
         alphaAnimation.setFillBefore(true);
         alphaAnimation.setFillAfter(true);
-        alphaAnimation.setDuration(500);
+        alphaAnimation.setDuration(DEFAULT_FADE_DURATION);
         return alphaAnimation;
     }
 
     @Override
     public void onContentRender() {
         super.onContentRender();
-        if (mExpandType == AdformEnum.ExpandType.TWO_PART)
+        if (mExpandType == AdformEnum.ExpandType.TWO_PART &&
+                !mAdformAnimationManager.isAnimating()) {
+            mDimmingView.startAnimation(mFadeInAnimation);
             mAdformAnimationManager.turnOn();
+        }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        if (mExpandType == AdformEnum.ExpandType.ONE_PART)
+        if (mExpandType == AdformEnum.ExpandType.ONE_PART &&
+                !mAdformAnimationManager.isAnimating()) {
+            mDimmingView.startAnimation(mFadeInAnimation);
             mAdformAnimationManager.turnOn();
+        }
     }
 
     @Override

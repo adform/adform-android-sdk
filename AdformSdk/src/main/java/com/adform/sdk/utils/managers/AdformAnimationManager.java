@@ -38,10 +38,11 @@ public class AdformAnimationManager {
         public Animation getCollapseAnimation();
         public Animation getExpandAnimation();
         public int getAnimationDuration();
+        public int getAnimationDelay();
     }
 
     public static final int DEFAULT_DURATION = 500;
-//    private static final int SHOW_DELAY = 50;
+    public static final int DEFAULT_DELAY = 0;
     private boolean isOpen = false;
     private SliderableWidgetProperties mListenerProperties;
     private SliderableWidgetCallbacks mListenerCallbacks;
@@ -74,6 +75,7 @@ public class AdformAnimationManager {
 //        mAnimation.setDuration(hideSpeed);
         mAnimation = mListenerAnimationProperties.getCollapseAnimation();
         mAnimation.setDuration(mListenerAnimationProperties.getAnimationDuration());
+        mAnimation.setStartOffset(mListenerAnimationProperties.getAnimationDelay());
         mAnimation.setAnimationListener(collapseListener);
         mListenerProperties.getView().post(preHideRunnable);
         mListenerProperties.getView().post(animationRunnable);
@@ -99,6 +101,7 @@ public class AdformAnimationManager {
 //        mAnimation.setDuration(showSpeed);
         mAnimation = mListenerAnimationProperties.getExpandAnimation();
         mAnimation.setDuration(mListenerAnimationProperties.getAnimationDuration());
+        mAnimation.setStartOffset(mListenerAnimationProperties.getAnimationDelay());
         mAnimation.setAnimationListener(expandListener);
         mListenerProperties.getView().post(preShowRunnable);
         mListenerProperties.getView().post(animationRunnable);
