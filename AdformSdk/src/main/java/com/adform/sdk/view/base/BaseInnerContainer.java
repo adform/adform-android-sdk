@@ -1,12 +1,16 @@
 package com.adform.sdk.view.base;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.*;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.mraid.MraidWebViewClient;
 import com.adform.sdk.resources.AdDimension;
@@ -14,6 +18,7 @@ import com.adform.sdk.resources.CloseImageView;
 import com.adform.sdk.resources.MraidJavascript;
 import com.adform.sdk.utils.*;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
+import com.adform.sdk.view.CoreAdView;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.HashMap;
@@ -469,6 +474,37 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     public MraidBridge getMraidBridge() {
         return mMraidBridge;
     }
+
+    // -----------
+    // Mockup draw
+    // -----------
+
+    public ImageView getMockupPlaceholder() {
+        ImageView viewCache = new ImageView(mContext);
+        viewCache.setImageBitmap(loadBitmapFromView(this, getWidth(), getHeight()));
+        return viewCache;
+    }
+
+    public static Bitmap loadBitmapFromView(View v, int width, int height) {
+        Bitmap b = Bitmap.createBitmap(width , height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+        v.draw(c);
+        return b;
+    }
+
+    private Runnable mClearCacheRunnable = new Runnable() {
+        @Override
+        public void run() {
+//            mViewCache.setImageBitmap(null);
+//            mViewCache.setVisibility(GONE);
+            //TODO mariusm 14/05/14 Bitmaps should be recycled, but it causes trouble at the moment when quickly switching view instances
+//            if (mBitmap != null && !mBitmap.isRecycled())
+//                mBitmap.recycle();
+//            mBitmap = null;
+//            mCanvas = null;
+        }
+    };
 
     public abstract void destroyWebView();
 

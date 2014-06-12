@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
 import com.adform.sdk.mraid.properties.*;
@@ -438,7 +439,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // ----------------
     // View switching implementation
     private FrameLayout mRootView;
-    private FrameLayout mPlaceholderView;
+    private ImageView mPlaceholderView;
     private RelativeLayout mExpandContainer;
     private CoreExpandedView mCoreExpandView;
 
@@ -469,8 +470,8 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected void expand(String content, ExpandProperties properties) {
         mRootView = (FrameLayout) getRootView().findViewById(android.R.id.content);
         // Changing inner container with an empty view
-        if (mPlaceholderView == null)
-            mPlaceholderView = new FrameLayout(mContext);
+        mPlaceholderView = getInnerView().getMockupPlaceholder();
+
         addView(mPlaceholderView,
                 new ViewGroup.LayoutParams(getInnerView().getWidth(), getInnerView().getHeight()));
         removeView(getInnerView());
@@ -523,15 +524,23 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         mRootView.removeView(mExpandContainer);
 
         getInnerView().requestLayout();
-
-        addView(getInnerView(), getInnerViewLayoutParams());
-        removeView(mPlaceholderView);
+        addView(getInnerView(), 0, getInnerViewLayoutParams());
         invalidate();
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
         getInnerView().getMraidBridge().setCoreBridgeListener(this);
         getInnerView().setCloseButtonEnabled(false);
         resumeService();
+
+        // Giving a bit of time for javascript to react
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                removeView(mPlaceholderView);
+                mPlaceholderView.setImageBitmap(null);
+                mPlaceholderView = null;
+            }
+        }, 100);
     }
 
     @Override

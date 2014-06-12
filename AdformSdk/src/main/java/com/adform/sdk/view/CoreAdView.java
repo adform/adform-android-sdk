@@ -164,7 +164,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
-//        getInnerView().getMraidBridge().setState(AdformEnum.State.DEFAULT);
         getInnerView().showContent(content);
     }
 
