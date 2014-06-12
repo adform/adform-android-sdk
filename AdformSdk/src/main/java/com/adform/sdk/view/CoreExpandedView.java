@@ -26,6 +26,7 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
     public static final String INNER_EXTRA_HEIGHT = "INNER_EXTRA_HEIGHT";
     public static final String INNER_EXTRA_USE_CUSTOM_CLOSE = "INNER_EXTRA_USE_CUSTOM_CLOSE";
     public static final String INNER_EXTRA_CONTENT = "INNER_EXTRA_CONTENT";
+    public static final String INNER_EXTRA_TYPE = "INNER_EXTRA_TYPE";
     private Animation mAnimation;
     private SlidingManager mSlidingManager;
     private View mDimmingView;
@@ -98,6 +99,16 @@ public class CoreExpandedView extends CoreInterstitialView implements SlidingMan
             return relativeLayoutParams;
         }
         return super.getInnerViewLayoutParams();
+    }
+
+    @Override
+    public AdformEnum.State getDefaultState() {
+        return AdformEnum.State.EXPANDED;
+    }
+
+    @Override
+    public AdformEnum.PlacementType getDefaultPlacementType() {
+        return AdformEnum.PlacementType.INLINE;
     }
 
     private AlphaAnimation createAlphaAnimation(float from, float to) {

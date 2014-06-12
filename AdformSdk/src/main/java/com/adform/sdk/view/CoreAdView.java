@@ -12,7 +12,6 @@ import com.adform.sdk.mraid.AdService;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.utils.*;
-import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.utils.managers.SlidingManager;
 import com.adform.sdk.view.base.BaseCoreContainer;
@@ -43,7 +42,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     /** Manager that handles core container sliding animation */
     private SlidingManager mSlidingManager;
     /** Manager that handles contract (json) loading */
-    private AdformContentLoadManager mAdformContentLoadManager;
+    private AdformContentLoadManager mContentLoader;
     /** An interface for calling back handler functions for outer control */
     private CoreAdViewListener mListener;
     /* Basic values that store persistent information */
@@ -65,8 +64,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
             mListener = (CoreAdViewListener)mContext;
         mSlidingManager = new SlidingManager(this);
         mSlidingManager.setListenerCallbacks(this);
-        mAdformContentLoadManager = new AdformContentLoadManager();
-        mAdformContentLoadManager.setListener(this);
+        mContentLoader = new AdformContentLoadManager();
+        mContentLoader.setListener(this);
         setVisibility(INVISIBLE);
         getInnerView().setCloseButtonEnabled(false);
     }
@@ -85,6 +84,16 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
         return new RelativeLayout.LayoutParams(
                 mockDimension.getWidth(),
                 mockDimension.getHeight());
+    }
+
+    @Override
+    public AdformEnum.State getDefaultState() {
+        return AdformEnum.State.DEFAULT;
+    }
+
+    @Override
+    public AdformEnum.PlacementType getDefaultPlacementType() {
+        return AdformEnum.PlacementType.INLINE;
     }
 
     /** An update from configuration json */
@@ -116,8 +125,9 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                     ) {
                 String content = adServingEntity.getAdEntity().getTagDataEntity().getSrc();
                 try {
-                    mAdformContentLoadManager.loadContent(
-                            mAdformContentLoadManager.getRawGetTask(content,true));
+                    getInnerView().getMraidBridge().setState(AdformEnum.State.DEFAULT);
+                    mContentLoader.loadContent(
+                            mContentLoader.getRawGetTask(content, true));
                 } catch (AdformContentLoadManager.ContentLoadException e) {
                     e.printStackTrace();
                 }
@@ -132,6 +142,7 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
 
     @Override
     public void onContentMraidLoadSuccessful(String content) {
+//        getInnerView().getMraidBridge().setState(AdformEnum.State.DEFAULT);
         getInnerView().showContent(content);
     }
 
@@ -376,11 +387,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
     }
 
     @Override
-    public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
-        // Nothing should be done
-    }
-
-    @Override
     public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
         // Nothing should be done
     }
@@ -399,8 +405,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
             mSlidingManager.destroy();
         mSlidingManager = null;
         mListener = null;
-        mAdformContentLoadManager.setListener(null);
-        mAdformContentLoadManager = null;
+        mContentLoader.setListener(null);
+        mContentLoader = null;
         super.destroy();
     }
 }

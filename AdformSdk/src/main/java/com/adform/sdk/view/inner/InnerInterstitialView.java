@@ -57,8 +57,4 @@ public class InnerInterstitialView extends BaseInnerContainer {
         mWebView.destroy();
     }
 
-    @Override
-    public AdformEnum.PlacementType getPlacementType() {
-        return AdformEnum.PlacementType.INTERSTITIAL;
-    }
 }

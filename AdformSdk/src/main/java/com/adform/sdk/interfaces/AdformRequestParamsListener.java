@@ -34,5 +34,5 @@ public interface AdformRequestParamsListener {
      * Returns current banner type. This can be interstitial, or inline
      * @return banner type
      */
-    public AdformEnum.PlacementType getBannerType();
+    public AdformEnum.PlacementType getDefaultPlacementType();
 }

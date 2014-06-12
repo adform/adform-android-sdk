@@ -24,7 +24,6 @@ public class CoreInterstitialView extends BaseCoreContainer {
 
     public interface CoreInterstitialListener {
         public void onAdClose();
-        public void onAdOrientationChange(int orientation);
         public void onAdShown();
     }
 
@@ -77,6 +76,16 @@ public class CoreInterstitialView extends BaseCoreContainer {
     }
 
     @Override
+    public AdformEnum.State getDefaultState() {
+        return AdformEnum.State.DEFAULT;
+    }
+
+    @Override
+    public AdformEnum.PlacementType getDefaultPlacementType() {
+        return AdformEnum.PlacementType.INTERSTITIAL;
+    }
+
+    @Override
     protected void onVisibilityCallback(boolean isVisible) {
         mInnerContainer.getMraidBridge().changeVisibility(isVisible, false);
     }
@@ -109,29 +118,6 @@ public class CoreInterstitialView extends BaseCoreContainer {
         // Closing functionality is passed to its listener
         if (mListener != null)
             mListener.onAdClose();
-    }
-
-    @Override
-    public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
-        switch (forcedOrientation) {
-            case NONE:{
-                if (allowOrientationChange)
-                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                else
-                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-                break;
-            }
-            case LANDSCAPE:{
-                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                break;
-            }
-            case PORTRAIT:{
-                    mListener.onAdOrientationChange(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                break;
-            }
-            default:
-                mListener.onAdOrientationChange(Configuration.ORIENTATION_UNDEFINED);
-        }
     }
 
     @Override

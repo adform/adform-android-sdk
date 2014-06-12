@@ -44,6 +44,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
          */
         public void onContentRender();
         public void setAnimating(boolean isAnimating);
+        public AdformEnum.State getDefaultState();
+        public AdformEnum.PlacementType getDefaultPlacementType();
     }
     /** Global variable, indicating that content is being restored. */
     private BaseAdViewListener mBaseListener;
@@ -133,6 +135,10 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         else
             mCloseImageView.setVisibility(View.GONE);
 
+    }
+
+    public int getCloseButtonDimen() {
+        return mCloseImageView.getCloseButtonDimen();
     }
 
     @Override
@@ -263,8 +269,8 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         String mraidContent = AdformContentLoadManager.isMraidImpelemnetation(content);
         if (mraidContent != null) {
             mMraidBridge.setContentMraid(true);
-            mMraidBridge.setPlacementType(getPlacementType());
-            mMraidBridge.setState(AdformEnum.State.DEFAULT);
+            mMraidBridge.setPlacementType(mBaseListener.getDefaultPlacementType());
+            mMraidBridge.setState(mBaseListener.getDefaultState());
             mMraidBridge.forceSettingUpdate();
         } else {
             mMraidBridge.setContentMraid(false);
@@ -330,14 +336,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         mConfigurationPreset.put("state", false);
         mConfigurationPreset.put("placementType", false);
     }
-
-    // This defines orientation for the ad view
-
-    /**
-     * @return ad placeent type
-     */
-    public abstract AdformEnum.PlacementType getPlacementType();
-
 
     // -------------------------
     // Instance saving/restoring

@@ -1,12 +1,16 @@
 package com.adform.sdk.view.base;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -60,8 +64,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private int mPublisherId = 0; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
     private String mApiVersion = "1.0";
-    // Set hidden state from outside, as when the view is hidden should it be INVISIBLE or GONE
-    protected int mHiddenState = INVISIBLE;
     private boolean isAnimating;
 //    protected AdDimension mPlacementDimen;
     protected MraidDeviceIdProperty mDeviceId;
@@ -131,6 +133,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     protected abstract ViewGroup.LayoutParams getInnerViewLayoutParams();
 
+    public abstract AdformEnum.State getDefaultState();
+
+    public abstract AdformEnum.PlacementType getDefaultPlacementType();
+
     @Override
     public AdDimension getAdDimension() {
         return getInnerView().getAdDimension();
@@ -194,11 +200,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);
         impressionTask.execute();
-    }
-
-    @Override
-    public AdformEnum.PlacementType getBannerType() {
-        return getInnerView().getPlacementType();
     }
 
 //    @Override
@@ -373,7 +374,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      */
     public String getRequestProperties() {
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
-        if (getBannerType() == AdformEnum.PlacementType.INTERSTITIAL)
+        if (getDefaultPlacementType() == AdformEnum.PlacementType.INTERSTITIAL)
             properties.add(MraidPlacementSizeProperty.createWithSize(1, 1));
         else
             properties.add(MraidPlacementSizeProperty.createWithDimension(getAdDimension()));
@@ -383,7 +384,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
                 "\"accepted_languages\"", getLocale().replaceAll("_", "-")));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(
-                "\"type\"", AdformEnum.PlacementType.getPlacementString(getBannerType())));
+                "\"type\"", AdformEnum.PlacementType.getPlacementString(getDefaultPlacementType())));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("\"publisher_id\"", getPublisherId()));
         if (!IS_CUSTOMDATA_LOADED) {
             if (!isCustomParamsEmpty())
@@ -470,8 +471,11 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         if (mExpandContainer == null)
             mExpandContainer = new RelativeLayout(mContext);
         Bundle extraParams = new Bundle();
-        extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH, properties.getWidth());
-        extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT, properties.getHeight());
+        int buttonDimen = getInnerView().getCloseButtonDimen();
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_WIDTH,
+                (properties.getWidth() == -1 || properties.getWidth() > buttonDimen)?properties.getWidth():buttonDimen);
+        extraParams.putInt(CoreExpandedView.INNER_EXTRA_HEIGHT,
+                (properties.getHeight() == -1 || properties.getHeight() > buttonDimen)?properties.getHeight():buttonDimen);
         extraParams.putBoolean(CoreExpandedView.INNER_EXTRA_USE_CUSTOM_CLOSE, properties.useCustomClose());
         if (content == null) {
             mCoreExpandView = new CoreExpandedView(mContext, getInnerView(), extraParams);
@@ -488,12 +492,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             }
 
             @Override
-            public void onAdOrientationChange(int orientation) {
-            }
-
-            @Override
-            public void onAdShown() {
-            }
+            public void onAdShown() {}
         });
         RelativeLayout.LayoutParams lp;
         lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -527,6 +526,43 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         getInnerView().setCloseButtonEnabled(false);
         resumeService();
     }
+
+    @Override
+    public void onMraidSetOrientation(boolean allowOrientationChange, AdformEnum.ForcedOrientation forcedOrientation) {
+        if (allowOrientationChange && getInnerView().getMraidBridge().getState() != AdformEnum.State.DEFAULT) {
+            switch (forcedOrientation) {
+                case NONE: {
+                    if (allowOrientationChange)
+                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    else
+                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+                    break;
+                }
+                case LANDSCAPE: {
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    break;
+                }
+                case PORTRAIT: {
+                    setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    break;
+                }
+                default:
+                    setOrientation(Configuration.ORIENTATION_UNDEFINED);
+            }
+        }
+    }
+
+    private void setOrientation(int orientation) {
+        Context context = getContext();
+        Activity activity = null;
+        try {
+            activity = (Activity) context;
+            activity.setRequestedOrientation(orientation);
+        } catch (ClassCastException e) {
+            Utils.p("Cant modify orientation");
+        }
+    }
+
 
     // ---------------
     // Instance saving

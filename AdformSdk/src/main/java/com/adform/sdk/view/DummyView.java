@@ -66,10 +66,6 @@ public class DummyView extends BaseCoreContainer {
                 @Override
                 protected void animateAdShowing() {}
 
-                @Override
-                public AdformEnum.PlacementType getPlacementType() {
-                    return AdformEnum.PlacementType.INTERSTITIAL;
-                }
             };
         return mInnerContainer;
     }
@@ -79,6 +75,16 @@ public class DummyView extends BaseCoreContainer {
         return new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    @Override
+    public AdformEnum.State getDefaultState() {
+        return AdformEnum.State.HIDDEN;
+    }
+
+    @Override
+    public AdformEnum.PlacementType getDefaultPlacementType() {
+        return AdformEnum.PlacementType.INTERSTITIAL;
     }
 
     @Override

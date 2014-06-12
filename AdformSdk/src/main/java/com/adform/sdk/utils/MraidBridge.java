@@ -281,6 +281,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mAdDimension = adDimension;
     }
 
+    public AdformEnum.State getState() {
+        return mState;
+    }
+
     // ---------
     // Runnables
     // ---------

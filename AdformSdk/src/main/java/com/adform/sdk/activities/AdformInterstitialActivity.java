@@ -73,11 +73,6 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
     }
 
     @Override
-    public void onAdOrientationChange(int orientation) {
-        setRequestedOrientation(orientation);
-    }
-
-    @Override
     public void onAdShown() {
         if (!isImpressionLoaded) {
             mInterstitialView.loadImpression(mImpressionUrl);

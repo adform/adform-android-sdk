@@ -49,9 +49,9 @@ public class CloseImageView extends ImageView {
     }
 
     public RelativeLayout.LayoutParams getStandardLayoutParams() {
-        Resources r = getResources();
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CLOSE_IMAGE_DIMEN, r.getDisplayMetrics());
-        final RelativeLayout.LayoutParams closeImageViewParams = new RelativeLayout.LayoutParams((int)px, (int)px);
+        int closeDimen = getCloseButtonDimen();
+        final RelativeLayout.LayoutParams closeImageViewParams = new RelativeLayout.LayoutParams(closeDimen,
+                closeDimen);
         closeImageViewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         closeImageViewParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         return closeImageViewParams;
@@ -83,5 +83,10 @@ public class CloseImageView extends ImageView {
             mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         }
         return mBitmap;
+    }
+
+    public int getCloseButtonDimen(){
+        Resources r = getResources();
+        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CLOSE_IMAGE_DIMEN, r.getDisplayMetrics());
     }
 }
