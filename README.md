@@ -7,20 +7,34 @@ How to add AdformSDK to your project
 ## General info
 * AdformSDK runs on Android 4.0, so created project version should be 4.0 and above.
 * Also the instructions described here are done on IntelliJ 13.1. These instructions should be compatible with Android Studio also.
-* **For more detailed documentation, scroll below**!
 
 ## Project preparations for AdformSDK (Short) 
 
-1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.4.6 
+1. Download project library `AdformSdk_0.4.10.jar` latest version. 
 2. Insert library into your project.
-3. Update `build.gradle` file with
+3. Update `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`.
 		
+		...
+		buildscript {
+    			repositories {
+        		mavenCentral()
+    		}
+    		dependencies {
+        		classpath 'com.android.tools.build:gradle:0.9.+'
+        		classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.361.0'
+    		}
+		}
+		apply plugin: 'android'
+		apply plugin: 'newrelic'
+		...
 		dependencies {
 		    compile 'com.google.android.gms:play-services:4.2.42'
+		    compile 'com.newrelic.agent.android:android-agent:3.361.0'
     		compile fileTree(dir: 'libs', include: ['*.jar'])
 		}
+		...
 		
-4. Update `AndroidManifest.xml` with snipped shown below between `<manifest></manifest>` tags.
+4. Update `AndroidManifest.xml` with snippet shown below between `<manifest></manifest>` tags.
 
 		<uses-permission android:name="android.permission.INTERNET" />
 		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -29,25 +43,43 @@ How to add AdformSDK to your project
 
 	    <meta-data android:name="com.google.android.gms.version"
 	               android:value="@integer/google_play_services_version" />
-		<activity android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
+		<activity
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
 
-Thats it! If you had any problems, a more detailed implementation is described **below**.
+Thats it!
 
 ## Basic AdformSDK Banner View implementation
 To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdView`. This can be done like this:
 
 	<com.adform.sdk.view.CoreAdView
-			master_id="1234"
+			master_id="111111"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
-* Note that, when initializing a view master tag is set by providing it to the view parameters.
+* Note that, when initializing a view master tag is set by providing it to the view parameters. Also this can be set by providing custom parameters in the programming code.
 * Gravity can be changed by inserting the adView into the container and changing its position.
 
+When initializing SDK in Fragment/Activity, a **destruction event should be provided** for the view. This can be done by doing these steps: 
+	
+1. Get created view instance.
+
+		mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+
+2. Destroy its instance with onDestroy() method, that every Activity/Fragmet has. 
+
+        @Override
+        public void onDestroy() {
+            if (mAdView != null)
+                mAdView.destroy();
+            super.onDestroy();
+        }
+
+More advanced implementation is discussed below (like ListView etc.)
 
 ## Advanced AdformSDK View implementation 
 
-There should not be any problems by using the AdformSDK in any kind of context that saves and returns instance (simple activity, fragment) or the one that does not destroy its instance (like fragment with retainInstance true). 
+At the moment AdformSDK does not save its instance on screen rotation, so when device is rotated, its instance is created anew. 
 
 ### Adding custom values to AdformSDK
 
@@ -78,7 +110,7 @@ These values also can be cleared by using snippet below.
         
 ### Expandable view
 
-Library is capable of expanding a one way ad. The implementation is the same, as using a CoreAdView. Executing a mraid function expand with its setting, a view is expanded in the front. 
+Library is capable of expanding one/two way ads. The implementation is the same, as using a CoreAdView. Executing a mraid function expand with its setting, a view is expanded in the front. 
 
 ### ListView implementation
 
@@ -152,6 +184,17 @@ For more complicated implementation like ListView, its adapter should *always* r
         }
     
         static class ViewAdHolder {}
+    }
+    
+Also, it is recommended to clean/destroy view when fragment/activity is no longer needed.
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAdapter != null)
+            mAdapter.clear();
+        if (mListView != null)
+            mListView.setAdapter(null);
     }
 
 ### Interstitial implementation
@@ -294,36 +337,3 @@ The interstitial ad has two types, preload info before showing and show info ins
             }
         
         }
-
-
-## Project preparations for AdformSDK (Detailed)
-These instructions are given assuming this is a new project.
-
-1. Download project library `AdformSDK.jar` latest version. Currently latest version is 0.4.6  
-2. Insert library into your project. This can be done by copying the AdformSDK.jar file into `libs` directory.
-3. Update `build.gradle` file, to load the library when compiling project and add additional needed library. 
-
-If you are creating new project, this should be already done.
-
-		dependencies {
-		    compile 'com.google.android.gms:play-services:4.2.42'
-    		compile fileTree(dir: 'libs', include: ['*.jar'])
-		}
-
-When something is edited in the build file, project should be refreshed for IDE to take effect. That can be done by pressing View -> Tool windows -> Gradle. In opened windows press "refresh" icon.
-
-Note that, we are also adding "Google play" services for additional functionality that is needed in AdformSDK. "Google play" services version may varie depending on Android platform.
-
-4. Also we need to set up some permissions that are needed for the AdformSDK to work. We need an internet connection, and an ability to check if internet avalaible. This is done by editing `AndroidManifest.xml` file and adding code snippet between the `<manifest></manifest>` tags.
-
-		<uses-permission android:name="android.permission.INTERNET" />
-		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-		
-Furthermore, we need some additional data for the AdformSDK to work, that is inserted between `<application></application>` tags.
-
-	    <meta-data android:name="com.google.android.gms.version"
-	               android:value="@integer/google_play_services_version" />
-		<activity android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation"/>
-	               
-And that is it! Your library is ready to be used.	               
-	
