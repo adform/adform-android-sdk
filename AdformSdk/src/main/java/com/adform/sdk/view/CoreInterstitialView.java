@@ -87,7 +87,9 @@ public class CoreInterstitialView extends BaseCoreContainer implements AdformAni
     @Override
     public BaseInnerContainer getInnerView() {
         if (mInnerContainer == null) {
-            mInnerContainer = new InnerInterstitialView(mContext);
+            Bundle extras = new Bundle();
+            extras.putBoolean(BaseInnerContainer.INNER_EXTRA_SKIP_INIT, false);
+            mInnerContainer = new InnerInterstitialView(mContext, extras);
         }
         return mInnerContainer;
     }

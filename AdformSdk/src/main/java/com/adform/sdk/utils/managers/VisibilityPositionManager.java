@@ -255,6 +255,7 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
     }
 
     public void destroy() {
+        mVisibilityManagerListener.removeCallbacks(parentGetterRunnable);
         mVisibilityManagerListener = null;
         mPositionManagerListener = null;
     }

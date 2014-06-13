@@ -1,6 +1,7 @@
 package com.adform.sdk.view;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +39,10 @@ public class DummyView extends BaseCoreContainer {
 
     @Override
     public BaseInnerContainer getInnerView() {
-        if (mInnerContainer == null)
-            mInnerContainer = new BaseInnerContainer(mContext) {
+        if (mInnerContainer == null) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(BaseInnerContainer.INNER_EXTRA_SKIP_INIT, true);
+            mInnerContainer = new BaseInnerContainer(mContext, extras) {
                 @Override
                 public void destroyWebView() {
                     if (mWebView != null) {
@@ -64,9 +67,11 @@ public class DummyView extends BaseCoreContainer {
                 }
 
                 @Override
-                protected void animateAdShowing() {}
+                protected void animateAdShowing() {
+                }
 
             };
+        }
         return mInnerContainer;
     }
 

@@ -117,7 +117,9 @@ public class CoreExpandedView extends BaseCoreContainer implements AdformAnimati
     @Override
     public BaseInnerContainer getInnerView() {
         if (mInnerContainer == null) {
-            mInnerContainer = new InnerInterstitialView(mContext);
+            Bundle extras = new Bundle();
+            extras.putBoolean(BaseInnerContainer.INNER_EXTRA_SKIP_INIT, true);
+            mInnerContainer = new InnerInterstitialView(mContext, extras);
         }
         return mInnerContainer;
     }

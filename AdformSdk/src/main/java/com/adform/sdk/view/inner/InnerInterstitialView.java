@@ -1,6 +1,7 @@
 package com.adform.sdk.view.inner;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,16 +16,16 @@ public class InnerInterstitialView extends BaseInnerContainer {
 
     private AdWebView mWebView;
 
-    public InnerInterstitialView(Context context) {
-        this(context, null);
+    public InnerInterstitialView(Context context, Bundle extras) {
+        this(context, null, 0, extras);
     }
 
     public InnerInterstitialView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0, null);
     }
 
-    public InnerInterstitialView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public InnerInterstitialView(Context context, AttributeSet attrs, int defStyle, Bundle extras) {
+        super(context, attrs, defStyle, extras);
     }
 
     @Override

@@ -4,9 +4,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.10.0'
+        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.361.0'
     }
 }
 apply plugin: 'android-library'
+apply plugin: 'newrelic'
 
 repositories {
     mavenCentral()
@@ -43,6 +45,7 @@ tasks.whenTaskAdded { task ->
 dependencies {
 //    compile 'com.google.android.gms:play-services:4.3.23'
     compile 'com.google.android.gms:play-services:4.2.42'
+    compile 'com.newrelic.agent.android:android-agent:3.361.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 task clearJar(type: Delete) {

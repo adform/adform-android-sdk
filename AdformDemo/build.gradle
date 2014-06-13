@@ -5,11 +5,9 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:0.10.0'
-        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.361.0'
     }
 }
 apply plugin: 'android'
-apply plugin: 'newrelic'
 
 repositories {
     mavenCentral()

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -20,6 +21,7 @@ import com.adform.sdk.utils.*;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.view.CoreAdView;
 import com.adform.sdk.view.inner.AdWebView;
+import com.newrelic.agent.android.NewRelic;
 
 import java.util.HashMap;
 
@@ -31,6 +33,7 @@ import java.util.HashMap;
 public abstract class BaseInnerContainer extends RelativeLayout implements
         JsLoadBridge.LoadBridgeHandler, MraidBridge.InnerMraidBridgeListener, View.OnClickListener {
     public static final String MRAID_JS_INTERFACE = "mraid";
+    public static final String INNER_EXTRA_SKIP_INIT = "INNER_EXTRA_SKIP_INIT";
 
     /**
      * A callback interface for main container
@@ -67,19 +70,30 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     private MraidBridge mMraidBridge;
     private CloseImageView mCloseImageView;
     private boolean mUseCloseButton = false;
+    private Bundle mExtraParams;
     
+    public BaseInnerContainer(Context context, Bundle extras) {
+        this(context, null, 0, extras);
+    }
 
     public BaseInnerContainer(Context context) {
-        this(context, null);
+        this(context, null, 0, null);
     }
 
     public BaseInnerContainer(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0, null);
     }
 
     public BaseInnerContainer(Context context, AttributeSet attrs, int defStyle) {
+        this(context, attrs, defStyle, null);
+    }
+
+    public BaseInnerContainer(Context context, AttributeSet attrs, int defStyle, Bundle extras) {
         super(context, attrs, defStyle);
         mContext = context;
+        mExtraParams = (extras != null)?extras:new Bundle();
+        if (!mExtraParams.getBoolean(INNER_EXTRA_SKIP_INIT, false))
+            initializeServices();
         getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutObserver);
 
         // Compability issues
@@ -91,6 +105,13 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         mMraidBridge = new MraidBridge(this);
         initView();
         setCloseButtonEnabled(false);
+    }
+
+    private void initializeServices() {
+        Utils.p("Initializing service");
+        NewRelic.withApplicationToken(
+                "AAffa2478f84ca37388d54a7d66b0e17b2c69a6aa8"
+        ).start(mContext);
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutObserver =
@@ -492,19 +513,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         v.draw(c);
         return b;
     }
-
-    private Runnable mClearCacheRunnable = new Runnable() {
-        @Override
-        public void run() {
-//            mViewCache.setImageBitmap(null);
-//            mViewCache.setVisibility(GONE);
-            //TODO mariusm 14/05/14 Bitmaps should be recycled, but it causes trouble at the moment when quickly switching view instances
-//            if (mBitmap != null && !mBitmap.isRecycled())
-//                mBitmap.recycle();
-//            mBitmap = null;
-//            mCanvas = null;
-        }
-    };
 
     public abstract void destroyWebView();
 

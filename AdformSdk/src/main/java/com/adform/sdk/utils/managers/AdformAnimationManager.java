@@ -115,6 +115,8 @@ public class AdformAnimationManager {
     private Runnable preShowRunnable = new Runnable() {
         @Override
         public void run() {
+            if (mListenerProperties == null)
+                return;
             mListenerProperties.getView().setVisibility(View.VISIBLE);
             mListenerProperties.getView().getInnerView().setVisibility(View.INVISIBLE);
         }
@@ -122,21 +124,18 @@ public class AdformAnimationManager {
     private Runnable preHideRunnable = new Runnable() {
         @Override
         public void run() {
+            if (mListenerProperties == null)
+                return;
             mListenerProperties.getView().setVisibility(View.VISIBLE);
             mListenerProperties.getView().getInnerView().setVisibility(View.VISIBLE);
         }
     };
 
-    private Runnable postHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mListenerProperties.getView().setVisibility(View.GONE);
-            mListenerProperties.getView().getInnerView().setVisibility(View.GONE);
-        }
-    };
     private Runnable animationRunnable = new Runnable() {
         @Override
         public void run() {
+            if (mListenerProperties == null)
+                return;
             mListenerProperties.getView().getInnerView().clearAnimation();
             mListenerProperties.getView().getInnerView().startAnimation(mAnimation);
         }
@@ -196,6 +195,10 @@ public class AdformAnimationManager {
     }
 
     public void destroy() {
+        mListenerProperties.getView().removeCallbacks(preShowRunnable);
+        mListenerProperties.getView().removeCallbacks(preHideRunnable);
+        mListenerProperties.getView().removeCallbacks(animationRunnable);
+        mListenerAnimationProperties = null;
         mListenerCallbacks = null;
         mListenerProperties = null;
     }
