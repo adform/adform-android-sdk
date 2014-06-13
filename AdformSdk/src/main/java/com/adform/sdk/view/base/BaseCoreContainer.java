@@ -533,14 +533,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         resumeService();
 
         // Giving a bit of time for javascript to react
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                removeView(mPlaceholderView);
-                mPlaceholderView.setImageBitmap(null);
-                mPlaceholderView = null;
-            }
-        }, 100);
+        postDelayed(removePlaceholderRunnable, 100);
     }
 
     @Override
@@ -649,6 +642,19 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 //        };
 //    }
 
+    // ---------
+    // Runnables
+    // ---------
+
+    private Runnable removePlaceholderRunnable = new Runnable() {
+        @Override
+        public void run() {
+            removeView(mPlaceholderView);
+            mPlaceholderView.setImageBitmap(null);
+            mPlaceholderView = null;
+        }
+    };
+
     // -----------------------------
     // Callbacks for mraid functions
     // -----------------------------
@@ -663,6 +669,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     public void destroy() {
+        removeCallbacks(removePlaceholderRunnable);
         if (mVisibilityPositionManager != null) {
             mVisibilityPositionManager.destroy();
             mVisibilityPositionManager = null;

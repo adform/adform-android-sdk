@@ -162,6 +162,7 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
 
     @Override
     public void onSliderFinishedShowing() {
+        mAdformAnimationManager.setOpen(true);
         getInnerView().setVisibility(View.VISIBLE);
     }
 

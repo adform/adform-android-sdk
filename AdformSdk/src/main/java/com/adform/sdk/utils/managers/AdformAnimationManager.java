@@ -189,6 +189,10 @@ public class AdformAnimationManager {
         this.mListenerCallbacks = listenerCallbacks;
     }
 
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
+
     public void destroy() {
         mListenerCallbacks = null;
         mListenerProperties = null;
