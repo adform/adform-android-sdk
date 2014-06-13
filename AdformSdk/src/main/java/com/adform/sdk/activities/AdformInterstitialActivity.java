@@ -15,13 +15,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import com.adform.sdk.interfaces.CoreInterstitialListener;
 import com.adform.sdk.utils.Utils;
 import com.adform.sdk.view.CoreInterstitialView;
 
 /**
  * Created by mariusm on 21/05/14.
  */
-public class AdformInterstitialActivity extends Activity implements CoreInterstitialView.CoreInterstitialListener {
+public class AdformInterstitialActivity extends Activity implements CoreInterstitialListener {
     public static final String HTML_DATA = "HTML_DATA";
     public static final String IMPRESSION_URL = "IMPRESSION_URL";
 

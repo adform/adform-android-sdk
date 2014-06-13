@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.adform.sdk.interfaces.AdformRequestParamsListener;
+import com.adform.sdk.interfaces.CoreInterstitialListener;
 import com.adform.sdk.mraid.properties.*;
 import com.adform.sdk.network.app.RawNetworkTask;
 import com.adform.sdk.network.base.ito.network.NetworkRequest;
@@ -75,6 +76,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected MraidDeviceIdProperty mDeviceId;
     protected BaseInnerContainer mInnerContainer;
     protected Bundle mExtraParams;
+    protected CoreInterstitialListener mListener;
 
     public BaseCoreContainer(Context context) {
         this(context, null);
@@ -130,6 +132,21 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected void onFinishInflate() {
         super.onFinishInflate();
         mVisibilityPositionManager.checkVisibilityService();
+    }
+
+    protected void showContent(String content) {
+        // Loaded content will always be loaded and mraid type
+        mInnerContainer.showContent(content);
+    }
+
+    /**
+     * Final call when visibility has changed. This should be called when something should be indicated
+     * as visibility state changed
+     *
+     * @param isVisible
+     */
+    protected void onVisibilityCallback(boolean isVisible) {
+        mInnerContainer.getMraidBridge().changeVisibility(isVisible, false);
     }
 
     /**
@@ -232,14 +249,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // -------------------
     // Visibility handling
     // -------------------
-
-    /**
-     * Final call when visibility has changed. This should be called when something should be indicated
-     * as visibility state changed
-     *
-     * @param isVisible
-     */
-    protected abstract void onVisibilityCallback(boolean isVisible);
 
     // Method called from visibility service
     @Override
@@ -374,6 +383,15 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         return this;
     }
 
+    public void setListener(CoreInterstitialListener listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public String getUserAgent() {
+        return mInnerContainer.getUserAgent();
+    }
+
     /**
      * Generates required parameters that are needed with the request for a contract.
      * This also forms a json object.
@@ -491,7 +509,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             extraParams.putString(CoreExpandedView.INNER_EXTRA_CONTENT, content);
             mCoreExpandView = new CoreExpandedView(mContext, extraParams);
         }
-        mCoreExpandView.setListener(new CoreInterstitialView.CoreInterstitialListener() {
+        mCoreExpandView.setListener(new CoreInterstitialListener() {
             @Override
             public void onAdClose() {
                 resetViewToDefaultState();

@@ -11,6 +11,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
+import com.adform.sdk.interfaces.CoreInterstitialListener;
 import com.adform.sdk.mraid.properties.MraidDeviceIdProperty;
 import com.adform.sdk.resources.AdDimension;
 import com.adform.sdk.resources.CloseImageView;
@@ -27,12 +28,6 @@ import com.adform.sdk.view.inner.InnerInterstitialView;
 public class CoreInterstitialView extends BaseCoreContainer implements AdformAnimationManager.SliderableWidgetProperties,
         AdformAnimationManager.SliderableWidgetCallbacks {
 
-    public interface CoreInterstitialListener {
-        public void onAdClose();
-        public void onAdShown();
-    }
-
-    protected CoreInterstitialListener mListener;
     private AdformAnimationManager mAdformAnimationManager;
 
     public CoreInterstitialView(Context context, BaseInnerContainer innerContainer, Bundle extras) {
@@ -86,7 +81,7 @@ public class CoreInterstitialView extends BaseCoreContainer implements AdformAni
     public void showContent(String content) {
         // Loaded content will always be loaded and mraid type
         setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
-        mInnerContainer.showContent(content);
+        super.showContent(content);
     }
 
     @Override
@@ -115,18 +110,8 @@ public class CoreInterstitialView extends BaseCoreContainer implements AdformAni
     }
 
     @Override
-    protected void onVisibilityCallback(boolean isVisible) {
-        mInnerContainer.getMraidBridge().changeVisibility(isVisible, false);
-    }
-
-    @Override
     public MraidDeviceIdProperty getDeviceId() {
         return null;
-    }
-
-    @Override
-    public String getUserAgent() {
-        return mInnerContainer.getUserAgent();
     }
 
     @Override
@@ -134,14 +119,11 @@ public class CoreInterstitialView extends BaseCoreContainer implements AdformAni
 
     @Override
     public void onContentRender() {
+        mAdformAnimationManager.turnOn();
         if (mListener != null)
             mListener.onAdShown();
-        mAdformAnimationManager.turnOn();
     }
 
-    public void setListener(CoreInterstitialListener listener) {
-        this.mListener = listener;
-    }
 
     @Override
     public void onMraidClose() {

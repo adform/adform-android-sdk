@@ -13,13 +13,16 @@ import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import com.adform.sdk.utils.AdformEnum;
 import com.adform.sdk.utils.Utils;
+import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.managers.AdformAnimationManager;
+import com.adform.sdk.view.base.BaseCoreContainer;
 import com.adform.sdk.view.base.BaseInnerContainer;
+import com.adform.sdk.view.inner.InnerInterstitialView;
 
 /**
  * Created by mariusm on 27/05/14.
  */
-public class CoreExpandedView extends CoreInterstitialView implements AdformAnimationManager.SliderableWidgetProperties,
+public class CoreExpandedView extends BaseCoreContainer implements AdformAnimationManager.SliderableWidgetProperties,
         AdformAnimationManager.SliderableWidgetCallbacks {
     public static final float TO_ALPHA = 0.44f; // like iOS var
     public static final float FROM_ALPHA = 0.0f;
@@ -89,6 +92,8 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
             }
         });
         addView(mDimmingView, 0);
+
+        setAnimating(false);
         getInnerView().setVisibility(View.INVISIBLE);
         getInnerView().setCloseButtonEnabled(true);
         getInnerView().onUseCustomClose(mExtraParams.getBoolean(INNER_EXTRA_USE_CUSTOM_CLOSE, false));
@@ -103,6 +108,20 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
         }
     }
 
+    public void showContent(String content) {
+        // Loaded content will always be loaded and mraid type
+        setViewState(AdformEnum.VisibilityGeneralState.LOAD_SUCCESSFUL);
+        super.showContent(content);
+    }
+
+    @Override
+    public BaseInnerContainer getInnerView() {
+        if (mInnerContainer == null) {
+            mInnerContainer = new InnerInterstitialView(mContext);
+        }
+        return mInnerContainer;
+    }
+
     @Override
     protected ViewGroup.LayoutParams getInnerViewLayoutParams() {
         if (mExtraParams != null) {
@@ -113,7 +132,9 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
             relativeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             return relativeLayoutParams;
         }
-        return super.getInnerViewLayoutParams();
+        return new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     @Override
@@ -128,30 +149,36 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
 
     private AlphaAnimation createAlphaAnimation(float from, float to) {
         AlphaAnimation alphaAnimation = new AlphaAnimation(from, to);
-        alphaAnimation.setFillBefore(true);
-        alphaAnimation.setFillAfter(true);
         alphaAnimation.setDuration(DEFAULT_FADE_DURATION);
         return alphaAnimation;
     }
 
     @Override
     public void onContentRender() {
-        super.onContentRender();
         if (mExpandType == AdformEnum.ExpandType.TWO_PART &&
                 !mAdformAnimationManager.isAnimating()) {
-            mDimmingView.startAnimation(mFadeInAnimation);
             mAdformAnimationManager.turnOn();
         }
+        if (mListener != null)
+            mListener.onAdShown();
     }
+
+    @Override
+    public void onContentRestore(boolean state) {}
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if (mExpandType == AdformEnum.ExpandType.ONE_PART &&
                 !mAdformAnimationManager.isAnimating()) {
-            mDimmingView.startAnimation(mFadeInAnimation);
             mAdformAnimationManager.turnOn();
         }
+    }
+
+    @Override
+    public void onMraidClose() {
+        if (!mAdformAnimationManager.isAnimating())
+            mAdformAnimationManager.turnOff();
     }
 
     @Override
@@ -173,12 +200,19 @@ public class CoreExpandedView extends CoreInterstitialView implements AdformAnim
     }
 
     @Override
-    public void onSliderStartedShowing() {}
+    public void onSliderStartedShowing() {
+        mDimmingView.setVisibility(View.VISIBLE);
+        mDimmingView.startAnimation(mFadeInAnimation);
+    }
 
     @Override
-    public void onMraidClose() {
-        if (!mAdformAnimationManager.isAnimating())
-            mAdformAnimationManager.turnOff();
+    public void onMraidUseCustomClose(boolean shouldUseCustomClose) {
+        // Nothing to respond to here anymore
+    }
+
+    @Override
+    public void onMraidExpand(String url, ExpandProperties expandProperties) {
+        // Nothing to do here
     }
 
     @Override

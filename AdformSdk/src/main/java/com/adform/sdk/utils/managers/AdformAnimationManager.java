@@ -2,6 +2,7 @@ package com.adform.sdk.utils.managers;
 
 import android.view.View;
 import android.view.animation.Animation;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.view.base.BaseCoreContainer;
 
 /**
@@ -86,6 +87,7 @@ public class AdformAnimationManager {
     }
 
     public void turnOn() {
+        Utils.p("turning on");
         turnOn(DEFAULT_DURATION);
     }
 
