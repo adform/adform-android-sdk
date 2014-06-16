@@ -1,8 +1,6 @@
 package com.adform.sample.app;
 
 import android.app.Application;
-import com.joshdholtz.sentry.Sentry;
-import com.newrelic.agent.android.NewRelic;
 
 /**
  * Created by mariusm on 05/05/14.

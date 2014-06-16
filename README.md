@@ -10,7 +10,7 @@ How to add AdformSDK to your project
 
 ## Project preparations for AdformSDK (Short) 
 
-1. Download project library `AdformSdk_0.4.10.jar` latest version. 
+1. Download project library `AdformSdk_0.4.11.jar` latest version. 
 2. Insert library into your project.
 3. Update `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`.
 		
@@ -21,7 +21,7 @@ How to add AdformSDK to your project
     		}
     		dependencies {
         		classpath 'com.android.tools.build:gradle:0.9.+'
-        		classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.361.0'
+        		classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.+'
     		}
 		}
 		apply plugin: 'android'
@@ -29,7 +29,7 @@ How to add AdformSDK to your project
 		...
 		dependencies {
 		    compile 'com.google.android.gms:play-services:4.2.42'
-		    compile 'com.newrelic.agent.android:android-agent:3.361.0'
+		    compile 'com.newrelic.agent.android:android-agent:3.+'
     		compile fileTree(dir: 'libs', include: ['*.jar'])
 		}
 		...
