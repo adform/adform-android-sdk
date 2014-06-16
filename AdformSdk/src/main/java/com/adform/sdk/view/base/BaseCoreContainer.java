@@ -222,6 +222,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     public void loadImpression(String impressionUrl) {
         // Loading impression
+        Utils.p("Loading impression to: "+impressionUrl);
         RawNetworkTask impressionTask =
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);

@@ -188,7 +188,8 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
                 mAdService.getAdServingEntity().getAdEntity() != null &&
                 mAdService.getAdServingEntity().getAdEntity().getTagDataEntity() != null &&
                 mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl() != null)
-            loadImpression(mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl());
+            loadImpression(mAdService.getAdServingEntity().getAdEntity().getTrackingUrlBase()+
+                    mAdService.getAdServingEntity().getAdEntity().getTagDataEntity().getImpressionUrl());
     }
 
     @Override

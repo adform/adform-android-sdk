@@ -2,6 +2,7 @@ package com.adform.sdk.network.app;
 
 import com.adform.sdk.network.app.entities.entities.RawResponse;
 import com.adform.sdk.network.base.ito.network.*;
+import com.adform.sdk.utils.Utils;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
@@ -24,20 +25,25 @@ public class RawNetworkTask extends NetworkTask<RawResponse> {
     @Override
     protected NetworkResponse<RawResponse> handleResponse(HttpResponse response) throws IOException, AuthorizationError {
         int statusCode = response.getStatusLine().getStatusCode();
-        mRawStringResponse = responseToRawString(response).toString();
         NetworkResponse networkResponse = null;
+        if (response != null &&
+                response.getEntity() != null) {
+            mRawStringResponse = responseToRawString(response).toString();
+//            Utils.p("Raw response: " + mRawStringResponse);
+            networkResponse = null;
 
-        switch (statusCode){
-            case 200:
-                //check if not empty response
-                if(mRawStringResponse != null && mRawStringResponse.length() > 0)
-                    networkResponse = parseJsonResponseBody();
-                break;
-            case 400:
-            case 401:
-            case 404:
-            default:
-                break;
+            switch (statusCode){
+                case 200:
+                    //check if not empty response
+                    if(mRawStringResponse != null && mRawStringResponse.length() > 0)
+                        networkResponse = parseJsonResponseBody();
+                    break;
+                case 400:
+                case 401:
+                case 404:
+                default:
+                    break;
+            }
         }
         if (networkResponse == null)
             networkResponse = createResponseWithError(

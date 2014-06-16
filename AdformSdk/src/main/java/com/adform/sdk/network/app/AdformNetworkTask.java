@@ -29,8 +29,7 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
         int statusCode = response.getStatusLine().getStatusCode();
         NetworkResponse networkResponse = null;
         if (response != null &&
-                response.getEntity() != null
-                ) {
+                response.getEntity() != null) {
             mRawStringResponse = responseToRawString(response).toString();
             Utils.p("Raw response: " + mRawStringResponse);
 

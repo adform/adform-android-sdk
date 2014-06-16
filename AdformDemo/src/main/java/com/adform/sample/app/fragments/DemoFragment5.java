@@ -77,6 +77,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                     // and its impression url
                     AdformInterstitialActivity.startActivity(getActivity(),
                             mAdformContentLoadManager.getLastRawResponse(),
+                            mAdformContentLoadManager.getLastAdServingResponse().getAdEntity().getTrackingUrlBase()+
                             mAdformContentLoadManager.getLastAdServingResponse()
                                     .getAdEntity().getTagDataEntity().getImpressionUrl()
                     );
@@ -128,6 +129,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
             showAfterLoad = false;
             AdformInterstitialActivity.startActivity(getActivity(),
                     mAdformContentLoadManager.getLastRawResponse(),
+                    mAdformContentLoadManager.getLastAdServingResponse().getAdEntity().getTrackingUrlBase()+
                     mAdformContentLoadManager.getLastAdServingResponse()
                             .getAdEntity().getTagDataEntity().getImpressionUrl());
         }
