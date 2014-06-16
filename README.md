@@ -10,29 +10,69 @@ How to add AdformSDK to your project
 
 ## Project preparations for AdformSDK (Short) 
 
+In this example project will be called `AdformExportDemo`.
+
 1. Download project library `AdformSdk_0.4.11.jar` latest version. 
 2. Insert library into your project.
-3. Update `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`.
+3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
 		
-		...
-		buildscript {
-    			repositories {
-        		mavenCentral()
-    		}
-    		dependencies {
-        		classpath 'com.android.tools.build:gradle:0.9.+'
-        		classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.+'
-    		}
-		}
-		apply plugin: 'android'
-		apply plugin: 'newrelic'
-		...
-		dependencies {
-		    compile 'com.google.android.gms:play-services:4.2.42'
-		    compile 'com.newrelic.agent.android:android-agent:3.+'
-    		compile fileTree(dir: 'libs', include: ['*.jar'])
-		}
-		...
+        buildscript {
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:0.9.+'
+                classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.+'
+            }
+        }
+        apply plugin: 'android'
+        apply plugin: 'newrelic'
+
+        repositories {
+            mavenCentral()
+        }
+
+        android {
+            compileSdkVersion 19
+            buildToolsVersion "19.0.2"
+
+            defaultConfig {
+                minSdkVersion 14
+                targetSdkVersion 19
+                versionCode 1
+                versionName "1.0"
+            }
+            buildTypes {
+                release {
+                    runProguard false
+                    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+                }
+            }
+        }
+
+        dependencies {
+            compile 'com.google.android.gms:play-services:4.2.42'
+            compile 'com.newrelic.agent.android:android-agent:3.+'
+            compile fileTree(dir: 'libs', include: ['*.jar'])
+        }
+
+Top project `build.gradle` file should be the way it is, and it should look like this: 
+
+        buildscript {
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:0.9.+'
+            }
+        }
+
+        allprojects {
+            repositories {
+                mavenCentral()
+            }
+        }
+ 
 		
 4. Update `AndroidManifest.xml` with snippet shown below between `<manifest></manifest>` tags.
 
