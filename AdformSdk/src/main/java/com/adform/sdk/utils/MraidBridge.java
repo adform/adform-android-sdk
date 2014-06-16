@@ -80,11 +80,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_DEFAULT_POS] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.DEFAULT_POSITION, mDefaultPosition)
-                        );
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(
+                                    MraidPositionProperty.createWithPosition(
+                                            MraidPositionProperty.PositionType.DEFAULT_POSITION, mDefaultPosition)
+                            );
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_DEFAULT_POS]);
@@ -101,11 +102,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_CURR_POS] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(
-                                MraidPositionProperty.createWithPosition(
-                                        MraidPositionProperty.PositionType.CURRENT_POSITION, mCurrentPosition)
-                        );
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(
+                                    MraidPositionProperty.createWithPosition(
+                                            MraidPositionProperty.PositionType.CURRENT_POSITION, mCurrentPosition)
+                            );
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_CURR_POS]);
@@ -123,11 +125,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_MAX_SIZE] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithViewCoords(
-                                        MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
-                        );
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(
+                                    MraidSizeProperty.createWithViewCoords(
+                                            MraidSizeProperty.SizeType.MAX_SIZE, mMaxSize)
+                            );
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_MAX_SIZE]);
@@ -145,11 +148,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_SCREEN_SIZE] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithViewCoords(
-                                        MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
-                        );
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(
+                                    MraidSizeProperty.createWithViewCoords(
+                                            MraidSizeProperty.SizeType.SCREEN_SIZE, mScreenSize)
+                            );
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_SCREEN_SIZE]);
@@ -166,11 +170,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_SIZE] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(
-                                MraidSizeProperty.createWithAdDimension(
-                                        MraidSizeProperty.SizeType.SIZE, mAdDimension)
-                        );
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(
+                                    MraidSizeProperty.createWithAdDimension(
+                                            MraidSizeProperty.SizeType.SIZE, mAdDimension)
+                            );
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_SIZE]);
@@ -187,8 +192,9 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_STATE] = new Runnable() {
             @Override
             public void run() {
-                mWebView.fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
-                        AdformEnum.State.getStateString(mState)));
+                if (mWebView != null)
+                    mWebView.fireChangeEventForProperty(SimpleMraidProperty.createWithKeyAndValue("state",
+                            AdformEnum.State.getStateString(mState)));
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_STATE]);
@@ -209,9 +215,10 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mRunnableArray[RUN_INDEX_PLACEMENT] = new Runnable() {
             @Override
             public void run() {
-                mWebView.fireChangeEventForProperty(
-                        SimpleMraidProperty.createWithKeyAndValue(VAR_PLACEMENT_TYPE,
-                                AdformEnum.PlacementType.getPlacementString(placementType)));
+                if (mWebView != null)
+                    mWebView.fireChangeEventForProperty(
+                            SimpleMraidProperty.createWithKeyAndValue(VAR_PLACEMENT_TYPE,
+                                    AdformEnum.PlacementType.getPlacementString(placementType)));
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_PLACEMENT]);
@@ -230,11 +237,12 @@ public class MraidBridge implements VisibilityPositionManager.PositionManagerLis
         mVisible = visible;
         if (mWebView == null)
             return;
-        mRunnableArray[4] = new Runnable() {
+        mRunnableArray[RUN_INDEX_VISIBILITY] = new Runnable() {
             @Override
             public void run() {
-                mWebView
-                        .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(mVisible));
+                if (mWebView != null)
+                    mWebView
+                            .fireChangeEventForProperty(MraidViewableProperty.createWithViewable(mVisible));
             }
         };
         mWebView.post(mRunnableArray[RUN_INDEX_VISIBILITY]);

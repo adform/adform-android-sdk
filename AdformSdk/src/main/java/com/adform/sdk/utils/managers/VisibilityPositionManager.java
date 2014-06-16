@@ -101,6 +101,8 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
         mVisibilityRunnable = new Runnable() {
             @Override
             public void run() {
+                if (mVisibilityManagerListener == null)
+                    return;
                 if (mPositionManagerListener != null && mGapBetweenScreenSizeMaxSize != null) {
                     setCurrentPosition(ViewCoords.createViewCoordSubrtactModifier(
                             mVisibilityManagerListener.getView(), mGapBetweenScreenSizeMaxSize));
@@ -122,6 +124,8 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
      * @return false if main view is not visible.
      */
     private boolean isViewVisibleInPresetContainers() {
+        if(mVisibilityManagerListener == null)
+            return false;
         ViewCoords mainViewCoords = ViewCoords.createViewCoord(mVisibilityManagerListener.getView());
         for (ViewCoords mParentCoord : mParentCoords) {
             if (!isViewVisible(mainViewCoords, mParentCoord))
@@ -162,6 +166,8 @@ public class VisibilityPositionManager implements ViewTreeObserver.OnScrollChang
             parentGetterRunnable = new Runnable() {
                 @Override
                 public void run() {
+                    if(mVisibilityManagerListener == null)
+                        return;
                     mViewParent = mVisibilityManagerListener.getParent();
                     if (mViewParent != null) {
                         hookScrollViewListeners((View) mViewParent);

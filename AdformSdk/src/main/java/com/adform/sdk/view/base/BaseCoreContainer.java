@@ -77,6 +77,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     protected BaseInnerContainer mInnerContainer;
     protected Bundle mExtraParams;
     protected CoreInterstitialListener mListener;
+    private boolean isDestroyed = false;
 
     public BaseCoreContainer(Context context) {
         this(context, null);
@@ -172,7 +173,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     protected void stopService() {
-        if (getInnerView() != null)
+        if (getInnerView() != null && getInnerView().getMraidBridge() != null)
             getInnerView().getMraidBridge().changeVisibility(false, true);
     }
 
@@ -390,6 +391,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     @Override
     public String getUserAgent() {
         return mInnerContainer.getUserAgent();
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
     }
 
     /**
@@ -687,6 +692,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     }
 
     public void destroy() {
+        isDestroyed = true;
         removeCallbacks(removePlaceholderRunnable);
         if (mVisibilityPositionManager != null) {
             mVisibilityPositionManager.destroy();

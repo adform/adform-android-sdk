@@ -71,6 +71,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     private CloseImageView mCloseImageView;
     private boolean mUseCloseButton = false;
     private Bundle mExtraParams;
+    private boolean isDestroyed = false;
     
     public BaseInnerContainer(Context context, Bundle extras) {
         this(context, null, 0, extras);
@@ -314,14 +315,15 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
 
     @Override
     public void onConfigurationPreset(String configuredParam) {
-        if (!mIsMraidReady) {
+        if (!mIsMraidReady && !isDestroyed) {
             mConfigurationPreset.put(configuredParam, true);
             if (isConfigurationPresetReady()) {
                 mIsMraidReady = true;
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        getCurrentWebView().fireReady();
+                        if (!isDestroyed)
+                            getCurrentWebView().fireReady();
                     }
                 });
             }
@@ -517,6 +519,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     public abstract void destroyWebView();
 
     public void destroy() {
+        isDestroyed = true;
         mMraidBridge.destroy();
         mMraidBridge = null;
         mBaseListener = null;

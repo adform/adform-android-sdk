@@ -255,7 +255,6 @@ public class CoreAdView extends BaseCoreContainer implements Observer,
      */
     protected void stopService() {
         super.stopService();
-        getInnerView().getMraidBridge().changeVisibility(false, true);
         if (mAdService != null) {
             mAdService.deleteObserver(this);
             mAdService.stopService();
