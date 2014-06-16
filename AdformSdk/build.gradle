@@ -58,4 +58,10 @@ task makeJar(type: Copy) {
     rename ('classes.jar', 'AdformSdk.jar')
 }
 
+//task printVersion() {
+//    def versionSuffix = targetVariant.buildType.versionNameSuffix ? targetVariant.buildType.versionNameSuffix : ""
+//    def versionName = targetVariant.mergedFlavor.versionName + versionSuffix;
+//    println "Version name: "+versionName
+//}
+
 makeJar.dependsOn(clearJar, build)

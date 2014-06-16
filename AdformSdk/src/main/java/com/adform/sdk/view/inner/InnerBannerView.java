@@ -89,6 +89,7 @@ public class InnerBannerView extends BaseInnerContainer {
             @Override
             public void onAnimationEnd(Animation animation) {
                 getBaseListener().setAnimating(false);
+                unloadOldContent();
             }
 
             @Override
@@ -131,6 +132,11 @@ public class InnerBannerView extends BaseInnerContainer {
         else
             webView = (AdWebView) getNextView(mWebViews, mViewAnimator.getCurrentView());
         return webView;
+    }
+
+    public void unloadOldContent() {
+        AdWebView hiddenWebView = (AdWebView)getNextView(mWebViews, getCurrentWebView());
+        hiddenWebView.loadDataWithBaseURL(null, "", "text/html", "UTF-8", null);
     }
 
     /**
