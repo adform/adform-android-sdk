@@ -467,11 +467,11 @@ public class MraidJavascript {
         "    } else {\n" +
         "      var args = ['expand'];\n" +
         "\n" +
-        "      if (this.getHasSetCustomClose()) {\n" +
+        "      if (hasSetCustomClose) {\n" +
         "        args = args.concat(['useCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);\n" +
         "      }\n" +
         "\n" +
-        "      if (this.getHasSetCustomSize()) {\n" +
+        "      if (hasSetCustomSize) {\n" +
         "        if (expandProperties.width >= 0 && expandProperties.height >= 0) {\n" +
         "          args = args.concat(['width', expandProperties.width, 'height', expandProperties.height]);\n" +
         "        }\n" +
@@ -483,14 +483,6 @@ public class MraidJavascript {
         "\n" +
         "      bridge.executeNativeCall.apply(this, args);\n" +
         "    }\n" +
-        "  };\n" +
-        "\n" +
-        "  mraid.getHasSetCustomClose = function() {\n" +
-        "      return hasSetCustomClose;\n" +
-        "  };\n" +
-        "\n" +
-        "  mraid.getHasSetCustomSize = function() {\n" +
-        "      return hasSetCustomSize;\n" +
         "  };\n" +
         "\n" +
         "  mraid.getExpandProperties = function() {\n" +

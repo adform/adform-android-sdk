@@ -9,6 +9,7 @@ public class Constants {
     public static final int REFRESH_SECONDS = 30;
     // Network
     // Public
+    public static final String API_VERSION = "1.0";
     public static final String SERVER_URL = "http://37.157.0.44/";
     public static final String SDK_INFO_PATH = "mobilesdk/ad/test.php";
     // Test - ddwrt

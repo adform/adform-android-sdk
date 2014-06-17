@@ -432,11 +432,11 @@
     } else {
       var args = ['expand'];
 
-      if (this.getHasSetCustomClose()) {
+      if (hasSetCustomClose) {
         args = args.concat(['useCustomClose', expandProperties.useCustomClose ? 'true' : 'false']);
       }
 
-      if (this.getHasSetCustomSize()) {
+      if (hasSetCustomSize) {
         if (expandProperties.width >= 0 && expandProperties.height >= 0) {
           args = args.concat(['width', expandProperties.width, 'height', expandProperties.height]);
         }
@@ -448,14 +448,6 @@
 
       bridge.executeNativeCall.apply(this, args);
     }
-  };
-
-  mraid.getHasSetCustomClose = function() {
-      return hasSetCustomClose;
-  };
-
-  mraid.getHasSetCustomSize = function() {
-      return hasSetCustomSize;
   };
 
   mraid.getExpandProperties = function() {

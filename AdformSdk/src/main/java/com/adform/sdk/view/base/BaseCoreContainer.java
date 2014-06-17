@@ -10,8 +10,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,7 +27,6 @@ import com.adform.sdk.utils.entities.ExpandProperties;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.utils.managers.VisibilityPositionManager;
 import com.adform.sdk.view.CoreExpandedView;
-import com.adform.sdk.view.CoreInterstitialView;
 import com.adform.sdk.view.inner.AdWebView;
 
 import java.util.ArrayList;
@@ -48,10 +45,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public static final String INNER_EXTRA_TYPE = "INNER_EXTRA_TYPE";
 
     // Special variables that can be set by the view
-    public static final String MASTER_ID = "master_id";
-    public static final String API_VERSION = "api_version";
-    public static final String HIDDEN_STATE = "hidden_state";
-    public static final String PUBLISHER_ID = "publisher_id";
+    public static final String KEY_MASTER_ID = "master_id";
+    public static final String KEY_API_VERSION = "api_version";
+    public static final String KEY_HIDDEN_STATE = "hidden_state";
+    public static final String KEY_PUBLISHER_ID = "publisher_id";
     private static boolean IS_CUSTOMDATA_LOADED = false;
     private static boolean IS_REQUEST_WITH_CUSTOMDATA = false;
 
@@ -71,7 +68,6 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     private int mMasterId = 0;
     private int mPublisherId = 0; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
-    private String mApiVersion = "1.0";
     private boolean isAnimating;
     protected MraidDeviceIdProperty mDeviceId;
     protected BaseInnerContainer mInnerContainer;
@@ -190,16 +186,14 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             int count = attributes.getAttributeCount();
             for (int i = 0; i < count; i++) {
                 String name = attributes.getAttributeName(i);
-                if (name.equals(MASTER_ID)) {
+                if (name.equals(KEY_MASTER_ID)) {
                     String masterAttr = attributes.getAttributeValue(i);
                     try {
                         mMasterId = Integer.parseInt(masterAttr);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
-                } else if (name.equals(API_VERSION)) {
-                    mApiVersion = attributes.getAttributeValue(i);
-                } else if (name.equals(PUBLISHER_ID)) {
+                } else if (name.equals(KEY_PUBLISHER_ID)) {
                     String publisherAttr = attributes.getAttributeValue(i);
                     try {
                         mPublisherId = Integer.parseInt(publisherAttr);
@@ -207,7 +201,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
                         e.printStackTrace();
                     }
                 }
-//                else if (name.equals(HIDDEN_STATE)) {
+//                else if (name.equals(KEY_HIDDEN_STATE)) {
 //                    String hiddenState = attributes.getAttributeValue(i);
 //                    if (hiddenState.equals("invisible"))
 //                        mHiddenState = View.INVISIBLE;
@@ -340,7 +334,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     @Override
     public String getVersion() {
-        return mApiVersion;
+        return KEY_API_VERSION;
     }
 
     @Override

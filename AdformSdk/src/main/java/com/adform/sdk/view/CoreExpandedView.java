@@ -151,6 +151,7 @@ public class CoreExpandedView extends BaseCoreContainer implements AdformAnimati
 
     private AlphaAnimation createAlphaAnimation(float from, float to) {
         AlphaAnimation alphaAnimation = new AlphaAnimation(from, to);
+        alphaAnimation.setFillAfter(true);
         alphaAnimation.setDuration(DEFAULT_FADE_DURATION);
         return alphaAnimation;
     }
