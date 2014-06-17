@@ -12,7 +12,7 @@ How to add AdformSDK to your project
 
 In this example project will be called `AdformExportDemo`.
 
-1. Download project library `AdformSdk_0.4.13.jar` latest version. 
+1. Download project library `AdformSdk_0.4.14.jar` latest version. 
 2. Insert library into your project.
 3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
 		
@@ -94,10 +94,16 @@ To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdV
 
 	<com.adform.sdk.view.CoreAdView
 			master_id="111111"
+			publisher_id="222222"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
-* Note that, when initializing a view master tag is set by providing it to the view parameters. Also this can be set by providing custom parameters in the programming code.
+* Note that, when initializing a view, `master_id` and `publisher_id`can be provided by setting through view parameters. Also this can be set by setting  parameters in the programming code like in snippet below.
+
+        mAdView.setMasterId(111111);
+        mAdView.setPublisherId(222222);
+
+
 * Gravity can be changed by inserting the adView into the container and changing its position.
 
 When initializing SDK in Fragment/Activity, a **destruction event should be provided** for the view. This can be done by doing these steps: 
