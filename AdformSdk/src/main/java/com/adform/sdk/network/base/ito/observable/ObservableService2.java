@@ -122,7 +122,6 @@ public abstract class ObservableService2 extends Observable {
 
     public void scheduleRequest(final NetworkTask<?> task, long millis) {
         if (countObservers() == 0) {
-            Utils.p("No observers...");
             stopService();
         }
         Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );

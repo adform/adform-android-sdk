@@ -1,6 +1,7 @@
 package com.adform.sdk.network.app.entities.entities;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import java.io.IOException;
 
@@ -53,20 +54,27 @@ public class AdEntity {
         String trackingUrlBase = null;
         int refreshInterval = 30;
         TagDataEntity tagData = null;
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("trackingUrlBase")) {
-                trackingUrlBase = reader.nextString();
-            } else if (name.equals("refreshInterval")) {
-                refreshInterval = reader.nextInt();
-            } else if (name.equals("tagData")) {
-                tagData = TagDataEntity.readEntity(reader);
-            } else {
-                reader.skipValue();
+        if (reader.peek() == JsonToken.BEGIN_OBJECT) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                if (reader.peek() != JsonToken.NULL) {
+                    if (name.equals("trackingUrlBase")) {
+                        trackingUrlBase = reader.nextString();
+                    } else if (name.equals("refreshInterval")) {
+                        refreshInterval = reader.nextInt();
+                    } else if (name.equals("tagData")) {
+                        tagData = TagDataEntity.readEntity(reader);
+                    } else {
+                        reader.skipValue();
+                    }
+                } else {
+                    reader.skipValue();
+                }
             }
-        }
-        reader.endObject();
+            reader.endObject();
+        } else
+            return null;
         return new AdEntity(trackingUrlBase, refreshInterval, tagData);
     }
 

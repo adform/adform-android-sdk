@@ -67,7 +67,7 @@ public class AdformInterstitialActivity extends Activity implements CoreIntersti
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException anfe) {
-            Utils.p("AdformInterstitial activity must be declared in AndroidManifest.xml");
+            Utils.e("AdformInterstitial activity must be declared in AndroidManifest.xml");
         }
     }
 

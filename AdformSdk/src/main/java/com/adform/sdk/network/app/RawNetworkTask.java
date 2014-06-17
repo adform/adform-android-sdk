@@ -29,7 +29,6 @@ public class RawNetworkTask extends NetworkTask<RawResponse> {
         if (response != null &&
                 response.getEntity() != null) {
             mRawStringResponse = responseToRawString(response).toString();
-//            Utils.p("Raw response: " + mRawStringResponse);
             networkResponse = null;
 
             switch (statusCode){
@@ -47,8 +46,10 @@ public class RawNetworkTask extends NetworkTask<RawResponse> {
         }
         if (networkResponse == null)
             networkResponse = createResponseWithError(
-                    NetworkError.Type.SERVER, 0, "Something is way off (Raw: "+mRawStringResponse+")"
+                    NetworkError.Type.SERVER, 0, "Error: " + mRawStringResponse
             );
+        if (networkResponse.getError() != null)
+            Utils.e(networkResponse.getError().getMessage());
         return networkResponse;
     }
 

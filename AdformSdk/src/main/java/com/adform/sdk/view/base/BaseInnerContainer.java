@@ -109,7 +109,6 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
     }
 
     private void initializeServices() {
-        Utils.p("Initializing service");
         NewRelic.withApplicationToken(
                 "AAffa2478f84ca37388d54a7d66b0e17b2c69a6aa8"
         ).start(mContext);
@@ -197,31 +196,31 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
         webView.setWebChromeClient(new WebChromeClient(){
             @Override
             public boolean onJsBeforeUnload(WebView view, String url, String message, JsResult result) {
-                Utils.p("JS(onJsBeforeUnload):"+message);
+                Utils.d("JS(onJsBeforeUnload):"+message);
                 return super.onJsBeforeUnload(view, url, message, result);
             }
 
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-                Utils.p("JS(onJsConfirm):"+message);
+                Utils.d("JS(onJsConfirm):"+message);
                 return super.onJsConfirm(view, url, message, result);
             }
 
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-                Utils.p("JS(onJsPrompt):"+message);
+                Utils.d("JS(onJsPrompt):"+message);
                 return super.onJsPrompt(view, url, message, defaultValue, result);
             }
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                Utils.p("JS(onJsAlert):"+message);
+                Utils.d("JS(onJsAlert):"+message);
                 return super.onJsAlert(view, url, message, result);
             }
 
             @Override
             public void onConsoleMessage(String message, int lineNumber, String sourceID) {
-                Utils.p("JS(onConsoleMessage):"+message);
+                Utils.d("JS(onConsoleMessage):"+message);
                 super.onConsoleMessage(message, lineNumber, sourceID);
             }
         });
@@ -332,7 +331,7 @@ public abstract class BaseInnerContainer extends RelativeLayout implements
 
     @Override
     public void onNativePrint(String nativeCall) {
-        Utils.p("JS Console: " + nativeCall);
+        Utils.d("JS Console: " + nativeCall);
     }
 
     /**

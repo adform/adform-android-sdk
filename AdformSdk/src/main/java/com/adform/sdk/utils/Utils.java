@@ -16,8 +16,10 @@ import java.util.ArrayList;
  * Created by marius on 8/16/13.
  */
 public class Utils {
-    public static void p(String msg){
-//        if(BuildConfig.DEBUG)
+    public static void d(String msg){
+        Log.d("AdformSdk", msg);
+    }
+    public static void e(String msg){
         Log.e("AdformSdk", msg);
     }
 //    public static void p(String msg, String... args){

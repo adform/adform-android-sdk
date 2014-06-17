@@ -216,7 +216,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     public void loadImpression(String impressionUrl) {
         // Loading impression
-        Utils.p("Loading impression to: "+impressionUrl);
+        Utils.d("Loading impression to: "+impressionUrl);
         RawNetworkTask impressionTask =
                 new RawNetworkTask(NetworkRequest.Method.GET,
                         impressionUrl);
@@ -586,7 +586,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             activity = (Activity) context;
             activity.setRequestedOrientation(orientation);
         } catch (ClassCastException e) {
-            Utils.p("Cant modify orientation");
+            Utils.e("Cant modify orientation");
         }
     }
 

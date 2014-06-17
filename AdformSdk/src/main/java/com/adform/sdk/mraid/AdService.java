@@ -114,7 +114,7 @@ public class AdService extends ObservableService2 {
     private AdformNetworkTask<AdServingEntity> getRequest(){
         String additionalPOSTProperties = mListener.getView().getRequestProperties();
         String additionalURLProperties = mListener.getView().getUrlProperties();
-        Utils.p("Generated params: "+additionalPOSTProperties);
+        Utils.d("Generated params: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
                         Constants.SDK_INFO_PATH+

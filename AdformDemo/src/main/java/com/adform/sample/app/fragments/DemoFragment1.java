@@ -32,8 +32,8 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         View view = inflater.inflate(R.layout.activity_main, null);
         mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
-        mAdView.setMasterId(111111);
-        mAdView.setPublisherId(222222);
+        mAdView.setMasterId(72338);
+        mAdView.setPublisherId(111111);
 
         // Use builder to set custom parameters...
         mAdView.setCustomParams(new CustomParamBuilder()

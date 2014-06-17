@@ -71,7 +71,7 @@ public class AdWebView extends WebView {
     }
 
     public void fireReady() {
-        Utils.p("Ready event...");
+        Utils.d("Ready event...");
         injectJavascript("window.mraidbridge.fireReadyEvent();");
     }
 
@@ -82,7 +82,7 @@ public class AdWebView extends WebView {
 
     public void fireChangeEventForProperty(MraidBaseProperty property) {
         String json = "{" + property.toString() + "}";
-        Utils.p("Sending: "+json);
+        Utils.d("Sending: "+json);
         injectJavascript("window.mraidbridge.fireChangeEvent(" + json + ");");
     }
 

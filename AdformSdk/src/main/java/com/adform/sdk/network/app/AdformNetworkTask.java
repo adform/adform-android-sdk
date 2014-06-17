@@ -1,6 +1,7 @@
 package com.adform.sdk.network.app;
 
 import com.adform.sdk.Constants;
+import com.adform.sdk.network.app.entities.entities.AdServingEntity;
 import com.adform.sdk.network.base.ito.network.*;
 import com.adform.sdk.utils.Utils;
 import org.apache.http.HttpRequest;
@@ -31,7 +32,7 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
         if (response != null &&
                 response.getEntity() != null) {
             mRawStringResponse = responseToRawString(response).toString();
-            Utils.p("Raw response: " + mRawStringResponse);
+            Utils.d("Raw response: " + mRawStringResponse);
 
             switch (statusCode) {
                 case 200:
@@ -40,6 +41,13 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
                         networkResponse = parseJsonResponseBody();
                         if (networkResponse == null) {
                             networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Failed to parse (Raw: " + mRawStringResponse + ")");
+                        }
+                        // Special case checking
+                        if (networkResponse.getEntity() != null && networkResponse.getEntity() instanceof AdServingEntity) {
+                            AdServingEntity servingEntity = ((AdServingEntity) networkResponse.getEntity());
+                            if ((servingEntity.getAdEntity() != null && servingEntity.getAdEntity().getTagDataEntity() == null) ||
+                                    servingEntity.getAdEntity() == null)
+                                networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Request Error: No ad to show.");
                         }
                     } else {
                         networkResponse = createResponseWithError(NetworkError.Type.SERVER, statusCode, "Empty response");
@@ -53,6 +61,8 @@ public class AdformNetworkTask<ResponseType> extends NetworkTask<ResponseType> {
             networkResponse = createResponseWithError(
                     NetworkError.Type.SERVER, 0, "Something is way off (Raw: "+mRawStringResponse+")"
             );
+        if (networkResponse.getError() != null)
+            Utils.e(networkResponse.getError().getMessage());
         return networkResponse;
     }
 

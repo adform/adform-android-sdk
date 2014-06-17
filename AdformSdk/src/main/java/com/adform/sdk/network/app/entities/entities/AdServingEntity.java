@@ -1,6 +1,7 @@
 package com.adform.sdk.network.app.entities.entities;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 import com.adform.sdk.network.base.ito.network.NetworkResponse;
 import com.adform.sdk.network.base.ito.network.NetworkResponseParser;
 
@@ -64,18 +65,23 @@ public class AdServingEntity {
     public static AdServingEntity readEntity(JsonReader reader) throws IOException  {
         String version = null;
         AdEntity adEntity = null;
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("version")) {
-                version = reader.nextString();
-            } else if (name.equals("ad")) {
-                adEntity = AdEntity.readEntity(reader);
-            } else {
-                reader.skipValue();
+        if (reader.peek() == JsonToken.BEGIN_OBJECT) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                if (reader.peek() != JsonToken.NULL) {
+                    if (name.equals("version")) {
+                        version = reader.nextString();
+                    } else if (name.equals("ad")) {
+                        adEntity = AdEntity.readEntity(reader);
+                    } else {
+                        reader.skipValue();
+                    }
+                }
             }
-        }
-        reader.endObject();
+            reader.endObject();
+        } else
+            return null;
         return new AdServingEntity(version, adEntity);
     }
 }

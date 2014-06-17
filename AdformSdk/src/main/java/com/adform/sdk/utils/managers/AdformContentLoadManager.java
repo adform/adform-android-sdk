@@ -132,7 +132,7 @@ public class AdformContentLoadManager implements ErrorListener, LoadingStateList
      * @param properties properties that are added with the request. This probably will be json properties
      */
     public AdformNetworkTask getContractTask(String urlPostfix, String properties) throws ContentLoadException {
-        Utils.p("Generated params: " + properties);
+        Utils.d("Generated params: " + properties);
         AdformNetworkTask<AdServingEntity> contractTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,
                         Constants.SDK_INFO_PATH+

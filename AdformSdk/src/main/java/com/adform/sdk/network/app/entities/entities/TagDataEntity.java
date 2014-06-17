@@ -1,6 +1,7 @@
 package com.adform.sdk.network.app.entities.entities;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import java.io.IOException;
 
@@ -38,20 +39,25 @@ public class TagDataEntity {
     public static TagDataEntity readEntity(JsonReader reader) throws IOException {
         String impressionUrl = null;
         String src = null;
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("impressionUrl")) {
-                impressionUrl = reader.nextString();
-            } else if (name.equals("src")) {
-                src = reader.nextString();
-            } else {
-                reader.skipValue();
+        if (reader.peek() == JsonToken.BEGIN_OBJECT) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                if (reader.peek() != JsonToken.NULL) {
+                    if (name.equals("impressionUrl")) {
+                        impressionUrl = reader.nextString();
+                    } else if (name.equals("src")) {
+                        src = reader.nextString();
+                    } else {
+                        reader.skipValue();
+                    }
+                } else {
+                    reader.skipValue();
+                }
             }
-        }
-        reader.endObject();
+            reader.endObject();
+        } else
+            return null;
         return new TagDataEntity(impressionUrl, src);
     }
-
-
 }

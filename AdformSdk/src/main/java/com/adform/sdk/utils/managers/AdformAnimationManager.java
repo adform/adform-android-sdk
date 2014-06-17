@@ -87,7 +87,6 @@ public class AdformAnimationManager {
     }
 
     public void turnOn() {
-        Utils.p("turning on");
         turnOn(DEFAULT_DURATION);
     }
 
