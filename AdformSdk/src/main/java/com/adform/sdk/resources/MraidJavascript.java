@@ -520,7 +520,7 @@ public class MraidJavascript {
         "  };\n" +
         "\n" +
         "  mraid.getVersion = function() {\n" +
-        "    return mraid.VERSION;\n" +
+        "    return VERSION;\n" +
         "  };\n" +
         "\n" +
         "  mraid.isViewable = function() {\n" +

@@ -485,7 +485,7 @@
   };
 
   mraid.getVersion = function() {
-    return mraid.VERSION;
+    return VERSION;
   };
 
   mraid.isViewable = function() {

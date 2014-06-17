@@ -53,10 +53,11 @@ import java.util.Map;
 public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkError, NetworkResponse<ResponseType>> {
 
     private static final String TAG = NetworkTask.class.getSimpleName();
-    public static final int REQUEST_TIMEOUT = 15; // In seconds
+//    public static final int REQUEST_TIMEOUT = 15; // In seconds
 
     // server url
     public static final String HTTP_OK = "OK";
+    public static final int SOCKET_TIMEOUT = 5000;
 
     // tag to cheaply distinguish requests in listeners
     private int mTag;
@@ -133,8 +134,6 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
     protected void onPreExecute() {
         super.onPreExecute();
 
-//        mConsumer = WoraPayApplication.getContext().getAuthManager().getCurrentConsumer();
-
         //ensure that request is created and url path is set
         if(mRequest==null){
             throw new IllegalStateException("request cannot be null");
@@ -199,7 +198,7 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
                 } finally {
                     //sleep before retry (don't sleep after last retry)
                     if(i < mNumberOfRetries-1)
-                        sleep();
+                        sleep(3000);
                 }
             } else {
                 return null;
@@ -207,6 +206,14 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         }
         Log.d(TAG, "request unsuccessful exiting with error: " + lastError.getMessage());
         return new NetworkResponse(lastError);
+    }
+
+    /**
+     * still called in background
+     * @param response
+     */
+    protected void onAfterRequest(NetworkResponse<ResponseType> response) {
+        //subject to override
     }
 
     @Override
@@ -223,20 +230,21 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         Log.d(TAG, "onCancelled");
         // call abort to network client
         if(mRunningHttpUriRequest !=null && !mRunningHttpUriRequest.isAborted()){
-            mHttpClient.getConnectionManager().shutdown();
-            mHttpClient = null;
-            sHttpClient = null;
+            mRunningHttpUriRequest.abort();
+//            mHttpClient.getConnectionManager().shutdown();
+//            mHttpClient = null;
+//            sHttpClient = null;
             Log.d(TAG, "running http request abort received");
         }
         mListeners.notifyCancel(this);
         mListeners.notifyFinnish(this);
     }
 
-    private void sleep() {
+    private void sleep(long millis) {
         try {
             //retry operation after 2 seconds
             Log.d(TAG, "sleeping for 3 seconds before retry...");
-            Thread.sleep(3000);
+            Thread.sleep(millis);
         } catch (InterruptedException e1) {
             //we expect it to be interrupted to, don't log stack trace
             //e1.printStackTrace();
@@ -304,6 +312,7 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
 
         return response;
     }
+
     private DefaultHttpClient getClient(){
         if(sHttpClient == null){
             sHttpClient = createClient();
@@ -390,7 +399,6 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
 
     private void logRequestError(String method,String url, String responseCode,String body){
         // Error from server tracking is not really needed here.
-//        WoraPayApplication.getContext().trackEvent("error",responseCode + ", " +url +", "+method,body,0L);
     }
 
     // Parameters handling
@@ -464,8 +472,8 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
             HttpParams params = new BasicHttpParams();
             HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-            HttpConnectionParams.setConnectionTimeout(params, REQUEST_TIMEOUT * 1000);
-            HttpConnectionParams.setSoTimeout(params, REQUEST_TIMEOUT * 1000);
+            HttpConnectionParams.setConnectionTimeout(params, 5000);
+            HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
 
             SchemeRegistry registry = new SchemeRegistry();
             registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -503,6 +511,23 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
             resp.getEntity().consumeContent();
         }
         return sb;
+    }
+
+    public void clearListeners(){
+        setErrorListener(null);
+        setCancelListener(null);
+        setLoadingStateListener(null);
+        setSuccessListener(null);
+        setRetryListener(null);
+    }
+
+    /**
+     * aborts network task
+     */
+    public void abort(){
+        mListeners.notifyFinnish(this);
+        cancel(true);
+        clearListeners();
     }
 
     class MySSLSocketFactory extends SSLSocketFactory {
@@ -587,6 +612,11 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         this.mHttpClient = mHttpClient;
     }
 
+    @SuppressWarnings("unused")
+    public void setParser(NetworkResponseParser<ResponseType> mParser) {
+        this.mParser = mParser;
+    }
+
     /**
      * @param mIgnoreBodyParsing if set to true, response parsing ignores body parsing, and returns empty response
      * useful for simple posts when no body is expected, to avoid json parsing error.
@@ -594,10 +624,6 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
     @SuppressWarnings("unused")
     public void setIgnoreBodyParsing(boolean mIgnoreBodyParsing) {
         this.mIgnoreBodyParsing = mIgnoreBodyParsing;
-    }
-
-    public void setParser(NetworkResponseParser<ResponseType> mParser) {
-        this.mParser = mParser;
     }
 
     public NetworkRequest getRequest() {
@@ -614,5 +640,9 @@ public abstract class NetworkTask<ResponseType> extends AsyncTask<Void, NetworkE
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getSocketTimeout() {
+        return SOCKET_TIMEOUT;
     }
 }
