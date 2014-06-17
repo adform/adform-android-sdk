@@ -60,7 +60,7 @@
 				<com.adform.sdk.view.CoreAdView
 						android:id="@+id/custom_ad_view"
 						android:background="@android:color/transparent"
-                        master_id="555555"
+                        master_id="72325"
                         publisher_id="222222"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"/>

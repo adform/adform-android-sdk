@@ -10,14 +10,14 @@ public class Constants {
     // Network
     // Public
     public static final String API_VERSION = "1.0";
-//    public static final String SERVER_URL = "http://adx.adform.net/";
-//    public static final String SDK_INFO_PATH = "adx/mobile/api/";
+    public static final String SERVER_URL = "http://adx.adform.net/";
+    public static final String SDK_INFO_PATH = "adx/mobile/api/";
     // Test - ddwrt
 //    public static final String SERVER_URL = "http://192.168.2.122/";
 //    public static final String SDK_INFO_PATH = "mobilesdk/ad/";
     // Test - iTo
-    public static final String SERVER_URL = "http://192.168.4.72/";
-    public static final String SDK_INFO_PATH = "mobilesdk/ad/";
+//    public static final String SERVER_URL = "http://192.168.4.72/";
+//    public static final String SDK_INFO_PATH = "mobilesdk/ad/";
     public static final String SDK_INFO_PATH_ERROR = "mobilesdk/error.php";
     public static final String SDK_INFO_PATH_EMPTY = "mobilesdk/tricky.php";
 //    public static final String TEMP_INTERSTITIAL_LINK = SERVER_URL+SDK_INFO_PATH+
