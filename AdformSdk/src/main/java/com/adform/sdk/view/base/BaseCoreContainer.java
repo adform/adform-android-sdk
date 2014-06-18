@@ -45,7 +45,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public static final String INNER_EXTRA_TYPE = "INNER_EXTRA_TYPE";
 
     // Special variables that can be set by the view
-    public static final String KEY_MASTER_ID = "master_id";
+    public static final String KEY_MASTER_TAG_ID = "mastertag_id";
     public static final String KEY_API_VERSION = "api_version";
     public static final String KEY_HIDDEN_STATE = "hidden_state";
     public static final String KEY_PUBLISHER_ID = "publisher_id";
@@ -65,7 +65,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     public static float sDeviceDensity;
     private HashMap<String, String> mCustomParams;
     // Should be taken from some kind of configuration
-    private int mMasterId = 0;
+    private int mMasterTagId = 0;
     private int mPublisherId = 0; // Some hardcoded number, probably will be used later on
     // Should be taken from some kind of configuration
     private boolean isAnimating;
@@ -186,10 +186,10 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             int count = attributes.getAttributeCount();
             for (int i = 0; i < count; i++) {
                 String name = attributes.getAttributeName(i);
-                if (name.equals(KEY_MASTER_ID)) {
+                if (name.equals(KEY_MASTER_TAG_ID)) {
                     String masterAttr = attributes.getAttributeValue(i);
                     try {
-                        mMasterId = Integer.parseInt(masterAttr);
+                        mMasterTagId = Integer.parseInt(masterAttr);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
@@ -319,12 +319,12 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // -----------------
 
     @Override
-    public int getMasterId() {
-        return mMasterId;
+    public int getMasterTagId() {
+        return mMasterTagId;
     }
 
-    public void setMasterId(int masterId) {
-        this.mMasterId = masterId;
+    public void setMasterTagId(int masterId) {
+        this.mMasterTagId = masterId;
     }
 
     @Override
@@ -404,7 +404,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
             properties.add(MraidPlacementSizeProperty.createWithSize(1, 1));
         else
             properties.add(MraidPlacementSizeProperty.createWithDimension(getAdDimension()));
-        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterId()));
+        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterTagId()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", getVersion()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", getUserAgent()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(

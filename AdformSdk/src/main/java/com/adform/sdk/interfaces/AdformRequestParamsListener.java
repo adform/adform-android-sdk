@@ -15,7 +15,7 @@ public interface AdformRequestParamsListener {
     /** @return ad dimensions */
     public AdDimension getAdDimension();
     /** @return ad unique */
-    public int getMasterId();
+    public int getMasterTagId();
     /** @return unique device id */
     public MraidDeviceIdProperty getDeviceId();
     /** @return Custom set user parameters */

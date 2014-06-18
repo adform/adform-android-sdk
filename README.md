@@ -12,7 +12,7 @@ How to add AdformSDK to your project
 
 In this example project will be called `AdformExportDemo`.
 
-1. Download project library `AdformSdk_0.5.1.jar` latest version. 
+1. Download project library `AdformSdk_0.5.2.jar` latest version. 
 2. Insert library into your project.
 3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
 		
@@ -93,14 +93,14 @@ Thats it!
 To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdView`. This can be done like this:
 
 	<com.adform.sdk.view.CoreAdView
-			master_id="111111"
+			mastertag_id="111111"
 			publisher_id="222222"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
-* Note that, when initializing a view, `master_id` and `publisher_id`can be provided by setting through view parameters. Also this can be set by setting  parameters in the programming code like in snippet below.
+* Note that, when initializing a view, `mastertag_id` and `publisher_id`can be provided by setting through view parameters. Also this can be set by setting  parameters in the programming code like in snippet below.
 
-        mAdView.setMasterId(111111);
+        mAdView.setMasterTagId(111111);
         mAdView.setPublisherId(222222);
 
 
@@ -275,7 +275,7 @@ The interstitial ad has two types, preload info before showing and show info ins
                 // We just initialize view for it to collect all the required info
                 mDummyView = new DummyView(getActivity());
                 // Adding custom data
-                mDummyView.setMasterId(222222);
+                mDummyView.setMasterTagId(222222);
                 mDummyView.setPublisherId(666666);
         
                 // Initializing loading manager

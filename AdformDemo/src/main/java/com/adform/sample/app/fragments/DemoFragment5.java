@@ -37,7 +37,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         // We just initialize view for it to collect all the required info
         mDummyView = new DummyView(getActivity());
         // Adding custom data
-        mDummyView.setMasterId(222222);
+        mDummyView.setMasterTagId(222222);
         mDummyView.setPublisherId(666666);
 
         // Initializing loading manager
