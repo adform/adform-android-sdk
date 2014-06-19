@@ -36,7 +36,11 @@ public class MraidCustomProperty extends MraidBaseProperty {
             paramsFormedToJson.append("{");
             paramsFormedToJson.append("\"name\":\""+key+"\"");
             paramsFormedToJson.append(",");
-            paramsFormedToJson.append("\"value\":\""+mCustomParams.get(key)+"\"");
+            if (mCustomParams.get(key) == null ||
+                    (mCustomParams.get(key) != null && mCustomParams.get(key).length() == 0))
+                paramsFormedToJson.append("\"value\":null");
+            else
+                paramsFormedToJson.append("\"value\":"+"\""+mCustomParams.get(key)+"\"");
             paramsFormedToJson.append("},");
         }
         // Deleting last comma
