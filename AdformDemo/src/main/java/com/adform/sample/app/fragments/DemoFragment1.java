@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.adform.sample.app.R;
-import com.adform.sdk.network.base.ito.network.NetworkError;
-import com.adform.sdk.network.base.ito.network.NetworkTask;
 import com.adform.sdk.utils.builders.CustomParamBuilder;
 import com.adform.sdk.view.CoreAdView;
 
@@ -33,22 +31,22 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
         mAdView.setMasterTagId(72338);
-//        mAdView.setPublisherId(23);
+        mAdView.setPublisherId(23);
 
         // Use builder to set custom parameters...
-        mAdView.setCustomParams(new CustomParamBuilder()
+        CoreAdView.setCustomParams(CustomParamBuilder.startCreating()
                         .addCustomParam("gender", "female")
                         .addCustomParam("age", "23")
                         .buildParams()
         );
-        mAdView.clearCustomParams();
+        CoreAdView.clearCustomParams();
 
         // ...or use variable to store custom params.
-        HashMap<String, String> customParams = new CustomParamBuilder()
+        HashMap<String, String> customParams = CustomParamBuilder.startCreating()
                 .addCustomParam("gender", "female")
                 .addCustomParam("age", "23")
                 .buildParams();
-        mAdView.setCustomParams(customParams);
+        CoreAdView.setCustomParams(customParams);
 
         mPlaceHolder = view.findViewById(R.id.place_holder);
         mPlaceHolder.setVisibility(mAdView.isAdVisible()?View.VISIBLE:View.GONE);

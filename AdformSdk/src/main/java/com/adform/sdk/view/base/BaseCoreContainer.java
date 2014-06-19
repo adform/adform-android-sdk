@@ -63,7 +63,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      */
     private VisibilityPositionManager mVisibilityPositionManager;
     public static float sDeviceDensity;
-    private HashMap<String, String> mCustomParams;
+    private static HashMap<String, String> mCustomParams;
     // Should be taken from some kind of configuration
     private int mMasterTagId = 0;
     private int mPublisherId = 0; // Some hardcoded number, probably will be used later on
@@ -98,7 +98,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
         initializeDeviceId();
         initializeCustomParameters(attrs);
         sDeviceDensity = mContext.getResources().getDisplayMetrics().density;
-        mCustomParams = new HashMap<String, String>();
+//        mCustomParams = new HashMap<String, String>();
         setBackgroundResource(android.R.color.transparent);
         getInnerView().setBaseListener(this);
         getInnerView().getMraidBridge().setMraidListener(this);
@@ -300,16 +300,16 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
     // Custom parameter handling
     // -------------------------
 
-    public void setCustomParams(HashMap<String, String> customParams) {
+    public static void setCustomParams(HashMap<String, String> customParams) {
         mCustomParams = customParams;
     }
 
-    public void addCustomParam(String name, String value) {
-        if (mCustomParams != null && name != null && value != null)
-            mCustomParams.put(name, value);
-    }
+//    public void addCustomParam(String name, String value) {
+//        if (mCustomParams != null && name != null && value != null)
+//            mCustomParams.put(name, value);
+//    }
 
-    public void clearCustomParams() {
+    public static void clearCustomParams() {
         if (mCustomParams != null)
             mCustomParams.clear();
     }

@@ -7,7 +7,12 @@ import java.util.HashMap;
  */
 public class CustomParamBuilder {
     private HashMap<String, String> mCustomParams;
-    public CustomParamBuilder() {
+
+    public static CustomParamBuilder startCreating() {
+        return new CustomParamBuilder();
+    }
+
+    private CustomParamBuilder() {
         mCustomParams = new HashMap<String, String>();
     }
 

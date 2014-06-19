@@ -28,7 +28,7 @@ public class DemoFragment2 extends Fragment {
         mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
 
         // Use builder to set custom parameters...
-        mAdView.setCustomParams(new CustomParamBuilder()
+        CoreAdView.setCustomParams(CustomParamBuilder.startCreating()
                         .addCustomParam("gender", "female")
                         .addCustomParam("age", "23")
                         .buildParams()
