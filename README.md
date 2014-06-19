@@ -2,8 +2,6 @@
 
 Adform brings brand advertising to the programmatic era at scale, making display advertising simple, relevant and rewarding!
 
-How to add AdformSDK to your project
-====================================
 ## General info
 * AdformSDK runs on Android 4.0, so created project version should be 4.0 and above.
 * Also the instructions described here are done on IntelliJ 13.1. These instructions should be compatible with Android Studio also.
