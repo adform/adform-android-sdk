@@ -46,7 +46,7 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
 
     // Special variables that can be set by the view
     public static final String KEY_MASTER_TAG_ID = "mastertag_id";
-    public static final String KEY_API_VERSION = "api_version";
+    public static final String KEY_API_VERSION = "1.0";
     public static final String KEY_HIDDEN_STATE = "hidden_state";
     public static final String KEY_PUBLISHER_ID = "publisher_id";
     private static boolean IS_CUSTOMDATA_LOADED = false;
