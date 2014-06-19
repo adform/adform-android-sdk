@@ -29,6 +29,8 @@ public class SimpleMraidProperty extends MraidBaseProperty {
     }
     @Override
     public String toJson() {
+        if (isInteger && Integer.parseInt(mValue) == 0)
+            return null;
         return mKey+":" +
                 ((!isInteger)?"\"":"") +
                 mValue +

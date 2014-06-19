@@ -61,8 +61,10 @@ public class AdformContentLoadManager implements ErrorListener, LoadingStateList
     public AdformContentLoadManager() {}
 
     public void loadContent(NetworkTask<?> getTask) throws ContentLoadException {
-//        if (isLoading())
-//            throw new ContentLoadException("Content already being loaded");
+        if(getTask == null) {
+            Utils.e("Error loading content.");
+            return;
+        }
         getTask.execute();
     }
 
@@ -132,6 +134,8 @@ public class AdformContentLoadManager implements ErrorListener, LoadingStateList
      * @param properties properties that are added with the request. This probably will be json properties
      */
     public AdformNetworkTask getContractTask(String urlPostfix, String properties) throws ContentLoadException {
+        if (properties == null)
+            throw new ContentLoadException("Error loading contract. Additional parameters are null.");
         Utils.d("Generated params: " + properties);
         AdformNetworkTask<AdServingEntity> contractTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,

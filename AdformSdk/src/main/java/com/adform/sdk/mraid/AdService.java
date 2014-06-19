@@ -114,6 +114,10 @@ public class AdService extends ObservableService2 {
     private AdformNetworkTask<AdServingEntity> getRequest(){
         String additionalPOSTProperties = mListener.getView().getRequestProperties();
         String additionalURLProperties = mListener.getView().getUrlProperties();
+        if (additionalPOSTProperties == null) {
+            Utils.e("Error loading contract. Additional parameters are null.");
+            return null;
+        }
         Utils.d("Generated params: "+additionalPOSTProperties);
         AdformNetworkTask<AdServingEntity> getTask =
                 new AdformNetworkTask<AdServingEntity>(NetworkRequest.Method.POST,

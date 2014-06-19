@@ -33,7 +33,7 @@ public class DemoFragment1 extends Fragment implements CoreAdView.CoreAdViewList
         mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
         mAdView.setListener(this);
         mAdView.setMasterTagId(72338);
-        mAdView.setPublisherId(23);
+//        mAdView.setPublisherId(23);
 
         // Use builder to set custom parameters...
         mAdView.setCustomParams(new CustomParamBuilder()

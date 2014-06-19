@@ -400,11 +400,17 @@ public abstract class BaseCoreContainer extends RelativeLayout implements
      */
     public String getRequestProperties() {
         ArrayList<MraidBaseProperty> properties = new ArrayList<MraidBaseProperty>();
+        // Break parameter loading if master tag is not set
+        if (getMasterTagId() == 0) {
+            Utils.e("No master tag id is set. Skipping parameter generation.");
+            return null;
+        }
+        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterTagId()));
+
         if (getDefaultPlacementType() == AdformEnum.PlacementType.INTERSTITIAL)
             properties.add(MraidPlacementSizeProperty.createWithSize(1, 1));
         else
             properties.add(MraidPlacementSizeProperty.createWithDimension(getAdDimension()));
-        properties.add(MraidMasterTagProperty.createWithMasterTag(getMasterTagId()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("\"version\"", getVersion()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue("\"user_agent\"", getUserAgent()));
         properties.add(SimpleMraidProperty.createWithKeyAndValue(

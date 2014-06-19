@@ -96,8 +96,6 @@
 			android:background="@android:color/transparent"
 			android:layout_centerHorizontal="true"
 			android:layout_alignParentBottom="true"
-            master_id="666666"
-            publisher_id="222222"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 

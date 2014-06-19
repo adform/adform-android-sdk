@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import com.adform.sample.app.R;
 import com.adform.sdk.activities.AdformInterstitialActivity;
+import com.adform.sdk.utils.Utils;
 import com.adform.sdk.utils.managers.AdformContentLoadManager;
 import com.adform.sdk.view.DummyView;
 
@@ -37,7 +38,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
         // We just initialize view for it to collect all the required info
         mDummyView = new DummyView(getActivity());
         // Adding custom data
-        mDummyView.setMasterTagId(222222);
+//        mDummyView.setMasterTagId(222222);
         mDummyView.setPublisherId(666666);
 
         // Initializing loading manager
@@ -107,6 +108,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                             ));
                             mAdformContentLoadManager.setListener(DemoFragment5.this);
                         } catch (AdformContentLoadManager.ContentLoadException e) {
+                            Utils.e(e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -116,6 +118,7 @@ public class DemoFragment5 extends Fragment implements View.OnClickListener,
                 });
             } catch (AdformContentLoadManager.ContentLoadException e) {
                 Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                Utils.e(e.getMessage());
                 e.printStackTrace();
             }
         }

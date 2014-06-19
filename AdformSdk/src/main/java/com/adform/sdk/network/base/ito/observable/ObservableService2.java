@@ -121,10 +121,12 @@ public abstract class ObservableService2 extends Observable {
     }
 
     public void scheduleRequest(final NetworkTask<?> task, long millis) {
+        if (task == null)
+            return;
         if (countObservers() == 0) {
             stopService();
         }
-        Log.e(getTag(),"#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );
+        Utils.d("#"+requestSequenceNumber+ " scheduleRequest: " + task.getRequest().getUrl() + " in " + millis + "millis" );
         requestSequenceNumber++;
         mScheduler.postDelayed(new Runnable() {
             @Override
@@ -139,7 +141,9 @@ public abstract class ObservableService2 extends Observable {
     }
 
     public void scheduleRequestImmediate(final NetworkTask<?> task) {
-//        Log.e(getTag(),"#"+requestSequenceNumber+ " schedule request immediate: " + task.getRequest().getUrl());
+        if (task == null)
+            return;
+        Utils.d("#"+requestSequenceNumber+ " schedule request immediate: " + task.getRequest().getUrl());
         stopCurrentTask();
         requestSequenceNumber++;
 

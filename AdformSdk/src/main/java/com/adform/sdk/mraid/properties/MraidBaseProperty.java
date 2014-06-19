@@ -38,9 +38,12 @@ public abstract class MraidBaseProperty {
         StringBuilder path = new StringBuilder("{");
         for (int i = 0; i < properties.size(); i++) {
             MraidBaseProperty property = properties.get(i);
-            path.append(property.toJson());
-            if (i < properties.size()-1)
-                path.append(", ");
+            String json = property.toJson();
+            if (json != null) {
+                path.append(json);
+                if (i < properties.size() - 1)
+                    path.append(", ");
+            }
         }
         path.append("}");
         return path.toString();
