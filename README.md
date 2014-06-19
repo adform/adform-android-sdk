@@ -10,7 +10,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 In this example project will be called `AdformExportDemo`.
 
-1. Download project library `AdformSdk_0.5.2.jar` latest version. 
+1. Download project library `AdformSdk_1.0.0.jar` latest version. 
 2. Insert library into your project.
 3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
 		
