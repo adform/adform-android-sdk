@@ -12,7 +12,7 @@ How to add AdformSDK to your project
 
 In this example project will be called `AdformExportDemo`.
 
-1. Download project library `AdformSdk_0.5.2.jar` latest version. 
+1. Download project library `AdformSdk_0.5.3.jar` latest version. 
 2. Insert library into your project.
 3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
 		
@@ -136,23 +136,22 @@ To add custom additional values, first View must be found.
 Later on, just add wanted values.
 
         // Use builder to set custom parameters...
-        mAdView.setCustomParams(new CustomParamBuilder()
+        CoreAdView.setCustomParams(CustomParamBuilder.startCreating()
                         .addCustomParam("gender", "female")
                         .addCustomParam("age", "23")
                         .buildParams()
         );
-        mAdView.clearCustomParams();
 
         // ...or use variable to store custom params.
-        HashMap<String, String> customParams = new CustomParamBuilder()
+        HashMap<String, String> customParams = CustomParamBuilder.startCreating()
                 .addCustomParam("gender", "female")
                 .addCustomParam("age", "23")
                 .buildParams();
-        mAdView.setCustomParams(customParams);
+        CoreAdView.setCustomParams(customParams);
 
 These values also can be cleared by using snippet below.
 
-        mAdView.clearCustomParams();
+        CoreAdView.clearCustomParams();
         
 ### Expandable view
 
