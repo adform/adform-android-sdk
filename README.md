@@ -8,7 +8,10 @@ In this example project will be called `AdformExportDemo`.
 
 1. Download project library `AdformSdk_0.1.0.jar` latest version. 
 2. Insert library into your project.
-3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. Everything should look something like this:
+3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. 
+Please be noted, that `New Relic` library is optional and should be imported depending on user preference.
+
+Everything should look something like this:
 		
         buildscript {
             repositories {
