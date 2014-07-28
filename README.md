@@ -6,7 +6,7 @@
 
 In this example project will be called `AdformExportDemo`.
 
-1. Download project library `AdformSdk_0.1.1.jar` latest version. 
+1. Download project library `AdformSdk-0.1.2.jar` latest version. 
 2. Insert library into your project.
 3. Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `SDK`. 
 Please be noted, that `New Relic` library is optional and should be imported depending on user preference.
@@ -48,7 +48,7 @@ Everything should look something like this:
         }
 
         dependencies {
-            compile 'com.google.android.gms:play-services:4.2.42'
+            compile 'com.google.android.gms:play-services:5.0.77'
             compile 'com.newrelic.agent.android:android-agent:3.+'
             compile fileTree(dir: 'libs', include: ['*.jar'])
         }
@@ -82,7 +82,10 @@ Top project `build.gradle` file should be the way it is, and it should look like
 	               android:value="@integer/google_play_services_version" />
 		<activity
                 android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                android:name="com.adform.sdk.activities.AdformInterstitialActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
+                android:name="com.adform.sdk.activities.AdActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
+		<activity
+                android:theme="@android:style/Theme.Holo.Light"
+                android:name="com.adform.sdk.activities.AdBrowser" android:configChanges="keyboardHidden|orientation|screenSize"/>
 
 Thats it!
 
@@ -149,3 +152,69 @@ Later on, just add wanted values.
 These values also can be cleared by using snippet below.
 
         CoreAdView.clearCustomParams();
+
+### Adding custom refresh rate
+
+There is a possibility to add a custom refresh rate. It overrides the one that is received from the server. To achieve this, refresh rate can be set in layout xml like this...
+
+		<com.adform.sdk.view.CoreAdView
+			refresh_seconds="35"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+... or it can be set from source code
+
+        mAdView.setRefreshSeconds(35);
+
+Also refresh rate has some features and restrictions in using it:
+
+1. When refresh rate is set to 0, ad refreshing is disabled.
+2. Refresh rate can't be set lower than 30 seconds.
+
+### Adding basic event listeners
+
+To add an event listener to a class, first the class must declare an `AdListener` interface...
+
+		public class DemoFragment1 extends Fragment implements AdListener ...
+
+...implement its interface...
+
+		@Override
+    	public void onAdLoadSuccess() {
+			// Load succeeded event
+    	}
+
+    	@Override
+    	public void onAdLoadFail(String failError) {
+        	// Load failed event
+    	}
+
+...and bind the Ad view as the interface listener
+
+		mAdView.setListener(this);
+
+### Adding additional event listeners
+
+There are more events that can be received when implementing `AdStateListener` interface.
+At the moment, only `onAdVisibilityChange` event can be captured, but in the future there will be additional events:
+
+* onAdStateChange
+* onAdSizeChange
+* onAdPlacementChange
+* onCurrentPositionChange
+
+Implementing `AdStateListener` is simmilar to implementing basic listeners. We declare that class answers to `AdStateListener` interface...
+
+	public class DemoFragment1 extends Fragment implements AdStateListener...
+
+...implements its events...
+
+    @Override
+    public void onAdVisibilityChange(boolean isVisible) {
+        // Ad view visibility changed event
+    }
+
+...and lastly bind the Ad view to the interface listener
+
+	mAdView.setStateListener(this);
+
