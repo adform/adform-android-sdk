@@ -147,6 +147,97 @@ Thats it! You are ready to go.
 
 # Sample Integrations
 
+## Adding custom values to AdformSDK
+
+To add custom additional values, first View must be found.
+
+		CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+
+Later on, just add wanted values.
+
+        // Use builder to set custom parameters...
+        CoreAdView.setCustomParams(CustomParamBuilder.startCreating()
+                        .addCustomParam("gender", "female")
+                        .addCustomParam("age", "23")
+                        .buildParams()
+        );
+
+        // ...or use variable to store custom params.
+        HashMap<String, String> customParams = CustomParamBuilder.startCreating()
+                .addCustomParam("gender", "female")
+                .addCustomParam("age", "23")
+                .buildParams();
+        CoreAdView.setCustomParams(customParams);
+
+These values also can be cleared by using snippet below.
+
+        CoreAdView.clearCustomParams();
+
+## Adding custom refresh rate
+
+There is a possibility to add a custom refresh rate. It overrides the one that is received from the server. To achieve this, refresh rate can be set in layout xml like this...
+
+		<com.adform.sdk.view.CoreAdView
+			refresh_seconds="35"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+... or it can be set from source code
+
+        mAdView.setRefreshSeconds(35);
+
+Also refresh rate has some features and restrictions in using it:
+
+1. When refresh rate is set to 0, ad refreshing is disabled.
+2. Refresh rate can't be set lower than 30 seconds.
+
+## Adding basic event listeners
+
+To add an event listener to a class, first the class must declare an `AdListener` interface...
+
+		public class DemoFragment1 extends Fragment implements AdListener ...
+
+...implement its interface...
+
+		@Override
+    	public void onAdLoadSuccess() {
+			// Load succeeded event
+    	}
+
+    	@Override
+    	public void onAdLoadFail(String failError) {
+        	// Load failed event
+    	}
+
+...and bind the Ad view as the interface listener
+
+		mAdView.setListener(this);
+
+## Adding additional event listeners
+
+There are more events that can be received when implementing `AdStateListener` interface.
+At the moment, only `onAdVisibilityChange` event can be captured, but in the future there will be additional events:
+
+* onAdStateChange
+* onAdSizeChange
+* onAdPlacementChange
+* onCurrentPositionChange
+
+Implementing `AdStateListener` is simmilar to implementing basic listeners. We declare that class answers to `AdStateListener` interface...
+
+	public class DemoFragment1 extends Fragment implements AdStateListener...
+
+...implements its events...
+
+    @Override
+    public void onAdVisibilityChange(boolean isVisible) {
+        // Ad view visibility changed event
+    }
+
+...and lastly bind the Ad view to the interface listener
+
+	mAdView.setStateListener(this);
+
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
