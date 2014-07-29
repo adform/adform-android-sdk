@@ -119,11 +119,29 @@ To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdV
 
 * Note that, when initializing a view, `mastertag_id` and `publisher_id`can be provided by setting through view parameters. Also this can be set by setting  parameters in the programming code like in snippet below.
 
-	mAdView.setMasterTagId(111111);
-	mAdView.setPublisherId(222222);
+
+		mAdView.setMasterTagId(111111);
+		mAdView.setPublisherId(222222);
 	
         
 * Gravity can be changed by inserting the adView into the container and changing its position.
+* 
+When initializing SDK in Fragment/Activity, a **destruction event should be provided** for the view. This can be done by doing these steps: 
+	
+1. Get created view instance.
+
+		mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+
+2. Destroy its instance with onDestroy() method, that every Activity/Fragmet has. 
+
+        @Override
+        public void onDestroy() {
+            if (mAdView != null)
+                mAdView.destroy();
+            super.onDestroy();
+        }
+        
+![alt tag](http://37.157.0.44/mobilesdk/help/images/page_07.png)
 	
 Thats it! You are ready to go.
 
