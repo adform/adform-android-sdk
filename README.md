@@ -244,16 +244,19 @@ This part lists release notes from all versions of Adform Mobile Advertising And
 
 ## 0.1.2
 
-### Bug Fixes
-
 ### New Features
+
+* Refresh Rate override option added;
+* onAdLoadFail listener added;
 
 ## 0.1.1
 
 ### Bug Fixes
 
-### New Features
+* NewRelic library made as optional;
 
 ## 0.1.0
 
 ### New Features
+
+* first release;
