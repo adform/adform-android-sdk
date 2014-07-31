@@ -219,7 +219,7 @@ The most common case to replace SDK with fallback image in case of failure:
 		
 And the result will be image fallback:
 		
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_10.png)
+![alt tag](http://37.157.0.44/mobilesdk/help/images/page_10_1.png)
 
 ## Adding additional event listeners
 
