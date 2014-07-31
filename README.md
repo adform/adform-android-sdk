@@ -191,6 +191,8 @@ Also refresh rate has some features and restrictions in using it:
 1. When refresh rate is set to 0, ad refreshing is disabled.
 2. Refresh rate can't be set lower than 30 seconds.
 
+![alt tag](http://37.157.0.44/mobilesdk/help/images/page_08.png)
+
 ## Adding basic event listeners
 
 To add an event listener to a class, first the class must declare an `AdListener` interface...
