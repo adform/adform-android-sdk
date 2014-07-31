@@ -1,5 +1,7 @@
 # Getting Started
 
+Adform brings brand advertising to the programmatic era at scale, making display advertising simple, relevant and rewarding!
+
 ## 1. General Info
 
 * AdformSDK runs on Android 4.0, so created project version should be 4.0 and above.
