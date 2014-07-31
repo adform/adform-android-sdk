@@ -212,6 +212,14 @@ To add an event listener to a class, first the class must declare an `AdListener
 ...and bind the Ad view as the interface listener
 
 		mAdView.setListener(this);
+		
+The most common case to replace SDK with fallback image in case of failure:
+
+![alt tag](http://37.157.0.44/mobilesdk/help/images/page_09.png)
+		
+And the result will be image fallback:
+		
+![alt tag](http://37.157.0.44/mobilesdk/help/images/page_10.png)
 
 ## Adding additional event listeners
 
