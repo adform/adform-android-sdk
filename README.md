@@ -68,6 +68,8 @@ Everything should look something like this:
 	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	    package="adform.com.adformdemo" >
 	
+4. Update `AndroidManifest.xml` with snippet shown below between `<manifest></manifest>` tags.
+
 	    <uses-permission android:name="android.permission.INTERNET" />
 	    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -251,6 +253,115 @@ Implementing `AdStateListener` is simmilar to implementing basic listeners. We d
 ...and lastly bind the Ad view to the interface listener
 
 	mAdView.setStateListener(this);
+
+
+## Basic interstitial implementation
+
+In the example below, interstitial ad implementation will be showed. To load an interstitial ad, an utility `InterstitialAdLoader` class will be used. For implementing an ad loader, first it is needed to be initialized.
+
+	InterstitialAdLoader adLoader = InterstitialAdLoader.createInstance(getActivity());
+
+It also needs Master Tag for loading ads.
+
+    adLoader.setMasterTagId(123456);
+
+Optionally Publisher Id also can be set using the loader.
+
+	adLoader.setPublisherId(666666);
+
+This class has two methods that can be used to display an interstitial:
+
+* loadAd() - used to load an ad, and store its contents into memory for later use.
+* showAd() - used for showing an ad when its already loaded. If the ad is not loaded, it loads internally and displays it as soon as the ad is loaded.
+
+You can find an example below how these functions are used with simple button events.
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.load_button: {
+                adLoader.loadAd();
+                break;
+            }
+            case R.id.show_button: {
+                adLoader.showAd();
+                break;
+            }
+        }
+    }
+
+Also loaded should be destroyed when not used any more.
+
+    @Override
+    public void onDestroy() {
+        adLoader.destroy();
+        super.onDestroy();
+    }
+
+This concludes simple interstitial ad implementation.
+
+## Advanced interstitial implementation
+
+An `InterstitialAdLoader` has more advanced features such as instance saving, loading into a view, and its callback event listeners. These features are an addition to the basic implementation.
+
+### Saving an instance
+
+To save instance of an ad loader and restore its data on screen rotation/return from background additional methods should be used. For saving loader instance `saveState(outState)` should be used.
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        adLoader.saveState(outState);
+    }
+
+To restore an instance, in `onCreate`, `onActivityCreated` or any other method that returns saved state, method `restoreState(savedInstanceState)` should be used.
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		if (savedInstanceState != null)
+    		adLoader.restoreState(savedInstanceState);
+    	super.onRestoreInstanceState(savedInstanceState);
+    }
+
+### Loading into a view
+
+If you want to load an interstitial ad into a view instead of opening a new window (like using interstitial ads in a ViewPager), a method `createInterstitialView(Context context)` should be used. This method returns a view that can be added to the view hierarchy. The example below shows how interstitial ad is loaded into a fragment.
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return adLoader.createInterstitialView(getActivity());
+    }
+
+### Callback listeners
+
+To get ad loader state `setListener(InterstitialAdLoader.InterstitialLoaderListener)` should be used to get events when loading has succeeded/failed.
+
+    adLoader.setListener(new InterstitialAdLoader.InterstitialLoaderListener() {
+        @Override
+        public void onInterstitialLoadError(String error) {
+			// Error event implementation
+        }
+
+        @Override
+        public void onInterstitialLoadSuccess() {
+			// Success event implementation
+        }
+    });
+
+Also to get events when the ad was opened/closed `setInterstitialViewListener(CoreInterstitialListener)` should be used.
+
+    adLoader.setInterstitialViewListener(new CoreInterstitialListener() {
+        @Override
+        public void onAdClose() {
+			// Close event implementation
+        }
+
+        @Override
+        public void onAdShown() {
+			// Ad shown event implementation
+        }
+    });
 
 # Release Notes
 
