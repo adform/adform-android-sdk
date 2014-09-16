@@ -12,7 +12,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 ## 2. Copy the contents of the libs folder directly the libs/ folder of your project.
 
-* Download project library `AdformSdk-0.2.1.jar` latest version. 
+* Download project library `AdformSdk-0.2.2.jar` latest version. 
 * Insert library into your project.
 
 ![alt tag](http://37.157.0.44/mobilesdk/help/images/page_02.png)
@@ -54,8 +54,8 @@ Everything should look something like this:
 	
 	dependencies {
 	    compile fileTree(dir: 'libs', include: ['*.jar'])
-	    compile 'com.google.android.gms:play-services:5.0.77'
-	    compile files('libs/AdformSdk-0.2.1.jar')
+	    compile 'com.google.android.gms:play-services:5.0.89'
+	    compile files('libs/AdformSdk-0.2.2.jar')
 	}
 
 ## 4. Update AndroidManifest.xml
@@ -95,11 +95,6 @@ Everything should look something like this:
 	        <activity
 	            android:theme="@android:style/Theme.Translucent.NoTitleBar"
 	            android:name="com.adform.sdk.activities.AdActivity"
-	            android:configChanges="keyboardHidden|orientation|screenSize"/>
-	
-	        <activity
-	            android:theme="@android:style/Theme.Holo.Light"
-	            android:name="com.adform.sdk.activities.AdBrowser"
 	            android:configChanges="keyboardHidden|orientation|screenSize"/>
 	
 	    </application>
@@ -366,6 +361,10 @@ Also to get events when the ad was opened/closed `setInterstitialViewListener(Co
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
+
+## 0.2.2
+
+* Added an ability to display interstitial ad without animation, inner browser changed to external.
 
 ## 0.2.1
 
