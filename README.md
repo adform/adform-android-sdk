@@ -12,7 +12,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 ## 2. Copy the contents of the libs folder directly the libs/ folder of your project.
 
-* Download project library `AdformSdk-0.2.2.jar` latest version. 
+* Download project library `AdformSdk-0.2.5.jar` latest version. 
 * Insert library into your project.
 
 ![alt tag](http://37.157.0.44/mobilesdk/help/images/page_02.png)
@@ -55,7 +55,7 @@ Everything should look something like this:
 	dependencies {
 	    compile fileTree(dir: 'libs', include: ['*.jar'])
 	    compile 'com.google.android.gms:play-services:5.0.89'
-	    compile files('libs/AdformSdk-0.2.2.jar')
+	    compile files('libs/AdformSdk-0.2.5.jar')
 	}
 
 ## 4. Update AndroidManifest.xml
