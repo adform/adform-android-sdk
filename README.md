@@ -6,193 +6,160 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 * AdformSDK runs on Android 4.0, so created project version should be 4.0 and above.
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_01.png)
+![alt tag](img/Screenshot 2014-11-20 12.50.06.png)
 
-* Also the instructions described here are done on IntelliJ 13.1. These instructions should be compatible with Android Studio also.
+* The instructions described here are done on Android studio. These instructions should also be compatible with Intelli J.
 
-## 2. Copy the contents of the libs folder directly the libs/ folder of your project.
+## 2. Setting up library dependencies
 
-* Download project library `AdformSdk-0.2.5.jar` latest version. 
-* Insert library into your project.
+* To add a library to the dependencies, first we need to specify repository location. This can be done by editing `build.gradle` file and by inserting snippet (specified below) right above the `android` configuration group. 
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_02.png)
+	    ...
+		repositories {
+    		maven { url "https://github.com/adform/adform-android-sdk/raw/master/releases/" }
+		}
+        ...
 
-* Right click it and hit `Add as Library...`
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_03.png)
-
-## 3. Set up Google Play, New Relic and Adform SDK
-
-* Project has 2 `build.gradle` files (One for top project and one for project module). Update module `build.gradle` file by inserting `Google Play` services, `New Relic` library, and `Adform SDK`.
+* Then in the dependency group we need to specify that we will be using `AdformSdk`, and also add `Google Play` services.
+		
+	    ...
+        dependencies {
+		    compile 'com.google.android.gms:play-services:6.5.87'
+    		compile 'com.adform.advertising.sdk:adform-advertising-sdk:1.0'
+        }
+        ...
+        
 * How to add Google Play Services to Your Project please follow these instructions: https://developer.android.com/google/play-services/setup.html#Setup
-* Please be noted, that `New Relic` library is optional and should be imported depending on user preference.
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_04.png)
+![alt tag](screenshots/Screenshot 2014-12-29 13.49.27.png)
 
-Everything should look something like this:
+## 3. Extend Application class
 
-	apply plugin: 'com.android.application'
-	
-	android {
-	    compileSdkVersion 20
-	    buildToolsVersion "20.0.0"
-	
-	    defaultConfig {
-	        applicationId "adform.com.adformdemo"
-	        minSdkVersion 14
-	        targetSdkVersion 20
-	        versionCode 1
-	        versionName "1.0"
-	    }
-	    buildTypes {
-	        release {
-	            runProguard false
-	            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-	        }
-	    }
-	}
-	
-	dependencies {
-	    compile fileTree(dir: 'libs', include: ['*.jar'])
-	    compile 'com.google.android.gms:play-services:5.0.89'
-	    compile files('libs/AdformSdk-0.2.5.jar')
-	}
+For the SDK to work properly, you need to extend a default or use already created  `Application` class and add two steps.
+
+* Initialize service by adding `adService = AdApplicationService.init();`
+* Implement `AdApplicationService.ServiceListener` interface.
+
+![alt tag](img/Screenshot 2014-11-20 13.24.09.png)
 
 ## 4. Update AndroidManifest.xml
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_05.png)
+Update `AndroidManifest.xml` with additional information.
 
-Everything should look something like this:
+* Add internet reachability and external storage permissions. This can be done by inserting snippet shown below between the `<manifest></manifest>` tags.
 
-	<?xml version="1.0" encoding="utf-8"?>
-	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	    package="adform.com.adformdemo" >
-	
-4. Update `AndroidManifest.xml` with snippet shown below between `<manifest></manifest>` tags.
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+		    
+* The SDK needs an additional window to display its various states. To do that, insert snippet shown below between `<application></application>` tags.
 
-	    <uses-permission android:name="android.permission.INTERNET" />
-	    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	
-	    <application
-	        android:allowBackup="true"
-	        android:icon="@drawable/ic_launcher"
-	        android:label="@string/app_name"
-	        android:theme="@style/AppTheme" >
-	
-	        <meta-data android:name="com.google.android.gms.version"
-	            android:value="@integer/google_play_services_version" />
-	
-	        <activity
-	            android:name=".MainActivity"
-	            android:label="@string/app_name" >
-	            <intent-filter>
-	                <action android:name="android.intent.action.MAIN" />
-	                <category android:name="android.intent.category.LAUNCHER" />
-	            </intent-filter>
-	        </activity>
-	
-	        <activity
-	            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-	            android:name="com.adform.sdk.activities.AdActivity"
-	            android:configChanges="keyboardHidden|orientation|screenSize"/>
-	
-	    </application>
-	
-	</manifest>
-	
-## 5. Basic Adform Mobile Advertising SDK Banner View implementation
+		<activity
+                android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                android:name="com.adform.sdk.activities.AdActivity" android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"/>
 
-To add an ad view, simply insert a view with a path `com.adform.sdk.view.CoreAdView`. This can be done like this:
+* Sign app to use earlier created application class by adding `android:name=".DemoApplication"` in `<application>` properties.
 
-	<com.adform.sdk.view.CoreAdView
-	        android:id="@+id/custom_ad_view"
-	        mastertag_id="111111"
-	        publisher_id="222222"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:gravity="center_horizontal" />
-	        
-	
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_06.png)
-
-* Note that, when initializing a view, `mastertag_id` and `publisher_id`can be provided by setting through view parameters. Also this can be set by setting  parameters in the programming code like in snippet below.
-
-
-		mAdView.setMasterTagId(111111);
-		mAdView.setPublisherId(222222);
-	
+        <application
+            android:name=".DemoApplication"...      
         
-* Gravity can be changed by inserting the adView into the container and changing its position.
-* 
-When initializing SDK in Fragment/Activity, a **destruction event should be provided** for the view. This can be done by doing these steps: 
-	
-1. Get created view instance.
+![alt tag](img/Screenshot 2014-11-20 13.24.22.png)
 
-		mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
-
-2. Destroy its instance with onDestroy() method, that every Activity/Fragmet has. 
-
-        @Override
-        public void onDestroy() {
-            if (mAdView != null)
-                mAdView.destroy();
-            super.onDestroy();
-        }
-        
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_07.png)
-	
-Thats it! You are ready to go.
+And you're set!
 
 # Sample Integrations
 
-## Adding custom values to AdformSDK
+## Basic AdformSDK Banner View implementation
 
-To add custom additional values, first View must be found.
+### Preparing view in xml
 
-		CoreAdView mAdView = (CoreAdView) view.findViewById(R.id.custom_ad_view);
+To add a banner view, insert a view with a path of `com.adform.sdk.view.AdView`. For the view to load an ad, you need to:
 
-Later on, just add wanted values.
+* Define a master tag id by adding `mastertag_id`
+* Define banner size by adding `ad_width` and `ad_height`. 
+
+An example of view insert into a layout can be found below:
+
+	<com.adform.sdk.view.AdView
+	        android:id="@+id/custom_ad_view"
+	        mastertag_id="111111"
+	        ad_width="320"
+	        ad_height="50"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal" />
+
+
+![alt tag](img/Screenshot 2014-11-20 13.33.48.png)
+
+### Preparing view in programmable code
+
+For the SDK to work properly, a set of events ( **destroy**, **return**, **pause** ) should be provided from the Fragment/Activity. This can be done by doing these steps: 
+	
+1. Get created view instance
+
+		adView = (AdView) view.findViewById(R.id.custom_ad_view);
+
+2. Report **onDestroy**, **onResume**,**onPause** events to the view
+
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+            adView.destroy();
+        }
+    
+        @Override
+        protected void onResume() {
+            super.onResume();
+            adView.onResume();
+        }
+    
+        @Override
+        protected void onPause() {
+            super.onPause();
+            adView.onPause();
+        }
+
+3. When ad is ready, use `loadAd()` to start loading.
+
+		adView.loadAd();
+	
+	Because ad needs to be initialized before using this (`onResume()` must be called first), there are some cases that cant cover this. So to force ad loading, use `forceLoadAd()` instead.
+	
+		adView.forceLoadAd();
+
+Note that master tag id and size parameters can be set from programmable code too.
+
+* To set master tag you need to use 
+
+		adView.setMasterTagId(111111);
+		
+Same goes for size parameters. 
+
+* To set them, you can use class `AdSize`. 
+
+		adView.setAdSize(new AdSize(320, 50));
+
+![alt tag](img/Screenshot 2014-11-20 15.52.59.png)
+
+Thats it! You are ready to go.
+
+### Adding custom values to AdformSDK
+
+To add custom values with the add, you can use a static class `AdformSDK` and its method `setPublisherIdAndCustomData(int, HashMap<String ,String>)`. 
+
+Note that #1 parameter is publisher id and #2 is a set of custom data. 
 
         // Use builder to set custom parameters...
-        CoreAdView.setCustomParams(CustomParamBuilder.startCreating()
+        AdformSDK.setPublisherIdAndCustomData(666666, CustomParamBuilder.startCreating()
                         .addCustomParam("gender", "female")
                         .addCustomParam("age", "23")
                         .buildParams()
-        );
+        );        
 
-        // ...or use variable to store custom params.
-        HashMap<String, String> customParams = CustomParamBuilder.startCreating()
-                .addCustomParam("gender", "female")
-                .addCustomParam("age", "23")
-                .buildParams();
-        CoreAdView.setCustomParams(customParams);
-
-These values also can be cleared by using snippet below.
-
-        CoreAdView.clearCustomParams();
-
-## Adding custom refresh rate
-
-There is a possibility to add a custom refresh rate. It overrides the one that is received from the server. To achieve this, refresh rate can be set in layout xml like this...
-
-		<com.adform.sdk.view.CoreAdView
-			refresh_seconds="35"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
-
-... or it can be set from source code
-
-        mAdView.setRefreshSeconds(35);
-
-Also refresh rate has some features and restrictions in using it:
-
-1. When refresh rate is set to 0, ad refreshing is disabled.
-2. Refresh rate can't be set lower than 30 seconds.
-
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_08.png)
-
-## Adding basic event listeners
+### Adding basic event listeners
 
 To add an event listener to a class, first the class must declare an `AdListener` interface...
 
@@ -212,19 +179,41 @@ To add an event listener to a class, first the class must declare an `AdListener
 
 ...and bind the Ad view as the interface listener
 
-		mAdView.setListener(this);
+		adView.setListener(this);
 		
-The most common case to replace SDK with fallback image in case of failure:
+### Adding support for different devices (tablets, phones)
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_11.png)
+The easiest way to add support for tablet and phone devices is to import different xml's for both screen types. To do that, in addition to default layout, add an xml layout for larger screen type, for e.g.  add a folder `layout-sw600dp` that targets tablet devices with smallest screen of 600dp and add an xml layout with different banner size to it.
 
-![alt tag](http://37.157.0.44/mobilesdk/help/images/page_09.png)
+        <com.adform.sdk.view.AdView
+            android:id="@+id/ad_view"
+            mastertag_id="111111"
+            ad_width="728"
+            ad_height="90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+ 
+
+For more information use the link below.
+http://developer.android.com/guide/practices/screens_support.html
+
+![alt tag](img/Screenshot 2014-11-24 11.25.41.png)
 		
+### Fallback case
+		
+The most common case to replace SDK with fallback image in case of failure is to add view into container.
+
+![alt tag](img/Screenshot 2014-11-20 16.20.01.png)
+
+And change container background whenever there is a failure when loading an ad.
+
+![alt tag](img/Screenshot 2014-11-20 16.21.33.png)
+
 And the result will be image fallback:
-		
+
 ![alt tag](http://37.157.0.44/mobilesdk/help/images/page_10_1.png)
 
-## Adding additional event listeners
+### Adding additional event listeners
 
 There are more events that can be received when implementing `AdStateListener` interface.
 At the moment, only `onAdVisibilityChange` event can be captured, but in the future there will be additional events:
@@ -234,7 +223,7 @@ At the moment, only `onAdVisibilityChange` event can be captured, but in the fut
 * onAdPlacementChange
 * onCurrentPositionChange
 
-Implementing `AdStateListener` is simmilar to implementing basic listeners. We declare that class answers to `AdStateListener` interface...
+Implementing `AdStateListener` is similar to implementing basic listeners. We declare that class answers to `AdStateListener` interface...
 
 	public class DemoFragment1 extends Fragment implements AdStateListener...
 
@@ -247,27 +236,38 @@ Implementing `AdStateListener` is simmilar to implementing basic listeners. We d
 
 ...and lastly bind the Ad view to the interface listener
 
-	mAdView.setStateListener(this);
+	adView.setStateListener(this);
 
+### ListView implementation
+
+For more complicated implementation like ListView, a view should always have a **unique ID** and a flag indicating that it is loaded from listview. This should be done like in example below:
+
+	<com.adform.sdk.view.AdView
+			android:id="@+id/custom_ad_view"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			ad_width="320"
+			ad_height="50"
+            mastertag_id="3987056"
+            listview_item="true"
+			/>
+
+When implementing an ad into ListView you should **NOT** pass in events such as `onReturn`, `onPause`, `destroy` like in normal view.
 
 ## Basic interstitial implementation
 
-In the example below, interstitial ad implementation will be showed. To load an interstitial ad, an utility `InterstitialAdLoader` class will be used. For implementing an ad loader, first it is needed to be initialized.
+To load an interstitial ad, a `AdViewInterstitial` class should be used. Before loading an interstitial ad, first it must be initialized.
 
-	InterstitialAdLoader adLoader = InterstitialAdLoader.createInstance(getActivity());
-
-It also needs Master Tag for loading ads.
-
+	AdViewInterstitial adLoader = AdViewInterstitial.createInstance(getActivity());
+		
+Then you should define master a master tag id. 
+		
     adLoader.setMasterTagId(123456);
+    
+This class has two methods that can be used to display an interstitial: 
 
-Optionally Publisher Id also can be set using the loader.
-
-	adLoader.setPublisherId(666666);
-
-This class has two methods that can be used to display an interstitial:
-
-* loadAd() - used to load an ad, and store its contents into memory for later use.
-* showAd() - used for showing an ad when its already loaded. If the ad is not loaded, it loads internally and displays it as soon as the ad is loaded.
+* loadAd() - used to load an ad, and store its contents into memory for later quick use. This is useful if an ad has lots of resources to load. 
+* showAd() - used for showing an ad. If the ad is not loaded, it loads internally and displays it as soon as the ad is loaded.
 
 You can find an example below how these functions are used with simple button events.
 
@@ -285,52 +285,44 @@ You can find an example below how these functions are used with simple button ev
         }
     }
 
-Also loaded should be destroyed when not used any more.
+Like in normal view, interstitial also has events that need to be called from outside. Those events are `destroy`, `saveInstanceState`, `restoreInstanceState`.
 
-    @Override
-    public void onDestroy() {
-        adLoader.destroy();
-        super.onDestroy();
-    }
+* **destroy** should be called in its similar method `onDestroy`.
 
-This concludes simple interstitial ad implementation.
+	    @Override
+    	public void onDestroy() {
+        	adLoader.destroy();
+        	super.onDestroy();
+    	}
 
+* **saveInstanceState** should be called in `onSaveInstanceState`.
+    
+	    @Override
+    	public void onSaveInstanceState(Bundle outState) {
+        	super.onSaveInstanceState(outState);
+        	adLoader.saveInstanceState(outState);
+    	}
+
+* **restoreInstanceState** should be called in whenever state is restored. Like in `onCreate` or `onActivityCreated` methods, that has a parameter of savedInstanceState.
+
+    	@Override
+    	public void onCreate(Bundle savedInstanceState) {
+        	super.onCreate(savedInstanceState);
+        	adLoader = AdViewInterstitial.createInstance(getActivity());
+        	adLoader.restoreInstanceState(savedInstanceState);
+    	}
+    
 ## Advanced interstitial implementation
 
-An `InterstitialAdLoader` has more advanced features such as instance saving, loading into a view, and its callback event listeners. These features are an addition to the basic implementation.
+An `AdViewInterstitial` has more advanced features such as instance saving, loading into a view, and its callback event listeners. These features are an addition to the basic implementation.
 
-### Saving an instance
+### Using animation
 
-To save instance of an ad loader and restore its data on screen rotation/return from background additional methods should be used. For saving loader instance `saveState(outState)` should be used.
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        adLoader.saveState(outState);
-    }
-
-To restore an instance, in `onCreate`, `onActivityCreated` or any other method that returns saved state, method `restoreState(savedInstanceState)` should be used.
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		if (savedInstanceState != null)
-    		adLoader.restoreState(savedInstanceState);
-    	super.onRestoreInstanceState(savedInstanceState);
-    }
-
-### Loading into a view
-
-If you want to load an interstitial ad into a view instead of opening a new window (like using interstitial ads in a ViewPager), a method `createInterstitialView(Context context)` should be used. This method returns a view that can be added to the view hierarchy. The example below shows how interstitial ad is loaded into a fragment.
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return adLoader.createInterstitialView(getActivity());
-    }
+Interstitial Ad can be shown with/without an animation by providing `useAnimation` flag. This can be done by using `setUseAnimation(boolean);` 
 
 ### Callback listeners
 
-To get ad loader state `setListener(InterstitialAdLoader.InterstitialLoaderListener)` should be used to get events when loading has succeeded/failed.
+To get ad loader state `setListener(AdViewInterstitial.InterstitialLoaderListener)` should be used to get events when loading has succeeded/failed.
 
     adLoader.setListener(new InterstitialAdLoader.InterstitialLoaderListener() {
         @Override
@@ -343,54 +335,7 @@ To get ad loader state `setListener(InterstitialAdLoader.InterstitialLoaderListe
 			// Success event implementation
         }
     });
-
-Also to get events when the ad was opened/closed `setInterstitialViewListener(CoreInterstitialListener)` should be used.
-
-    adLoader.setInterstitialViewListener(new CoreInterstitialListener() {
-        @Override
-        public void onAdClose() {
-			// Close event implementation
-        }
-
-        @Override
-        public void onAdShown() {
-			// Ad shown event implementation
-        }
-    });
-
+    
 # Release Notes
 
-This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
-
-## 0.2.2
-
-* Added an ability to display interstitial ad without animation, inner browser changed to external.
-
-## 0.2.1
-
-* Minor fixes
-
-## 0.2
-
-### New features
-
-* Interstitial ad
-
-## 0.1.2
-
-### New Features
-
-* Refresh Rate override option added;
-* onAdLoadFail listener added;
-
-## 0.1.1
-
-### Bug Fixes
-
-* NewRelic library made as optional;
-
-## 0.1.0
-
-### New Features
-
-* first release;
+Library is capable of expanding one/two way ads. The implementation is the same, as using an AdView. Executing a mraid function expand with its setting, a view is expanded in the front. 
