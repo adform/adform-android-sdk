@@ -26,13 +26,13 @@ Adform brings brand advertising to the programmatic era at scale, making display
 	    ...
         dependencies {
 		    compile 'com.google.android.gms:play-services:6.5.87'
-    		compile 'com.adform.advertising.sdk:adform-advertising-sdk:1.0'
+			compile 'com.adform.advertising.sdk:advertising-sdk:1.0'
         }
         ...
         
 * How to add Google Play Services to Your Project please follow these instructions: https://developer.android.com/google/play-services/setup.html#Setup
 
-![alt tag](screenshots/Screenshot 2014-12-29 13.49.27.png)
+![alt tag](img/Screenshot 2015-01-15 18.15.59.png)
 
 ## 3. Extend Application class
 
@@ -336,6 +336,3 @@ To get ad loader state `setListener(AdViewInterstitial.InterstitialLoaderListene
         }
     });
     
-# Release Notes
-
-Library is capable of expanding one/two way ads. The implementation is the same, as using an AdView. Executing a mraid function expand with its setting, a view is expanded in the front. 
