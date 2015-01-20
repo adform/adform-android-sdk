@@ -26,7 +26,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 	    ...
         dependencies {
 		    compile 'com.google.android.gms:play-services:6.5.87'
-			compile 'com.adform.advertising.sdk:advertising-sdk:1.0.1'
+			compile 'com.adform.advertising.sdk:advertising-sdk:1.0.2'
         }
         ...
         
