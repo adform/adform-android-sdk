@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.adform.adformdemo" >
+
+    <!--Permissions that are used in AdformSDK-->
+
+    <!--[mandatory] Base permissions that are used in sdk-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--[optional] This is needed for additional information to be sent when collecting data-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--[optional] This is needed for additional information to be sent when collecting data-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--[optional] This is needed when location data is used in ad requests-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!--[mandatory] 'android:name=".DemoApplication"' must be set to the extended Application class with SDK implementation-->
+    <application
+        android:name=".DemoApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".SampleActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AdInlineActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdInlineActivityBundle"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdInterstitialActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdOverlayActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdOverlayActivityBundle"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdHesionActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".AdInlineLWActivity"
+            android:label="@string/app_name">
+        </activity>
+
+        <!--[mandatory] Must be set for the SDK to work properly -->
+        <activity
+            android:name="com.adform.sdk.activities.AdActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+    </application>
+
+</manifest>
