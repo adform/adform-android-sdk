@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
 // This can be used if using maven repository to include library
-// repositories {
-//      maven { url "https://github.com/adform/adform-android-sdk/raw/master/releases/" }
-// }
+repositories {
+      maven { url "https://github.com/adform/adform-android-sdk/raw/master/releases/" }
+}
 
 android {
     compileSdkVersion 20
@@ -24,9 +24,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services:7.0.0'
 
     // This is used if using maven repository
-    // compile 'com.adform.advertising.sdk:advertising-sdk:1.0'
+    compile 'com.adform.advertising.sdk:advertising-sdk:2.0.0'
 }
