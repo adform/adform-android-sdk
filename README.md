@@ -23,3 +23,46 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 * [Adding Custom Values](https://github.com/adform/adform-android-sdk/wiki/Adding-Custom-Values)
 * [Location](https://github.com/adform/adform-android-sdk/wiki/Location)
+
+# Release Notes
+
+This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
+
+## 2.0
+
+* New formats introduced: Adhesion, Overlay and Interstitial
+* Open RTB protocol support;
+* Performance improvements;
+
+## 1.0
+
+Library is capable of expanding one/two way ads. 
+
+## 0.2.2
+
+* Added an ability to display interstitial ad without animation, inner browser changed to external.
+
+## 0.2.1
+
+* Minor fixes
+
+## 0.2
+
+* Interstitial ad
+
+## 0.1.2
+
+* Refresh Rate override option added;
+* onAdLoadFail listener added;
+
+## 0.1.1
+
+* Bug Fixes
+* NewRelic library made as optional;
+
+## 0.1.0
+
+* first release;
+
+
+
