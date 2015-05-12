@@ -28,7 +28,11 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
-## 2.0
+## 2.0.1
+
+* Stability fixes
+
+## 2.0.0
 
 * New formats introduced: Adhesion, Overlay and Interstitial
 * Open RTB protocol support;

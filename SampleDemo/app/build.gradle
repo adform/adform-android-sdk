@@ -28,5 +28,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
 
     // This is used if using maven repository
-    compile 'com.adform.advertising.sdk:advertising-sdk:2.0.0'
+    compile 'com.adform.advertising.sdk:advertising-sdk:2.0.1'
 }
