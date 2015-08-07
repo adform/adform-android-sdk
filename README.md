@@ -31,6 +31,11 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.2
+
+* Video Ads Support (VAST compatible)
+* Targeting by Keywords and Key Values added
+
 ## 2.0.4.1
 
 * Minor update for additional handling in third party banners.
