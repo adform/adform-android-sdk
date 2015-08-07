@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 // This can be used if using maven repository to include library
 repositories {
-      maven { url "https://github.com/adform/adform-android-sdk/raw/master/releases/" }
+   //   maven { url "https://github.com/adform/adform-android-sdk/raw/master/releases/" }
 }
 
 android {
@@ -21,6 +21,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    repositories{
+        flatDir{
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
@@ -28,5 +34,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
 
     // This is used if using maven repository
-    compile 'com.adform.advertising.sdk:advertising-sdk:2.0.1'
+    compile 'com.adform.adform_advertising_sdk:adform_advertising_sdk:2.2.0@aar'
 }

@@ -62,7 +62,7 @@ public class AdInlineActivity extends Activity {
         adInline.setMasterTagId(4016318);
 
         // [optional] Debug mode for testing ad. Can be set in layout XML
-        adInline.setDebugMode(true);
+       // adInline.setDebugMode(true);
 
         // [optional] You can set an animation type that could be used when ad shows in the banner.
         // adInline.setBannerAnimationType(AdformEnum.AnimationType.FADE);
