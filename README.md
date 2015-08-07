@@ -10,6 +10,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Integrating Full Screen Overlay Ad](https://github.com/adform/adform-android-sdk/wiki/Integrating-Full-Screen-Overlay-Ad)
 * [Integrating Interstitial Ad](https://github.com/adform/adform-android-sdk/wiki/Integrating-Interstitial-Ad)
 * [Integrating Adhesion Ad](https://github.com/adform/adform-android-sdk/wiki/Integrating-Adhesion-Ad)
+* [Video Ad Integration](Video-Ad-Integration)
 
 ###**Advanced integrations**
 
@@ -22,6 +23,8 @@ Adform brings brand advertising to the programmatic era at scale, making display
 ### **Other**
 
 * [Adding Custom Values](https://github.com/adform/adform-android-sdk/wiki/Adding-Custom-Values)
+* [Adding Keywords](Adding-keywords)
+* [Adding Key Value Pairs](Adding-key-value-pairs)
 * [Location](https://github.com/adform/adform-android-sdk/wiki/Location)
 
 # Release Notes
