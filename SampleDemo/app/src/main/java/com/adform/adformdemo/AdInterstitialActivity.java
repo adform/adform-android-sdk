@@ -49,16 +49,6 @@ public class AdInterstitialActivity extends FragmentActivity {
         // [optional] Debug mode for testing ad. Can be set in layout XML
         adInterstitial.setDebugMode(true);
 
-        // [optional] Custom implementation of the pager with overriden AdInterstitial ViewPager touch events
-        adInterstitial.setOverridePagerTouchEvent(true);
-        pager.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                adInterstitial.onPagerTouchEvent(event);
-                return adInterstitial.isAdReady();
-            }
-        });
-
         // [optional] Custom implementation of the pager with overriden AdInterstitial ViewPager OnPageChangeListener events
         adInterstitial.setOverridePagerPageChangeListener(true);
         pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
