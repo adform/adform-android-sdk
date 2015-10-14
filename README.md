@@ -31,6 +31,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.2.2
+
+* Fixed a bug with touch event passing to webview when in viewpager when using AdInterstitial
+ 
 ## 2.2.1
 
 * Added an ability for the AdInterstitial pager container to hold WebViews dynamically
