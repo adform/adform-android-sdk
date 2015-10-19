@@ -45,6 +45,12 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="openAdWebInterstitial"
+            android:text="AdWebInterstitial" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:onClick="openAdHesion"
             android:text="AdHesion" />
 

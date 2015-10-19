@@ -73,6 +73,10 @@ public class SampleActivity extends Activity {
         startActivity(new Intent(this, AdInterstitialActivity.class));
     }
 
+    public void openAdWebInterstitial(View v) {
+        startActivity(new Intent(this, AdInterstitialWebActivity.class));
+    }
+
     public void openAdHesion(View v) {
         startActivity(new Intent(this, AdHesionActivity.class));
     }
