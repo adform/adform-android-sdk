@@ -46,6 +46,10 @@
             android:label="@string/app_name">
         </activity>
         <activity
+            android:name=".AdInterstitialWebActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
             android:name=".AdOverlayActivity"
             android:label="@string/app_name">
         </activity>
