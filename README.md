@@ -26,10 +26,18 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Adding Keywords](https://github.com/adform/adform-android-sdk/wiki/Adding-keywords)
 * [Adding Key Value Pairs](https://github.com/adform/adform-android-sdk/wiki/Adding-key-value-pairs)
 * [Location](https://github.com/adform/adform-android-sdk/wiki/Location)
+* [Security](https://github.com/adform/adform-android-sdk/wiki/Security)
 
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
+
+## 2.3.0
+
+* Multiple sizes feature.
+* Mraid resize feature.
+* Added HTTPS support.
+* Minor fixes.
 
 ## 2.2.5
 
