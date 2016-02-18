@@ -28,7 +28,8 @@ public class AdInlineActivity extends Activity {
         // [optional] Setting base listeners for ad load status
         adInline.setListener(new AdListener() {
             @Override
-            public void onAdLoadSuccess(AdInline adInline) { }
+            public void onAdLoadSuccess(AdInline adInline) {
+            }
 
             @Override
             public void onAdLoadFail(AdInline adInline, String s) {
@@ -57,6 +58,15 @@ public class AdInlineActivity extends Activity {
 
         // [mandatory] Setting ad size. [optional] if set in layout XML
         adInline.setAdSize(new AdSize(320, 50));
+
+//        [optional] You could add to the request additional sizes.
+//        adInline.setSupportedSizes(new AdSize(300, 300), new AdSize(320, 160));
+
+//        [optional] If you want to support multiple ad sizes at the same placement without setting them, you could use additional dimensions feature.
+//        adInline.setEnabledAdditionalDimensions(true);
+
+//        [optional] If you want to setup that HTML ad would be loaded if video ads fails, you need to set fallback master tag.
+//        adInline.setFallbackMasterTagId(1111111);
 
         // [mandatory] Setting master tag. [optional] if set in layout XML
         adInline.setMasterTagId(4016318);
