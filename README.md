@@ -32,6 +32,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.3.2
+
+* Fixed AdOverlay display bug for devices with no navigation bar. 
+
 ## 2.3.1
 
 * Fixed issue with X509TrustManager implementation.
