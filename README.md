@@ -32,6 +32,13 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.4.0
+
+* Added smart ad size feature
+* Ad tag support
+* MRAID viewable percentage support
+* Minnor fixes
+
 ## 2.3.2
 
 * Fixed AdOverlay display bug for devices with no navigation bar. 
