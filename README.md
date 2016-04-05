@@ -27,6 +27,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Adding Key Value Pairs](https://github.com/adform/adform-android-sdk/wiki/Adding-key-value-pairs)
 * [Location](https://github.com/adform/adform-android-sdk/wiki/Location)
 * [Security](https://github.com/adform/adform-android-sdk/wiki/Security)
+* [Ad Tags](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags)
 
 # Release Notes
 
@@ -34,10 +35,10 @@ This part lists release notes from all versions of Adform Mobile Advertising And
 
 ## 2.4.0
 
-* Added smart ad size feature
-* Ad tag support
-* MRAID viewable percentage support
-* Minnor fixes
+* Smart ad size feature - now ad views can dynamically adapt to multiple screen sizes when used with smart ad size. For more details [check here](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-Inline-Ad#smart-ad-size).
+* Ad tag support - now ad views can load html or url ad tags provided by developer. For more details [check here](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags).
+* MRAID viewable percentage support - now MRAID banners may listen for viewablePercentageChange event or use getViewablePercentage() method to know how much of the creative is viewable.  
+* Minnor bug fixes
 
 ## 2.3.2
 
