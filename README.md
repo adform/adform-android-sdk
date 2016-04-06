@@ -33,6 +33,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.4.1
+
+* Fixed webview crash when trying to load URL using destroyed webview.
+
 ## 2.4.0
 
 * Smart ad size feature - now ad views can dynamically adapt to multiple screen sizes when used with smart ad size. For more details [check here](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-Inline-Ad#smart-ad-size).
