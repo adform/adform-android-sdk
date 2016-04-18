@@ -33,6 +33,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.4.2
+
+* Fixed banner loading in webview bug.
+
 ## 2.4.1
 
 * Fixed webview crash when trying to load URL using destroyed webview.
