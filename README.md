@@ -33,6 +33,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.4.4
+
+* Added helper classes for Unity plugin.
+
 ## 2.4.3
 
 * Added an option to AdHesion ads to enable close button. By default it is disabled.
