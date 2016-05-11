@@ -33,6 +33,13 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.5.0
+
+* Included Adform Header Bidding SDK v.1.0;
+* Added Adform recycler view adapter for displaying content with adinline banners.
+* Added additional 'price' and 'customData' parameters to ad views for header bidding support.
+* Minor bug fixes;
+
 ## 2.4.5
 
 * Fixed issue when webview crashes after destroy on devices without chromium.
