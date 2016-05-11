@@ -35,10 +35,10 @@ This part lists release notes from all versions of Adform Mobile Advertising And
 
 ## 2.5.0
 
-* Included Adform Header Bidding SDK v.1.0;
+* Included Adform Header Bidding SDK v.1.0.
 * Added Adform recycler view adapter for displaying content with adinline banners.
 * Added additional 'price' and 'customData' parameters to ad views for header bidding support.
-* Minor bug fixes;
+* Minor bug fixes.
 
 ## 2.4.5
 
