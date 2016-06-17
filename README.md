@@ -30,6 +30,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Ad Tags](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags)
 * [Header Bidding](https://github.com/adform/adform-android-sdk/wiki/Header-Bidding)
 
+### **Plugins**
+
+* [Unity](https://github.com/adform/adform-advertising-sdk-unity-plugin)
+
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
