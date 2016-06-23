@@ -19,6 +19,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Advanced integration of Interstitial Ad](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-Interstitial-Ad)
 * [Advanced integration of Adhesion Ad](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-Adhesion-Ad)
 * [Advanced integration of AdInline ListView](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-AdInline-ListView)
+* [Instream video ads integration](https://github.com/adform/adform-android-sdk/wiki/Instream-video-ads-implementation)
 
 ### **Other**
 
