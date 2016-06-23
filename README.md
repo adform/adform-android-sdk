@@ -38,6 +38,11 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.6.0
+
+* Added In-Stream ads support.
+* Minor bug fixes.
+
 ## 2.5.0
 
 * Included Adform Header Bidding SDK v.1.0.
