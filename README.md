@@ -44,6 +44,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.7.2
+
+* Ad container size fix bug fix. 
+
 ## 2.7.1
 
 * View port update script bug fix.
