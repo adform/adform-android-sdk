@@ -26,6 +26,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Adding Custom Values](https://github.com/adform/adform-android-sdk/wiki/Adding-Custom-Values)
 * [Adding Keywords](https://github.com/adform/adform-android-sdk/wiki/Adding-keywords)
 * [Adding Key Value Pairs](https://github.com/adform/adform-android-sdk/wiki/Adding-key-value-pairs)
+* [Adding Search Words](https://github.com/adform/adform-android-sdk/wiki/Adding-Search-Words)
 * [Location](https://github.com/adform/adform-android-sdk/wiki/Location)
 * [Security](https://github.com/adform/adform-android-sdk/wiki/Security)
 * [Ad Tags](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags)
