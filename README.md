@@ -45,6 +45,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.8.2
+
+* Fixed adinterstitial load failed event.
+
 ## 2.8.1
 
 * Fixed issue with ad interstitial key-values sending.
