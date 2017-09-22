@@ -45,6 +45,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.9.1
+
+* Fixed AdInline NPE
+
 ## 2.9.0
 
 * It is now possible to specify which ADX servers SDK should use by setting ADX domain. Check out documentation on how to do it [here](https://github.com/adform/adform-android-sdk/wiki/Changing-ADX-Domain).
