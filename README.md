@@ -45,6 +45,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.10.0
+
+* Added possibility to open ad in a internal browser.
+
 ## 2.9.1
 
 * Fixed AdInline NPE
