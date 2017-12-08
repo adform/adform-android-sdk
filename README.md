@@ -45,6 +45,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.11.0
+
+* Added possibility to set width and height for SmartAdSize. More info in [Advanced integration of Inline Ad](https://github.com/adform/adform-android-sdk/wiki/Advanced-integration-of-Inline-Ad)
+
 ## 2.10.0
 
 * Added possibility to open ad in a internal browser.
