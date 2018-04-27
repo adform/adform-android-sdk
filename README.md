@@ -31,6 +31,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Security](https://github.com/adform/adform-android-sdk/wiki/Security)
 * [Ad Tags](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags)
 * [Header Bidding](https://github.com/adform/adform-android-sdk/wiki/Header-Bidding)
+* [Specifying banner loading behaviour](https://github.com/adform/adform-android-sdk/wiki/Specifying-banner-loading-behaviour)
 
 ### **Mediations adapters**
 
@@ -44,6 +45,10 @@ Adform brings brand advertising to the programmatic era at scale, making display
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
+
+## 2.12.0
+
+* Added ability to specify banner loading behaviour. More info in [Specifying banner loading behaviour](https://github.com/adform/adform-android-sdk/wiki/Specifying-banner-loading-behaviour)
 
 ## 2.11.0
 
