@@ -32,6 +32,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Ad Tags](https://github.com/adform/adform-android-sdk/wiki/Ad-Tags)
 * [Header Bidding](https://github.com/adform/adform-android-sdk/wiki/Header-Bidding)
 * [Specifying banner loading behaviour](https://github.com/adform/adform-android-sdk/wiki/Specifying-banner-loading-behaviour)
+* [GDPR](https://github.com/adform/adform-android-sdk/wiki/GDPR)
 
 ### **Mediations adapters**
 
@@ -45,6 +46,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 # Release Notes
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
+
+## 2.13.0
+* Added GDPR support. More info in [GDPR](https://github.com/adform/adform-android-sdk/wiki/GDPR)
 
 ## 2.12.0
 
