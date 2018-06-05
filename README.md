@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.13.1
+* Minor changes for Prebid integration.
+
 ## 2.13.0
 * Added GDPR support. More info in [GDPR](https://github.com/adform/adform-android-sdk/wiki/GDPR)
 
