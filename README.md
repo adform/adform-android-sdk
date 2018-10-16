@@ -50,6 +50,10 @@ This part lists release notes from all versions of Adform Mobile Advertising And
 ## 2.13.2
 * Webview crash fix
 
+Since version 69 Chrome changed the way it handles paths to external resources. This causes Chrome WebView to crash in case external fonts are loaded.
+
+This release fixes the way we handle external resource paths therefore is recommended to all users of the Adform Android SDK.
+
 ## 2.13.1
 * Minor changes for Prebid integration.
 
