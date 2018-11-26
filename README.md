@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.13.4
+* VAST 3.0 skip compatability.
+
 ## 2.13.3
 * Video ad resume fix.
 * Added onAdClose(Adinline) callback for video ad.
