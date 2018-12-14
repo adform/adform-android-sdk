@@ -16,9 +16,6 @@
 
         <com.adform.sdk.pub.views.AdHesion
             android:id="@+id/view_ad_hesion"
-            ad_height="50"
-            ad_width="320"
-            mastertag_id="111111"
             ad_position="top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

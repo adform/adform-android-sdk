@@ -9,9 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.view.ViewGroup;
 import com.adform.adformdemo.support.EmptyWebviewFragment;
 import com.adform.sdk.interfaces.AdListener;
+import com.adform.sdk.network.utils.Log;
 import com.adform.sdk.pager.AdInterstitial;
 import com.adform.sdk.pub.views.AdInline;
-import com.adform.sdk.utils.Log;
 
 import java.util.ArrayList;
 
@@ -44,10 +44,10 @@ public class AdInterstitialWebActivity extends FragmentActivity {
         adInterstitial = (AdInterstitial) findViewById(R.id.pager_container);
 
         // [mandatory] Setting master tag. [optional] if set in layout XML
-        adInterstitial.setMasterTagId(4660165);
+        adInterstitial.setMasterTagId(142636);
 
         // [optional] Debug mode for testing ad. Can be set in layout XML
-        adInterstitial.setDebugMode(true);
+        adInterstitial.setDebugMode(false);
 
         // [optional] Custom implementation of the pager with overriden AdInterstitial ViewPager OnPageChangeListener events
         adInterstitial.setOverridePagerPageChangeListener(true);

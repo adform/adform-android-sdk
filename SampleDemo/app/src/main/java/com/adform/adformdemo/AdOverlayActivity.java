@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.adform.sdk.entities.AdformEnum;
+import com.adform.sdk.network.entities.AdformEnum;
 import com.adform.sdk.pub.AdOverlay;
 
 /**
@@ -32,10 +32,10 @@ public class AdOverlayActivity extends Activity implements View.OnClickListener 
         adOverlay = AdOverlay.createInstance(this);
 
         // [mandatory] Setting master tag. [optional] if set in layout XML
-        adOverlay.setMasterTagId(4660165);
+        adOverlay.setMasterTagId(142636);
 
         // [optional] Debug mode for testing ad. Can be set in layout XML
-        adOverlay.setDebugMode(true);
+        adOverlay.setDebugMode(false);
 
         // [optional] Setting base listeners for ad load status
         adOverlay.setListener(new AdOverlay.OverlayLoaderListener() {

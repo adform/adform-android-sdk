@@ -3,7 +3,7 @@ package com.adform.adformdemo;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.adform.sdk.entities.AdformEnum;
+import com.adform.sdk.network.entities.AdformEnum;
 import com.adform.sdk.pub.views.AdHesion;
 import com.adform.sdk.utils.AdSize;
 
@@ -29,10 +29,10 @@ public class AdHesionActivity extends Activity {
         adHesion.setAdSize(new AdSize(320, 50));
 
         // [mandatory] Setting master tag. [optional] if set in layout XML
-        adHesion.setMasterTagId(4016318);
+        adHesion.setMasterTagId(206416);
 
         // [optional] Debug mode for testing ad. Can be set in layout XML
-        adHesion.setDebugMode(true);
+        adHesion.setDebugMode(false);
 
         // [optional] You can set an animation type that could be used when ad shows in the banner.
         // adInline.setBannerAnimationType(AdformEnum.AnimationType.FADE);

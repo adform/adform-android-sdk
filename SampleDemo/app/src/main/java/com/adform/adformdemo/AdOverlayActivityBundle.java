@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.adform.sdk.entities.AdformEnum;
 import com.adform.sdk.pub.AdOverlay;
 
 /**

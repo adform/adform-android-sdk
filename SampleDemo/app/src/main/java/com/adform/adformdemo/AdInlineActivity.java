@@ -3,9 +3,9 @@ package com.adform.adformdemo;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.adform.sdk.entities.AdformEnum;
 import com.adform.sdk.interfaces.AdListener;
 import com.adform.sdk.interfaces.AdStateListener;
+import com.adform.sdk.network.entities.AdformEnum;
 import com.adform.sdk.pub.views.AdInline;
 import com.adform.sdk.utils.AdSize;
 
@@ -57,7 +57,7 @@ public class AdInlineActivity extends Activity {
         });
 
         // [mandatory] Setting ad size. [optional] if set in layout XML
-        adInline.setAdSize(new AdSize(320, 50));
+//        adInline.setAdSize(new AdSize(320, 50));
 
 //        [optional] You could add to the request additional sizes.
 //        adInline.setSupportedSizes(new AdSize(300, 300), new AdSize(320, 160));
@@ -69,7 +69,7 @@ public class AdInlineActivity extends Activity {
 //        adInline.setFallbackMasterTagId(1111111);
 
         // [mandatory] Setting master tag. [optional] if set in layout XML
-        adInline.setMasterTagId(4016318);
+        adInline.setMasterTagId(142493);
 
         // [optional] Debug mode for testing ad. Can be set in layout XML
        // adInline.setDebugMode(true);
