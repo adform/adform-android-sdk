@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.13.5
+* "Skip" button showing fix in video ad. 
+
 ## 2.13.4
 * VAST 3.0 skip compatability.
 
