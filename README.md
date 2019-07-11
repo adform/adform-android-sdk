@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.13.7
+* Added User-Agent header to impression request.
+
 ## 2.13.6
 * Added possibility to remove key value.
 
