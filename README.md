@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.15.0
+* IAB Transparent Consent Framework 2.0 support.
+
 ## 2.14.0
 * Migrated to AndroidX.
 * Fixed AdInline restore when navigating back to fragment. 
