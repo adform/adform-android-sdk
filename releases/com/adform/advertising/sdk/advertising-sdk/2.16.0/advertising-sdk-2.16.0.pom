@@ -6,11 +6,5 @@
   <version>2.16.0</version>
   <packaging>aar</packaging>
   <name>com.adform.advertising.sdk:advertising-sdk</name>
-  <dependencies>
-    <dependency>
-      <groupId>adform-android-sdk-dev</groupId>
-      <artifactId>HeaderBiddingSDK</artifactId>
-      <version>unspecified</version>
-    </dependency>
-  </dependencies>
+  <dependencies/>
 </project>
