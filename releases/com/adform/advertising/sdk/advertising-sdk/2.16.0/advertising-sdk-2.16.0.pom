@@ -8,9 +8,9 @@
   <name>com.adform.advertising.sdk:advertising-sdk</name>
   <dependencies>
     <dependency>
-      <groupId>com.adform</groupId>
-      <artifactId>adform-header-bidding-sdk</artifactId>
-      <version>2.16.0</version>
+      <groupId>adform-android-sdk-dev</groupId>
+      <artifactId>HeaderBiddingSDK</artifactId>
+      <version>unspecified</version>
     </dependency>
   </dependencies>
 </project>
