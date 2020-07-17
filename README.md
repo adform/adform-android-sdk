@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.17.0
+* Added Header Bidding SDK as dependency in Adform SDK maven configuration. 
+
 ## 2.16.0
 * Added US policy(CCPA) support.
 
