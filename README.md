@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.17.1
+* Fixed Smart Ad Size issue, when changing device orientation
+
 ## 2.17.0
 * Added Header Bidding SDK as dependency in Adform SDK maven configuration. 
 
