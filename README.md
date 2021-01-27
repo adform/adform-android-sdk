@@ -47,6 +47,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.18.0
+Added support for custom ad size in interstitial and overlay ads.
+
 ## 2.17.1
 * Fixed Smart Ad Size issue, when changing device orientation
 
