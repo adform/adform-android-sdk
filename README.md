@@ -33,6 +33,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 * [Header Bidding](https://github.com/adform/adform-android-sdk/wiki/Header-Bidding)
 * [Specifying banner loading behaviour](https://github.com/adform/adform-android-sdk/wiki/Specifying-banner-loading-behaviour)
 * [GDPR](https://github.com/adform/adform-android-sdk/wiki/GDPR)
+* [Logs](https://github.com/adform/adform-android-sdk/wiki/Enable-Disable-debug-logs)
 
 ### **Mediations adapters**
 
