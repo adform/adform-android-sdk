@@ -48,6 +48,9 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
+## 2.19.1
+Fixed bug when READ_PHONE_STATE state permission wasn't checked for Android 11.
+
 ## 2.19.0
 Added logs enabling/disabling
 
