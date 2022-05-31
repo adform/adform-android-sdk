@@ -6,8 +6,7 @@
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/text_view"
@@ -17,6 +16,6 @@
         android:layout_centerInParent="true"
         android:lineSpacingMultiplier="1.2"
         android:padding="16dp"
-        android:textSize="26dp" />
+        android:textSize="26sp" />
 
 </RelativeLayout>
