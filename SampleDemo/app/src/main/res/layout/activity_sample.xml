@@ -93,6 +93,12 @@
             android:onClick="openAdOverlayCustom2"
             android:text="AdOverlay with Ad 2" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="openInStreamActivity"
+            android:text="Using external player" />
+
     </LinearLayout>
 
 </ScrollView>

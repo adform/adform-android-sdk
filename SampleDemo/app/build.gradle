@@ -50,4 +50,6 @@ dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
     // Adform SDK
     implementation 'com.adform.advertising.sdk:advertising-sdk:2.19.1'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.0'
 }

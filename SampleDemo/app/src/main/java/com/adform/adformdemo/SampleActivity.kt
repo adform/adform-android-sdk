@@ -56,6 +56,12 @@ class SampleActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun openInStreamActivity(v: View?) {
+        val intent = Intent(this, InStreamActivity::class.java)
+        intent.putExtra(InStreamActivity.BUNDLE_KEY_MASTER_TAG, 1505418)
+        startActivity(intent)
+    }
+
     fun openAdInlineLW(v: View?) {
         startActivity(Intent(this, AdInlineLWActivity::class.java))
     }
