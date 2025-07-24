@@ -1,5 +1,6 @@
 package com.adform.adformdemo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +21,6 @@ import com.adform.sdk.network.entities.OpenRTBRequest.NativeRequest
 import com.adform.sdk.network.entities.OpenRTBRequest.NativeRequestAsset
 import com.adform.sdk.network.entities.OpenRTBRequest.RequestDataAsset
 import com.adform.sdk.network.entities.OpenRTBRequest.RequestImgAsset
-import com.adform.sdk.network.entities.OpenRTBRequest.RequestTitleAsset
 import com.adform.sdk.network.entities.OpenRTBResponse
 import com.adform.sdk.network.nativead.NativeAdListener
 import com.adform.sdk.network.nativead.OpenRTBBidLoader
@@ -90,6 +90,7 @@ class AdNativeActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun loadAdmobAd() {
         val adLoader = AdLoader.Builder(
             this,
@@ -108,39 +109,38 @@ class AdNativeActivity : AppCompatActivity() {
             adView.headlineView = adView.findViewById(R.id.ad_headline)
             (adView.headlineView as TextView).text = ad.headline
 
-            adView.bodyView = adView.findViewById(R.id.ad_body)
-            if (ad.body != null) {
-                (adView.bodyView as TextView).text = ad.body
-                adView.bodyView!!.visibility = View.VISIBLE
-            } else {
-                adView.bodyView!!.visibility = View.INVISIBLE
+            val bodyTextView = adView.findViewById<TextView>(R.id.ad_body)
+            adView.bodyView = bodyTextView
+            ad.body?.let {
+                bodyTextView.text = it
+                bodyTextView.visibility = View.VISIBLE
+            } ?: run {
+                bodyTextView.visibility = View.INVISIBLE
             }
 
-            adView.callToActionView =
-                adView.findViewById(R.id.ad_call_to_action)
-            if (ad.callToAction != null) {
-                (adView.callToActionView as Button).text = ad.callToAction
-                adView.callToActionView!!.visibility = View.VISIBLE
-            } else {
-                adView.callToActionView!!.visibility = View.INVISIBLE
+            val ctaButton = adView.findViewById<Button>(R.id.ad_call_to_action)
+            adView.callToActionView = ctaButton
+            ad.callToAction?.let {
+                ctaButton.text = it
+                ctaButton.visibility = View.VISIBLE
+            } ?: run {
+                ctaButton.visibility = View.INVISIBLE
             }
 
-            val iconView =
-                adView.findViewById<ImageView>(R.id.ad_app_icon)
-            if (ad.icon != null) {
-                iconView.setImageDrawable(ad.icon!!.drawable)
-                iconView.setVisibility(View.VISIBLE)
+            val iconView = adView.findViewById<ImageView>(R.id.ad_app_icon)
+            ad.icon?.let { icon ->
+                iconView.setImageDrawable(icon.drawable)
+                iconView.visibility = View.VISIBLE
                 adView.iconView = iconView
-            } else {
-                iconView.setVisibility(View.GONE)
+            } ?: run {
+                iconView.visibility = View.GONE
             }
 
-            val ratingBar =
-                adView.findViewById<RatingBar>(R.id.ad_stars)
-            if (ad.starRating != null) {
-                ratingBar.rating = ad.starRating!!.toFloat()
+            val ratingBar = adView.findViewById<RatingBar>(R.id.ad_stars)
+            ad.starRating?.let { rating ->
+                ratingBar.rating = rating.toFloat()
                 ratingBar.visibility = View.VISIBLE
-            } else {
+            } ?: run {
                 ratingBar.visibility = View.GONE
             }
 
@@ -212,51 +212,59 @@ class AdNativeActivity : AppCompatActivity() {
         val nativeAd = OpenRTBRequest.Native()
         val nativeRequest = NativeRequest()
 
-        val assetMainImage = NativeRequestAsset()
-        assetMainImage.id = 0
-        assetMainImage.required = 0
-        assetMainImage.img = RequestImgAsset()
-        assetMainImage.img.hmin = 166
-        assetMainImage.img.wmin = 200
-        assetMainImage.img.type = 3
+        val assetMainImage = NativeRequestAsset().apply {
+            id = 0
+            required = 0
+            img = RequestImgAsset()
+            img.hmin = 166
+            img.wmin = 200
+            img.type = 3
+        }
 
-        val assetTitle = NativeRequestAsset()
-        assetTitle.id = 1
-        assetTitle.required = 0
-        assetTitle.title = RequestTitleAsset()
-        assetTitle.title.len = 150
+        val assetTitle = NativeRequestAsset().apply {
+            id = 1
+            required = 0
+            data = RequestDataAsset()
+            data.type = 1
+        }
 
-        val assetDescription = NativeRequestAsset()
-        assetDescription.id = 2
-        assetDescription.required = 0
-        assetDescription.data = RequestDataAsset()
-        assetDescription.data.type = 2
+        val assetDescription = NativeRequestAsset().apply {
+            id = 2
+            required = 0
+            data = RequestDataAsset()
+            data.type = 1
+        }
 
-        val assetSponsoredBy = NativeRequestAsset()
-        assetSponsoredBy.id = 3
-        assetSponsoredBy.required = 0
-        assetSponsoredBy.data = RequestDataAsset()
-        assetSponsoredBy.data.type = 1
+        val assetSponsoredBy = NativeRequestAsset().apply {
+            id = 3
+            required = 0
+            data = RequestDataAsset()
+            data.type = 1
+        }
 
-        val assetAppIcon = NativeRequestAsset()
-        assetAppIcon.id = 4
-        assetAppIcon.required = 0
-        assetAppIcon.img = RequestImgAsset()
-        assetAppIcon.img.type = 1
-        assetAppIcon.img.wmin = 10
-        assetAppIcon.img.hmin = 10
+        val assetAppIcon = NativeRequestAsset().apply {
+            id = 4
+            required = 0
+            img = RequestImgAsset()
+            img.type = 1
+            img.wmin = 10
+            img.hmin = 10
+        }
 
-        val assetCallToAction = NativeRequestAsset()
-        assetCallToAction.id = 5
-        assetCallToAction.required = 0
-        assetCallToAction.data = RequestDataAsset()
-        assetCallToAction.data.type = 12
+        val assetCallToAction = NativeRequestAsset().apply {
+            id = 5
+            required = 0
+            data = RequestDataAsset()
+            data.type = 12
+        }
 
         val assetRating = NativeRequestAsset()
-        assetRating.id = 6
-        assetRating.required = 0
-        assetRating.data = RequestDataAsset()
-        assetRating.data.type = 3
+            .apply {
+                id = 6
+                required = 0
+                data = RequestDataAsset()
+                data.type = 3
+            }
 
         nativeAd.request = nativeRequest
         val assets: MutableList<NativeRequestAsset> = ArrayList()
@@ -273,8 +281,6 @@ class AdNativeActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (ad != null) {
-            ad!!.destroy()
-        }
+        ad?.destroy()
     }
 }
