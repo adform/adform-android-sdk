@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.sdk.utils.AdSize
 
 class SampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_sample)
     }
 
@@ -80,5 +82,9 @@ class SampleActivity : AppCompatActivity() {
 
     fun openAdHesion(v: View?) {
         startActivity(Intent(this, AdHesionActivity::class.java))
+    }
+
+    fun openAdNative(v: View?) {
+        startActivity(Intent(this, AdNativeActivity::class.java))
     }
 }

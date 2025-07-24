@@ -2,6 +2,7 @@ package com.adform.adformdemo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.sdk.pub.views.AdInline
 import com.adform.sdk.utils.AdSize
 
@@ -15,6 +16,7 @@ class AdInlineActivityBundle : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_adinline)
         adInline = findViewById(R.id.view_ad_inline)
         adInline.setDebugMode(true)
