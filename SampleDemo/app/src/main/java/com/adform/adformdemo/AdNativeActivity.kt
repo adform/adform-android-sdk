@@ -68,7 +68,7 @@ class AdNativeActivity : AppCompatActivity() {
                 for (adapterClass in statusMap.keys) {
                     val status = statusMap.get(adapterClass)
                     Log.d(
-                        "Admob",
+                        "AdNativeActivity",
                         String.format(
                             "Adapter name: %s, Description: %s, Latency: %d",
                             adapterClass,
@@ -160,7 +160,7 @@ class AdNativeActivity : AppCompatActivity() {
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 super.onAdFailedToLoad(loadAdError)
-                Log.d("AdmobActivity", "onAdFailedToLoad: $loadAdError")
+                Log.d("AdNativeActivity", "onAdFailedToLoad: $loadAdError")
             }
 
         }).withNativeAdOptions(
