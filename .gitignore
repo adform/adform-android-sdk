@@ -37,4 +37,3 @@ build/
 .gradle/
 docs/
 test_script/*txt
-SampleDemo/app/libs/
