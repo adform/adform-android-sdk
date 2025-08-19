@@ -3,6 +3,7 @@ package com.adform.adformdemo
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.sdk.interfaces.AdListener
 import com.adform.sdk.interfaces.AdStateListener
 import com.adform.sdk.network.entities.AdformEnum
@@ -19,6 +20,7 @@ class AdInlineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_adinline)
 
         // [mandatory] Getting an instance of the view

@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.sdk.pub.ContentPlayback
 import com.adform.sdk.pub.VideoPlayer
 import com.adform.sdk.pub.VideoPlayer.ExternalBuilder
@@ -23,6 +24,7 @@ class InStreamActivity : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_in_stream)
 
         externalPlayer = ExoPlayer.Builder(this).build()

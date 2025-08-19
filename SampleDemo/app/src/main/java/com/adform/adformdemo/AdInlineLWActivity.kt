@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.adformdemo.AdInlineLWActivity.TestAdapter.TestAdapterListener
 import com.adform.sdk.pub.views.AdListViewItemBuilder
 import com.adform.sdk.utils.AdSize
@@ -21,6 +22,7 @@ import java.util.ArrayList
 class AdInlineLWActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_adinline_lw)
 
         // Initializing data that will be used for items that are not ad type

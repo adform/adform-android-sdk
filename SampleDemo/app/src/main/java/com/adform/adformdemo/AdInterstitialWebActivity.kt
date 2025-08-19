@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -25,6 +26,7 @@ class AdInterstitialWebActivity : AppCompatActivity() {
     private lateinit var adInterstitial: AdInterstitial
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_adinterstitial_web)
         // [app related] Initializing pager
         val pager = findViewById<View>(R.id.pager) as ViewPager

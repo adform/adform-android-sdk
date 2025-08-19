@@ -3,6 +3,7 @@ package com.adform.adformdemo
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.adform.sdk.network.entities.AdformEnum
 import com.adform.sdk.pub.AdOverlay
 import com.adform.sdk.pub.AdOverlay.OverlayLoaderListener
@@ -18,7 +19,7 @@ class AdOverlayActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         // [app related] Initializing additional buttons for user control
         setContentView(R.layout.activity_adoverlay)
         val loadButton = findViewById<View>(R.id.load_button)

@@ -2,6 +2,7 @@ package com.adform.adformdemo
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import com.adform.sdk.network.entities.AdformEnum
 import com.adform.sdk.pub.views.AdHesion
 import com.adform.sdk.utils.AdSize
@@ -15,6 +16,7 @@ class AdHesionActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_adhesion)
 
         // [mandatory] Getting an instance of the view
