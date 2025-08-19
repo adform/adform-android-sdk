@@ -38,8 +38,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 
 ### **Mediations adapters**
 
-* [AdMob](https://github.com/adform/adform-android-sdk/wiki/Advertising-SDK-adapter-for-AdMob-mediation)
-* [DFP](https://github.com/adform/adform-android-sdk/wiki/Advertising-SDK-adapter-for-DFP-mediation)
+* [AdMob Native]([https://github.com/adform/adform-android-sdk/wiki/Advertising-SDK-adapter-for-AdMob-mediation](https://github.com/adform/adform-android-sdk/wiki/Adform-Native-Mediation-Adapter))
 
 ### **Plugins**
 
