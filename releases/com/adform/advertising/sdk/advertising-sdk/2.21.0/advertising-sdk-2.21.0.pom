@@ -12,5 +12,11 @@
       <url>https://github.com/adform/adform-android-sdk/raw/master/releases/</url>
     </repository>
   </repositories>
-  <dependencies/>
+  <dependencies>
+    <dependency>
+      <groupId>com.adform</groupId>
+      <artifactId>adform-header-bidding-sdk</artifactId>
+      <version>2.21.0</version>
+    </dependency>
+  </dependencies>
 </project>
