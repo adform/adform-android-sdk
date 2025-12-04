@@ -49,7 +49,7 @@ Adform brings brand advertising to the programmatic era at scale, making display
 This part lists release notes from all versions of Adform Mobile Advertising Android SDK.
 
 ## 2.22.0
-Added OpenRTP taxonomies support.
+Added OpenRTB taxonomies support.
 
 ## 2.21.0
 Added OpenRTB loading and Native Ads Admob mediation.
