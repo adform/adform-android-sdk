@@ -51,9 +51,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:24.4.0'
     implementation "androidx.multidex:multidex:2.0.1"
     // Adform SDK
-//    implementation 'com.adform.advertising.sdk:advertising-sdk:2.19.2'
-    implementation files('libs/AdformSdk-release.aar')
-    implementation files('libs/HeaderBiddingSDK-release.aar')
+    implementation 'com.adform.advertising.sdk:advertising-sdk:2.22.0'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.18.0'
 }
